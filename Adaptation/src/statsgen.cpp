@@ -6,6 +6,27 @@ using namespace std;
 
 
 
+void Statsgen::showHelp() {
+    wcout << "\nUsage database.txt [options]\n" << endl;
+
+    wcout << "Options:" << endl;
+    wcout << "\t--help, -h\t:\tShow this help message" << endl;
+    wcout << "\t--hiderare, -r\t:\tHide all statistics below 1%" << endl;
+    wcout << "\t--top, -t\t:\tShow only 10 first results\n\n" << endl;
+
+}
+
+
+void Statsgen::setHiderare(int val) {
+    hiderare = val;
+}
+
+
+
+void Statsgen::setTop(int val) {
+    top = val;
+}
+
 
 
 multimap<int, int> flip_map(map<int,int> & src) {
@@ -26,6 +47,12 @@ multimap<int, wstring> flip_map(map<wstring,int> & src) {
 
     return dst;
 }
+
+
+
+
+
+
 
 
 
@@ -148,7 +175,6 @@ int Statsgen::generate_stats(const string & filename) {
 
     while(readfile.good()) {
         getline(readfile, line);
-        //wcout << line << endl;
         
         if (line.size() == 0) {
             continue;
@@ -210,54 +236,116 @@ void Statsgen::print_stats() {
     wcout << "Analyzing " << total_counter << " passwords" << endl;
 
     float percentage;
+    int count;
 
-    wcout << "min - max" << endl;
-    wcout << "\t  digit:   " << mindigit << " - " << maxdigit << endl; 
-    wcout << "\t  lower:   " << minlower << " - " << maxlower << endl; 
-    wcout << "\t  upper:   " << minupper << " - " << maxupper << endl; 
-    wcout << "\tspecial:   " << minspecial << " - " << maxspecial << endl; 
+    wcout << "\nmin - max\n" << endl;
+    wcout << setw(43) << right << "digit:  " 
+            << setw(2) << right << mindigit << " - " << maxdigit << endl;
+    wcout << setw(43) << right << "lower:  " 
+            << setw(2) << right << minlower << " - " << maxlower << endl;
+    wcout << setw(43) << right << "upper:  " 
+            << setw(2) << right << minupper << " - " << maxupper << endl;
+    wcout << setw(43) << right << "special:  " 
+            << setw(2) << right << minspecial << " - " << maxspecial << endl;       
 
 
-    wcout << "\nStatistics relative to length: " << endl;
+
+    wcout << "\nStatistics relative to length: \n" << endl;
     
+    count = 0;
     multimap<int, int> reverseLength = flip_map(stats_length);
+
     for(map<int, int>::const_iterator it = reverseLength.end(); it != reverseLength.begin(); it--) {
         if (it == reverseLength.end()) continue;
+        
         percentage = (float) (100*it->first) / total_counter;
-        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
+
+        if (percentage >= hiderare) {
+            wstring value = to_wstring(percentage);
+            value = value.substr(0,5);
+
+            wcout << setw(40) << right << it->second << ":  " 
+                << setw(5) << right << value << "%" 
+                << setw(5) << right << "(" << it->first << ")" << endl;
+
+            count++;
+            if (top != -1 && count == top) break;
+        }
     }
     
 
 
-    wcout << "\nStatistics relative to charsets: " << endl;
+    wcout << "\nStatistics relative to charsets: \n" << endl;
     
+    count = 0;
     multimap<int, wstring> reverseCharsets = flip_map(stats_charactersets);
+
     for(map<int, wstring>::const_iterator it = reverseCharsets.end(); it != reverseCharsets.begin(); it--) {
         if (it == reverseCharsets.end()) continue;
+
         percentage = (float) (100*it->first) / total_counter;
-        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
+        
+        if (percentage >= hiderare) {
+            wstring value = to_wstring(percentage);
+            value = value.substr(0,5);
+
+            wcout << setw(40) << right << it->second << ":  " 
+                << setw(5) << right << value << "%" 
+                << setw(5) << right << "(" << it->first << ")" << endl;
+
+            count++;
+            if (top != -1 && count == top) break;
+        }
     }
 
 
 
-    wcout << "\nStatistics relative to simplemasks: " << endl;
+    wcout << "\nStatistics relative to simplemasks: \n" << endl;
 
+    count = 0;
     multimap<int, wstring> reverseSimpleMasks = flip_map(stats_simplemasks);
+
     for(map<int, wstring>::const_iterator it = reverseSimpleMasks.end(); it != reverseSimpleMasks.begin(); it--) {
         if (it == reverseSimpleMasks.end()) continue;
+        
         percentage = (float) (100*it->first) / total_counter;
-        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
+
+        if (percentage >= hiderare) {
+            wstring value = to_wstring(percentage);
+            value = value.substr(0,5);
+
+            wcout << setw(40) << right << it->second << ":  " 
+                << setw(5) << right << value << "%" 
+                << setw(5) << right << "(" << it->first << ")" << endl;
+
+            count++;
+            if (top != -1 && count == top) break;
+        }
     }
 
 
 
-    wcout << "\nStatistics relative to advancedmask: " << endl;
+    wcout << "\nStatistics relative to advancedmask: \n" << endl;
 
+    count = 0;
     multimap<int, wstring> reverseAdvancedMask = flip_map(stats_advancedmasks);
+
     for(map<int, wstring>::const_iterator it = reverseAdvancedMask.end(); it != reverseAdvancedMask.begin(); it--) {
         if (it == reverseAdvancedMask.end()) continue;
+        
         percentage = (float) (100*it->first) / total_counter;
-        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
+        
+        if (percentage >= hiderare) {
+            wstring value = to_wstring(percentage);
+            value = value.substr(0,5);
+
+            wcout << setw(40) << right << it->second << ":  " 
+                << setw(5) << right << value << "%" 
+                << setw(5) << right << "(" << it->first << ")" << endl;
+
+            count++;
+            if (top != -1 && count == top) break;
+        }
     }
 }
 

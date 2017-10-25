@@ -16,6 +16,10 @@ class Statsgen {
 public:
 
 	Statsgen();
+	
+	void showHelp();
+	void setHiderare(int);
+	void setTop(int);
 
 	void analyze_password(const std::wstring&, int &, std::wstring &, std::wstring &, std::wstring &,Policy &);
 	int generate_stats(const std::string &);
@@ -25,12 +29,8 @@ private:
 
 	// Filters
 
-	int minlength = 0;
-	int maxlength = 0;
-	std::map<std::wstring, int> charsets;
-	std::map<std::wstring, int> simplemasks;
-	bool quiet = false;
-	bool debug = true;
+	int hiderare = 0;
+	int top = -1;
 
 
 	// dico
@@ -41,10 +41,6 @@ private:
 	std::map<std::wstring, int> stats_charactersets;
 
 
-	// Ignore stats with less than 1% coverage
-
-	bool hiderare = false;
-	int filter_counter = 0;
 	int total_counter = 0;
 
 
