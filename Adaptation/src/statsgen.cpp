@@ -136,7 +136,7 @@ void Statsgen::analyze_password(const wstring & password, int &length, wstring &
 
 
 
-void Statsgen::generate_stats(const string & filename) {
+int Statsgen::generate_stats(const string & filename) {
     wifstream readfile(filename);
     wstring line;
 
@@ -193,7 +193,14 @@ void Statsgen::generate_stats(const string & filename) {
         stats_advancedmasks[advancedmask_string] += 1;
     }
 
+
+    if (!total_counter) {
+        wcerr << "Empty file or not existing file" << endl;
+        return 0;
+    }
+
     readfile.close();
+    return 1;
 }
 
 
@@ -252,14 +259,5 @@ void Statsgen::print_stats() {
         percentage = (float) (100*it->first) / total_counter;
         wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
     }
-
-
-
-/*
-    for(auto& it : stats_advancedmasks) {
-        percentage = (float) (100*it.second) / total_counter;
-        wcout << "\t" << it.first << ":  " << setprecision(4) << percentage << "%\t(" << it.second << ")" << endl;
-    }
-    */
 }
 

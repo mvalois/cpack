@@ -18,7 +18,7 @@ public:
 	Statsgen();
 
 	void analyze_password(const std::wstring&, int &, std::wstring &, std::wstring &, std::wstring &,Policy &);
-	void generate_stats(const std::string &);
+	int generate_stats(const std::string &);
 	void print_stats();
 
 private:
