@@ -10,7 +10,7 @@ int main() {
 
 	Statsgen test;
 
-	string filename = "/home/jorand/Documents/Projet_3A/BDD/rockyou.dirty.txt";
+	string filename = "/home/jorand/Documents/Projet_3A/BDD/rockyou.txt";
 
 	test.generate_stats(filename);
 	test.print_stats();

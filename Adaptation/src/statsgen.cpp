@@ -18,6 +18,15 @@ multimap<int, int> flip_map(map<int,int> & src) {
 }
 
 
+multimap<int, wstring> flip_map(map<wstring,int> & src) {
+    multimap<int, wstring> dst;
+
+    for(map<wstring, int>::const_iterator it = src.begin(); it != src.end(); ++it)
+        dst.insert(pair<int, wstring>(it -> second, it -> first));
+
+    return dst;
+}
+
 
 
 Statsgen::Statsgen() {
@@ -140,13 +149,12 @@ void Statsgen::generate_stats(const string & filename) {
     while(readfile.good()) {
         getline(readfile, line);
         //wcout << line << endl;
-        total_counter++;
-
-
+        
         if (line.size() == 0) {
             continue;
         }
 
+        total_counter++;
 
         analyze_password(line, pass_length, characterset, simplemask_string, advancedmask_string, pol);
 
@@ -211,22 +219,43 @@ void Statsgen::print_stats() {
         percentage = (float) (100*it->first) / total_counter;
         wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
     }
+    
 
 
-    /*
     wcout << "\nStatistics relative to charsets: " << endl;
-    for(auto& it : stats_charactersets) {
-        percentage = (float) (100*it.second) / total_counter;
-        wcout << "\t" << it.first << ":  " << setprecision(4) << percentage << "%\t(" << it.second << ")" << endl;
+    
+    multimap<int, wstring> reverseCharsets = flip_map(stats_charactersets);
+    for(map<int, wstring>::const_iterator it = reverseCharsets.end(); it != reverseCharsets.begin(); it--) {
+        if (it == reverseCharsets.end()) continue;
+        percentage = (float) (100*it->first) / total_counter;
+        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
     }
+
+
 
     wcout << "\nStatistics relative to simplemasks: " << endl;
-    for(auto& it : stats_simplemasks) {
-        percentage = (float) (100*it.second) / total_counter;
-        wcout << "\t" << it.first << ":  " << setprecision(4) << percentage << "%\t(" << it.second << ")" << endl;
+
+    multimap<int, wstring> reverseSimpleMasks = flip_map(stats_simplemasks);
+    for(map<int, wstring>::const_iterator it = reverseSimpleMasks.end(); it != reverseSimpleMasks.begin(); it--) {
+        if (it == reverseSimpleMasks.end()) continue;
+        percentage = (float) (100*it->first) / total_counter;
+        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
     }
 
+
+
     wcout << "\nStatistics relative to advancedmask: " << endl;
+
+    multimap<int, wstring> reverseAdvancedMask = flip_map(stats_advancedmasks);
+    for(map<int, wstring>::const_iterator it = reverseAdvancedMask.end(); it != reverseAdvancedMask.begin(); it--) {
+        if (it == reverseAdvancedMask.end()) continue;
+        percentage = (float) (100*it->first) / total_counter;
+        wcout << "\t\t" << it->second << ":  " << setprecision(4) << percentage << "%\t(" << it->first << ")" << endl;
+    }
+
+
+
+/*
     for(auto& it : stats_advancedmasks) {
         percentage = (float) (100*it.second) / total_counter;
         wcout << "\t" << it.first << ":  " << setprecision(4) << percentage << "%\t(" << it.second << ")" << endl;
