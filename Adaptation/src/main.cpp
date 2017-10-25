@@ -5,12 +5,17 @@ using namespace std;
 
 
 
-int main() {
+int main(int argc,char* argv[]) {
+	if(argc < 2){
+	cerr << "Missing arguments" << endl;
+	return -1;
+	}	
+
 	locale::global(locale(""));
 
 	Statsgen test;
 
-	string filename = "/home/jorand/Documents/Projet_3A/BDD/rockyou.txt";
+	string filename = argv[1];
 
 	test.generate_stats(filename);
 	test.print_stats();
