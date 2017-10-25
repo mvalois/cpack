@@ -1,0 +1,32 @@
+^(\d)*$ = MDP avec nombres uniquement
+\d = MDP avec au moins un nombre
+^(\D)*$ = MDP sans nombre
+^[a-zA-Z]*$ = MDP avec lettres uniquement
+^[a-z]*$ = MDP avec minuscules uniquement
+^[A-Z]*$ = MDP avec MAJUSCULES uniquement
+^[A-Z]([a-zA-Z])*$ = MDP commence par une MAJUSCULE
+^(.)*@(.)*\.(.)* = MDP type adresse mail
+^[0]*$ = MDP avec des "0" uniquement
+^[1]*$
+^[2]*$
+^[3]*$
+^[4]*$
+^[5]*$
+^[6]*$
+^[7]*$
+^[8]*$
+^[9]*$
+^(.)*[0](.)*$ = MDP contenant "0"
+^(.)*[1](.)*$
+^(.)*[2](.)*$
+^(.)*[3](.)*$
+^(.)*[4](.)*$
+^(.)*[5](.)*$
+^(.)*[6](.)*$
+^(.)*[7](.)*$
+^(.)*[8](.)*$
+^(.)*[9](.)*$
+^(\D)*(\d)(\D)*$ = MDP avec 1 nombre seulement
+^(\D)*(\d)(\D)*(\d)(\D)*$ = MDP avec 2 nombres exactement
+^(\D)*(\d)(\d)(\D)*$ = MDP avec 2 nombres exactement à la suite
+^(\D)*(\d)(\d)(\d)(\D)*$ = MDP avec 3 nombres exactement à la suite

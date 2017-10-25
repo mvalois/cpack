@@ -1,0 +1,79 @@
+                       _ 
+     StatsGen 0.0.3   | |
+      _ __   __ _  ___| | _
+     | '_ \ / _` |/ __| |/ /
+     | |_) | (_| | (__|   < 
+     | .__/ \__,_|\___|_|\_\
+     | |                    
+     |_| iphelix@thesprawl.org
+
+
+[*] Analyzing passwords in [../rockyou.dirty.txt]
+[+] Analyzing 100% (218/218) of passwords
+    NOTE: Statistics below is relative to the number of analyzed passwords, not total number of passwords
+
+[*] Length:
+[+]                         6: 19% (43)
+[+]                         7: 17% (39)
+[+]                         9: 16% (36)
+[+]                         8: 15% (34)
+[+]                        10: 07% (16)
+[+]                         5: 05% (12)
+[+]                        11: 04% (10)
+[+]                        12: 03% (8)
+[+]                        14: 03% (7)
+[+]                        15: 01% (3)
+[+]                        13: 00% (2)
+[+]                        16: 00% (2)
+[+]                        17: 00% (1)
+[+]                        20: 00% (1)
+[+]                        24: 00% (1)
+[+]                        28: 00% (1)
+[+]                        30: 00% (1)
+[+]                        31: 00% (1)
+
+[*] Character-set:
+[+]         loweralphaspecial: 65% (142)
+[+]      loweralphaspecialnum: 14% (31)
+[+]                   special: 07% (16)
+[+]                specialnum: 03% (8)
+[+]         mixedalphaspecial: 03% (7)
+[+]                       all: 02% (6)
+[+]         upperalphaspecial: 02% (6)
+[+]      upperalphaspecialnum: 00% (2)
+
+[*] Password complexity:
+[+]                     digit: min(0) max(8)
+[+]                     lower: min(0) max(27)
+[+]                     upper: min(0) max(14)
+[+]                   special: min(1) max(16)
+
+[*] Simple Masks:
+[+]       stringspecialstring: 45% (100)
+[+]                 othermask: 19% (43)
+[+]             stringspecial: 10% (22)
+[+]                   special: 07% (16)
+[+]             specialstring: 05% (11)
+[+]              specialdigit: 02% (6)
+[+]        stringdigitspecial: 02% (5)
+[+]        stringspecialdigit: 01% (4)
+[+]      specialstringspecial: 01% (3)
+[+]        specialstringdigit: 01% (3)
+[+]        specialdigitstring: 00% (1)
+[+]              digitspecial: 00% (1)
+[+]        digitspecialstring: 00% (1)
+[+]        digitstringspecial: 00% (1)
+[+]       specialdigitspecial: 00% (1)
+
+[*] Advanced Masks:
+[+]              ?l?l?l?l?s?l: 06% (14)
+[+]            ?l?l?l?l?l?s?l: 05% (11)
+[+]              ?l?l?s?l?l?l: 03% (7)
+[+]        ?l?l?l?l?l?l?l?s?l: 03% (7)
+[+]          ?l?l?s?l?l?l?l?l: 01% (4)
+[+]        ?l?l?s?l?l?l?l?l?l: 01% (4)
+[+]            ?s?s?s?s?s?s?s: 01% (4)
+[+]            ?l?l?l?l?l?l?s: 01% (4)
+[+]          ?l?l?l?l?l?l?l?s: 01% (3)
+[+]        ?l?l?l?l?l?l?l?l?s: 01% (3)
+[+]        ?s?l?l?l?l?l?l?l?l: 01% (3)
