@@ -15,7 +15,7 @@ class Statsgen {
 
 public:
 
-	Statsgen();
+	Statsgen() {};
 	
 	void showHelp();
 	void setHiderare(int);
@@ -26,6 +26,13 @@ public:
 	void print_stats();
 
 private:
+	// functions
+
+	void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &);
+	void analyse_charset(std::wstring &, const Policy &);
+
+	void updateMinMax(const Policy &);
+
 
 	// Filters
 
