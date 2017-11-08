@@ -10,9 +10,9 @@ void Statsgen::showHelp() {
     wcout << "\nUsage database.txt [options]\n" << endl;
 
     wcout << "Options:" << endl;
-    wcout << "\t--help, -h\t:\tShow this help message" << endl;
-    wcout << "\t--hiderare, -r\t:\tHide all statistics below 1%" << endl;
-    wcout << "\t--top, -t\t:\tShow only 10 first results\n\n" << endl;
+    wcout << "\t--help, -h\t\t:\tShow this help message" << endl;
+    wcout << "\t--hiderare, -r\t\t:\tHide all statistics below 1%" << endl;
+    wcout << "\t--top, -t [value]\t:\tShow only [value] first results\n\n" << endl;
 
 }
 
