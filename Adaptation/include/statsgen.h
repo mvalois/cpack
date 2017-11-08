@@ -2,6 +2,8 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <regex>
+
 
 struct Policy{
 	int digit;
@@ -20,6 +22,7 @@ public:
 	void showHelp();
 	void setHiderare(int);
 	void setTop(int);
+	void setRegex(std::string);
 
 	void analyze_password(const std::wstring&, int &, std::wstring &, std::wstring &, std::wstring &,Policy &);
 	int generate_stats(const std::string &);
@@ -32,12 +35,15 @@ private:
 	void analyse_charset(std::wstring &, const Policy &);
 
 	void updateMinMax(const Policy &);
-
+	void readResult(int, std::wstring, int &);
+	void readResult(int, int, int &);
 
 	// Filters
 
 	int hiderare = 0;
 	int top = -1;
+	std::wregex current_regex;
+	bool use_regex = false;
 
 
 	// dico
@@ -49,6 +55,7 @@ private:
 
 
 	int total_counter = 0;
+	int total_filter = 0;
 
 
 	// Minimum password complexity counters

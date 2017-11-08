@@ -1,9 +1,15 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#include <regex>
 #include "statsgen.h"
 using namespace std;
 
+
+
+/**********************************************************************
+ *                           INITIALISATION                           *
+ **********************************************************************/
 
 
 void Statsgen::showHelp() {
@@ -28,6 +34,26 @@ void Statsgen::setHiderare(int val) {
 void Statsgen::setTop(int val) {
     top = val;
 }
+
+
+void Statsgen::setRegex(string expr) {
+    wstring tmp(expr.length(),L' ');
+    copy(expr.begin(), expr.end(), tmp.begin());
+
+    wregex tmp_reg(tmp);
+    current_regex = tmp_reg;
+
+    use_regex = true;
+}
+
+
+
+
+
+
+/**********************************************************************
+ *                          USEFUL FUNCTIONS                          *
+ **********************************************************************/
 
 
 
@@ -226,13 +252,18 @@ int Statsgen::generate_stats(const string & filename) {
 
         total_counter++;
 
-        analyze_password(line, pass_length, characterset, simplemask_string, advancedmask_string, pol);
+        
+        if ( (use_regex && regex_match(line, current_regex)) || !use_regex )  {
+            total_filter++;
 
-        updateMinMax(pol);
-        stats_length[pass_length] += 1;
-        stats_charactersets[characterset] += 1;
-        stats_simplemasks[simplemask_string] += 1;
-        stats_advancedmasks[advancedmask_string] += 1;
+            analyze_password(line, pass_length, characterset, simplemask_string, advancedmask_string, pol);
+
+            updateMinMax(pol);
+            stats_length[pass_length] += 1;
+            stats_charactersets[characterset] += 1;
+            stats_simplemasks[simplemask_string] += 1;
+            stats_advancedmasks[advancedmask_string] += 1;
+        }
     }
 
 
@@ -248,11 +279,56 @@ int Statsgen::generate_stats(const string & filename) {
 
 
 
-void Statsgen::print_stats() {
-    wcout << "Analyzing " << total_counter << " passwords" << endl;
 
+
+/**********************************************************************
+ *                         PRINT STATISTIQUE                          *
+ **********************************************************************/
+
+
+void Statsgen::readResult(int res, int length, int & count) {
     float percentage;
+
+    percentage = (float) (100*res) / total_counter;
+
+    if (percentage >= hiderare) {
+        wstring value = to_wstring(percentage);
+        value = value.substr(0,5);
+
+        wcout << setw(40) << right << length << ":  " 
+            << setw(5) << right << value << "%" 
+            << setw(5) << right << "(" << res << ")" << endl;
+
+        count++;
+    }
+}
+
+void Statsgen::readResult(int res, wstring carac, int & count) {
+    float percentage;
+    percentage = (float) (100*res) / total_counter;
+
+    if (percentage >= hiderare) {
+        wstring value = to_wstring(percentage);
+        value = value.substr(0,5);
+
+        wcout << setw(40) << right << carac << ":  " 
+            << setw(5) << right << value << "%" 
+            << setw(5) << right << "(" << res << ")" << endl;
+
+        count++;
+    }
+}
+
+
+
+void Statsgen::print_stats() {
     int count;
+    float perc = (float) (100*total_filter) / total_counter;
+
+    wcout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t(" 
+        << perc << " %)" << endl;
+
+
 
     wcout << "\nmin - max\n" << endl;
     wcout << setw(43) << right << "digit:  " 
@@ -267,52 +343,44 @@ void Statsgen::print_stats() {
 
 
     wcout << "\nStatistics relative to length: \n" << endl;
-    
+
     count = 0;
     multimap<int, int> reverseLength = flip_map(stats_length);
-
-    for(map<int, int>::const_iterator it = reverseLength.end(); it != reverseLength.begin(); it--) {
-        if (it == reverseLength.end()) continue;
+    map<int, int>::const_iterator it1;
+    for(it1 = reverseLength.end(); it1 != reverseLength.begin(); it1--) {
+        if (it1 == reverseLength.end()) continue;
         
-        percentage = (float) (100*it->first) / total_counter;
+        readResult(it1->first, it1->second, count);
+        if (top != -1 && count == top) break;
+    }
 
-        if (percentage >= hiderare) {
-            wstring value = to_wstring(percentage);
-            value = value.substr(0,5);
-
-            wcout << setw(40) << right << it->second << ":  " 
-                << setw(5) << right << value << "%" 
-                << setw(5) << right << "(" << it->first << ")" << endl;
-
-            count++;
-            if (top != -1 && count == top) break;
-        }
+    if (count != top) {
+        readResult(it1->first, it1->second, count);
     }
     
 
+
+
+
+    
 
     wcout << "\nStatistics relative to charsets: \n" << endl;
     
     count = 0;
     multimap<int, wstring> reverseCharsets = flip_map(stats_charactersets);
+    map<int, wstring>::const_iterator it2;
 
-    for(map<int, wstring>::const_iterator it = reverseCharsets.end(); it != reverseCharsets.begin(); it--) {
-        if (it == reverseCharsets.end()) continue;
+    for(it2 = reverseCharsets.end(); it2 != reverseCharsets.begin(); it2--) {
+        if (it2 == reverseCharsets.end()) continue;
 
-        percentage = (float) (100*it->first) / total_counter;
-        
-        if (percentage >= hiderare) {
-            wstring value = to_wstring(percentage);
-            value = value.substr(0,5);
-
-            wcout << setw(40) << right << it->second << ":  " 
-                << setw(5) << right << value << "%" 
-                << setw(5) << right << "(" << it->first << ")" << endl;
-
-            count++;
-            if (top != -1 && count == top) break;
-        }
+        readResult(it2->first, it2->second, count);
+        if (top != -1 && count == top) break;
     }
+
+    if (count != top) {
+        readResult(it2->first, it2->second, count);
+    }
+    
 
 
 
@@ -320,24 +388,19 @@ void Statsgen::print_stats() {
 
     count = 0;
     multimap<int, wstring> reverseSimpleMasks = flip_map(stats_simplemasks);
+    map<int, wstring>::const_iterator it3;
 
-    for(map<int, wstring>::const_iterator it = reverseSimpleMasks.end(); it != reverseSimpleMasks.begin(); it--) {
-        if (it == reverseSimpleMasks.end()) continue;
+    for(it3 = reverseSimpleMasks.end(); it3 != reverseSimpleMasks.begin(); it3--) {
+        if (it3 == reverseSimpleMasks.end()) continue;
         
-        percentage = (float) (100*it->first) / total_counter;
-
-        if (percentage >= hiderare) {
-            wstring value = to_wstring(percentage);
-            value = value.substr(0,5);
-
-            wcout << setw(40) << right << it->second << ":  " 
-                << setw(5) << right << value << "%" 
-                << setw(5) << right << "(" << it->first << ")" << endl;
-
-            count++;
-            if (top != -1 && count == top) break;
-        }
+        readResult(it3->first, it3->second, count);
+        if (top != -1 && count == top) break;
     }
+
+    if (count != top) {
+        readResult(it3->first, it3->second, count);
+    }
+
 
 
 
@@ -345,23 +408,18 @@ void Statsgen::print_stats() {
 
     count = 0;
     multimap<int, wstring> reverseAdvancedMask = flip_map(stats_advancedmasks);
+    map<int, wstring>::const_iterator it4;
 
-    for(map<int, wstring>::const_iterator it = reverseAdvancedMask.end(); it != reverseAdvancedMask.begin(); it--) {
-        if (it == reverseAdvancedMask.end()) continue;
+    for(it4 = reverseAdvancedMask.end(); it4 != reverseAdvancedMask.begin(); it4--) {
+        if (it4 == reverseAdvancedMask.end()) continue;
         
-        percentage = (float) (100*it->first) / total_counter;
-        
-        if (percentage >= hiderare) {
-            wstring value = to_wstring(percentage);
-            value = value.substr(0,5);
-
-            wcout << setw(40) << right << it->second << ":  " 
-                << setw(5) << right << value << "%" 
-                << setw(5) << right << "(" << it->first << ")" << endl;
-
-            count++;
-            if (top != -1 && count == top) break;
-        }
+        readResult(it4->first, it4->second, count);
+        if (top != -1 && count == top) break;
     }
+
+    if (count != top) {
+        readResult(it4->first, it4->second, count);
+    }
+
 }
 
