@@ -17,30 +17,30 @@ int main(int argc,char* argv[]) {
 
 	wifstream readfile(filename);
 	wofstream writefile(outputfile.c_str());
-  wstring line;
-	wstring key  = wstring(L"^\\s+");
-  wstring repl = wstring(L"");
+	wstring line;
+	wstring cleanKey  = wstring(L"^\\s+");
+	wstring repl = wstring(L"");
 
-	wstring key2  = wstring(L"(\\d+) (.+)");
-  double sum=0;
+	wstring parseKey  = wstring(L"(\\d+) (.+)");
+	double sum=0;
 	while(readfile.good())
 	{
   		getline(readfile, line);
 		if (line.size() == 0) 
 		{
     	continue;
-    }
+		}
 
-		wstring cleanLine = regex_replace(line, std::wregex(key),  repl);
-		wsmatch m;
-		regex_match(cleanLine,m,std::wregex(key2));
-		if(m.size()>2)
+		wstring cleanLine = regex_replace(line, std::wregex(cleanKey),  repl);
+		wsmatch parsedPassword;
+		regex_match(cleanLine,parsedPassword,std::wregex(parseKey));
+		if(parsedPassword.size()>2)
 		{
-			int i=stoi(m[1]);
-			sum+=i;
-			for(int j=0;j<i;j++)
+			int nbPasswords=stoi(parsedPassword[1]);
+			sum+=nbPasswords;
+			for(int j=0;j<nbPasswords;j++)
 			{
-				writefile << m[2] << endl;
+				writefile << parsedPassword[2] << endl;
 			}
 		}
   }
