@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <regex>
+#include <time.h>
 #include "statsgen.h"
 using namespace std;
 
@@ -82,6 +83,15 @@ multimap<int, wstring> flip_map(map<wstring,int> & src) {
 }
 
 
+void duree(time_t _begin, time_t _end) {
+    double temp; 
+    double hours=0, min=0, sec=0; 
+    double dureeCalc = difftime(_end, _begin);
+    temp = modf(dureeCalc/3600., &hours); 
+    temp = modf(temp*60., &min); 
+    temp = modf(temp*60., &sec); 
+    cout<<"Duree du calcul : "<<hours<<" h "<<min<<" min "<<sec<<" sec"<<endl; 
+}
 
 
 /**********************************************************************
@@ -189,12 +199,31 @@ void Statsgen::analyze_password(const wstring & password, int & length, wstring 
     char last_simplemask = 'a';
 
 
+    clock_t t1, t2, t3, t4;
+    float tmp1, tmp2;
+ 
+
     for (int i=0; i<length; i++) {
     	wchar_t letter = password[i];
+        
+        t1 = clock();
         analyse_letter(letter, last_simplemask, simplemask_string, advancedmask_string, policy);
+        t2 = clock();
+        tmp1 = difftime(t2, t1);
+
+        if (tmp1 < timeLetterMin || timeLetterMin == 0) timeLetterMin = tmp1;
+        if (tmp1 > timeLetterMin) timeLetterMax = tmp1;
+        timeLetterTotal += tmp1;
     }
 
+    t3 = clock();
     analyse_charset(charset, policy);
+    t4 = clock();
+    tmp2 = difftime(t4, t3);
+
+    if (tmp2 < timeCharsetMin || timeCharsetMin == 0) timeCharsetMin = tmp2;
+    if (tmp2 > timeCharsetMin) timeCharsetMax = tmp2;
+    timeCharsetTotal += tmp2;
 }
 
 
@@ -263,11 +292,10 @@ int Statsgen::generate_stats(const string & filename) {
     int nbline = 0;
 
 
-    wstring key  = wstring(L"^\\s+");
-    wstring repl = wstring(L"");
-    wstring key2  = wstring(L"\\s*(\\d+) (.+)");
-    wsmatch parsedPassword;
 
+    clock_t t1, t2;
+
+    t1 = clock();
 
     while(readfile.good()) {
         getline(readfile, line);
@@ -280,26 +308,30 @@ int Statsgen::generate_stats(const string & filename) {
 
 
         if (withcount) {
+            int i = 0;
+            bool number=false;
+            for(i=0; i < line.length(); i++) {
+                if(iswdigit(line.at(i))) {
+                    number=true;
+                }
+                else if (!iswdigit(line.at(i)) && number) {
+                    break;
+                }
+            }
+            wstring password = line.substr(i+1,line.length());
+            int nbPasswords = stoi(line.substr(0,i));
             
-            regex_match(line, parsedPassword, std::wregex(key2));
-            
-            if(parsedPassword.size()>2) {
-                int i = stoi(parsedPassword[1]);
-                total_counter += i;
+            total_counter += nbPasswords;
 
-                //if ( !use_regex || (use_regex && regex_match(parsedPassword[2],current_regex)) ) {
-                total_filter += i;
+            if ( !use_regex || (use_regex && regex_match(password,current_regex)) ) {
+                total_filter += nbPasswords;
                 
-                analyze_password(parsedPassword[2], pass_length, characterset, simplemask_string, advancedmask_string, pol);
+                analyze_password(password, pass_length, characterset, simplemask_string, advancedmask_string, pol);
 
-                stats_length[pass_length] += i;
-                stats_charactersets[characterset] += i;
-                stats_simplemasks[simplemask_string] += i;
-                stats_advancedmasks[advancedmask_string] += i;
-                //}
-                
-            } else {
-                wcout << "Error format withcount, line " << nbline << endl;
+                stats_length[pass_length] += nbPasswords;
+                stats_charactersets[characterset] += nbPasswords;
+                stats_simplemasks[simplemask_string] += nbPasswords;
+                stats_advancedmasks[advancedmask_string] += nbPasswords;
             }
         }
 
@@ -318,9 +350,11 @@ int Statsgen::generate_stats(const string & filename) {
         }
 
         updateMinMax(pol);
-    
     }
 
+    t2 = clock();
+
+    timeTotal = difftime(t2,t1);
 
     if (!total_counter) {
         wcerr << "Empty file or not existing file" << endl;
@@ -475,6 +509,15 @@ void Statsgen::print_stats() {
     if (count != top) {
         readResult(it4->first, it4->second, count);
     }
+
+
+    wcout << "\n\nLetter --> min : " << timeLetterMin << " / max : " << timeLetterMax << " / total : " << timeLetterTotal << endl;
+    wcout << "Charset --> min : " << timeCharsetMin << " / max : " << timeCharsetMax << " / total : " << timeCharsetTotal << endl;
+    
+    wcout << "\nTotal temps : " << timeTotal << endl;
+    float lost = timeTotal - timeLetterTotal - timeCharsetTotal;
+
+    wcout << "\nTotal restant : " << lost << endl;
 
 }
 

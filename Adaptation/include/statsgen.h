@@ -71,4 +71,17 @@ private:
 	int minspecial = -1;
 	int maxspecial = -1;
 
+
+	// Time
+
+	float timeLetterMin = 0;
+	float timeLetterMax = 0;
+	float timeLetterTotal = 0;
+
+	float timeCharsetMin = 0;
+	float timeCharsetMax = 0;
+	float timeCharsetTotal = 0;
+
+	float timeTotal = 0;
+
 };
