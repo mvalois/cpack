@@ -17,11 +17,12 @@ int main(int argc,char* argv[]) {
 
 	wifstream readfile(filename);
 	wofstream writefile(outputfile.c_str());
+	/*
 	wstring line;
 	wstring cleanKey  = wstring(L"^\\s+");
 	wstring repl = wstring(L"");
 
-	wstring parseKey  = wstring(L"\\s*(\\d+) (.+)");
+	wstring parseKey  = wstring(L"\\s*(\\d+) (.+)");*/
 	double sum=0;
 	while(readfile.good())
 	{
@@ -60,9 +61,9 @@ int main(int argc,char* argv[]) {
 		int nbPasswords=stoi(line.substr(0,i));
 		sum+=nbPasswords;
 		for(int j=0;j<nbPasswords;j++)
-			{
-				writefile << password << endl;
-			}
+		{
+			writefile << password << endl;
+		}
   }
   wcout << L"Numbers of passwords :"<<sum<<endl;
 }
