@@ -31,6 +31,15 @@ int main(int argc,char* argv[]) {
 				i++;
 			}
 
+			else if (string(argv[i]) == "--regex") {
+				if (argc == i+1) {
+					wcerr << "Missing argument --top [value]" << endl;
+					return -1;
+				}
+				test.setRegex(argv[i+1]);
+				i++;
+			}
+
 			else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
 				test.showHelp();
 				return 0;
@@ -43,10 +52,13 @@ int main(int argc,char* argv[]) {
 	}
 
 
+
 	if (filename == "") {
-		cerr << "Missing filename" << endl;
+		wcerr << "Missing filename" << endl;
 		return -1;
 	}
+
+
 
 
 	if (test.generate_stats(filename)) {
