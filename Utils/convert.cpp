@@ -21,7 +21,7 @@ int main(int argc,char* argv[]) {
 	wstring cleanKey  = wstring(L"^\\s+");
 	wstring repl = wstring(L"");
 
-	wstring parseKey  = wstring(L"(\\d+) (.+)");
+	wstring parseKey  = wstring(L"\\s*(\\d+) (.+)");
 	double sum=0;
 	while(readfile.good())
 	{
@@ -31,18 +31,38 @@ int main(int argc,char* argv[]) {
     	continue;
 		}
 
-		wstring cleanLine = regex_replace(line, std::wregex(cleanKey),  repl);
+		/*wstring cleanLine = regex_replace(line, std::wregex(cleanKey),  repl);
 		wsmatch parsedPassword;
-		regex_match(cleanLine,parsedPassword,std::wregex(parseKey));
+		regex_match(line,parsedPassword,std::wregex(parseKey));
 		if(parsedPassword.size()>2)
 		{
 			int nbPasswords=stoi(parsedPassword[1]);
-			sum+=nbPasswords;
+			
 			for(int j=0;j<nbPasswords;j++)
 			{
 				writefile << parsedPassword[2] << endl;
 			}
+		}*/
+		bool number=false;
+		int i=0;
+		for(i=0;i<line.length();i++)
+		{
+			if(iswdigit(line.at(i)))
+			{
+				number=true;
+			}
+			else if (!iswdigit(line.at(i)) && number)
+			{
+				break;
+			}
 		}
+		wstring password=line.substr(i+1,line.length());
+		int nbPasswords=stoi(line.substr(0,i));
+		sum+=nbPasswords;
+		for(int j=0;j<nbPasswords;j++)
+			{
+				writefile << password << endl;
+			}
   }
   wcout << L"Numbers of passwords :"<<sum<<endl;
 }
