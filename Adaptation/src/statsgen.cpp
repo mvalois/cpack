@@ -13,11 +13,13 @@ using namespace std;
 
 
 void Statsgen::showHelp() {
-    wcout << "\nUsage database.txt [options]\n" << endl;
+    wcout << "\nUsage: database.txt [options]\n" << endl;
 
     wcout << "Options:" << endl;
     wcout << "\t--help, -h\t\t:\tShow this help message" << endl;
-    wcout << "\t--hiderare, -r\t\t:\tHide all statistics below 1%" << endl;
+    wcout << "\t--withcount, -w\t\t:\tMendatory if the input database has the following format : [number of occurence] [password]\n" << endl;
+
+    wcout << "\t--hiderare, -hr\t\t:\tHide all statistics below 1%" << endl;
     wcout << "\t--top, -t [value]\t:\tShow only [value] first results" << endl;
     wcout << "\t--regex [value]\t\t:\tShow result for password, using the regular expression [value]" << endl;
 
@@ -47,6 +49,9 @@ void Statsgen::setRegex(string expr) {
 }
 
 
+void Statsgen::setWithcount(bool val) {
+    withcount = val;
+}
 
 
 
@@ -201,6 +206,20 @@ void Statsgen::analyze_password(const wstring & password, int & length, wstring 
  **********************************************************************/
 
 
+
+bool analyse_withcount(wstring & line) {
+    wstring key  = wstring(L"^\\s+");
+    wstring repl = wstring(L"");
+    wstring key2  = wstring(L"(\\d+) (.+)");
+    
+    wstring cleanLine = regex_replace(line, std::wregex(key),  repl);
+    wsmatch m;
+    regex_match(cleanLine,m,std::wregex(key2));
+
+    return (m.size() > 2);
+}
+
+
 void Statsgen::updateMinMax(const Policy & pol) {
     if (mindigit == -1 || mindigit > pol.digit) {
         mindigit = pol.digit;
@@ -232,7 +251,6 @@ void Statsgen::updateMinMax(const Policy & pol) {
 }
 
 
-
 int Statsgen::generate_stats(const string & filename) {
     wifstream readfile(filename);
     wstring line;
@@ -242,28 +260,65 @@ int Statsgen::generate_stats(const string & filename) {
     wstring advancedmask_string;
     wstring simplemask_string;
     Policy pol;
+    int nbline = 0;
+
+
+    wstring key  = wstring(L"^\\s+");
+    wstring repl = wstring(L"");
+    wstring key2  = wstring(L"\\s*(\\d+) (.+)");
+    wsmatch parsedPassword;
+
 
     while(readfile.good()) {
         getline(readfile, line);
-        
+        nbline++;
+
         if (line.size() == 0) {
+            wcout << "Error empty password, line " << nbline << endl;
             continue;
         }
 
-        total_counter++;
 
-        
-        if ( (use_regex && regex_match(line, current_regex)) || !use_regex )  {
-            total_filter++;
+        if (withcount) {
+            
+            regex_match(line, parsedPassword, std::wregex(key2));
+            
+            if(parsedPassword.size()>2) {
+                int i = stoi(parsedPassword[1]);
+                total_counter += i;
 
-            analyze_password(line, pass_length, characterset, simplemask_string, advancedmask_string, pol);
+                //if ( !use_regex || (use_regex && regex_match(parsedPassword[2],current_regex)) ) {
+                total_filter += i;
+                
+                analyze_password(parsedPassword[2], pass_length, characterset, simplemask_string, advancedmask_string, pol);
 
-            updateMinMax(pol);
-            stats_length[pass_length] += 1;
-            stats_charactersets[characterset] += 1;
-            stats_simplemasks[simplemask_string] += 1;
-            stats_advancedmasks[advancedmask_string] += 1;
+                stats_length[pass_length] += i;
+                stats_charactersets[characterset] += i;
+                stats_simplemasks[simplemask_string] += i;
+                stats_advancedmasks[advancedmask_string] += i;
+                //}
+                
+            } else {
+                wcout << "Error format withcount, line " << nbline << endl;
+            }
         }
+
+        else {
+            if ( !use_regex || (use_regex && regex_match(line,current_regex)) ) {
+                total_filter++;
+
+                analyze_password(line, pass_length, characterset, simplemask_string, advancedmask_string, pol);
+
+                stats_length[pass_length] += 1;
+                stats_charactersets[characterset] += 1;
+                stats_simplemasks[simplemask_string] += 1;
+                stats_advancedmasks[advancedmask_string] += 1;
+            }
+            total_counter++;
+        }
+
+        updateMinMax(pol);
+    
     }
 
 

@@ -18,7 +18,7 @@ int main(int argc,char* argv[]) {
 
 	if (argc > 1) {
 		for (int i = 1; i < argc; i++) {
-			if (string(argv[i]) == "--hiderare" || string(argv[i]) == "-r") {
+			if (string(argv[i]) == "--hiderare" || string(argv[i]) == "-hr") {
 				test.setHiderare(1);
 			}
 
@@ -43,6 +43,10 @@ int main(int argc,char* argv[]) {
 			else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
 				test.showHelp();
 				return 0;
+			}
+
+			else if (string(argv[i]) == "--withcount" || string(argv[i]) == "-w") {
+				test.setWithcount(true);
 			}
 
 			else {

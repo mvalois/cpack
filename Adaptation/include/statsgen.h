@@ -23,6 +23,7 @@ public:
 	void setHiderare(int);
 	void setTop(int);
 	void setRegex(std::string);
+	void setWithcount(bool);
 
 	void analyze_password(const std::wstring&, int &, std::wstring &, std::wstring &, std::wstring &,Policy &);
 	int generate_stats(const std::string &);
@@ -44,6 +45,7 @@ private:
 	int top = -1;
 	std::wregex current_regex;
 	bool use_regex = false;
+	bool withcount = false;
 
 
 	// dico
