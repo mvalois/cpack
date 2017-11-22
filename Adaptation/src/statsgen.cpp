@@ -22,7 +22,7 @@ void Statsgen::showHelp() {
 
     wcout << "\t--hiderare, -hr\t\t:\tHide all statistics below 1%" << endl;
     wcout << "\t--top, -t [value]\t:\tShow only [value] first results" << endl;
-    wcout << "\t--regex [value]\t\t:\tShow result for password, using the regular expression [value]" << endl;
+    wcout << "\t--regex, -r [value]\t\t:\tShow result for password, using the regular expression [value]" << endl;
 
     wcout << "\n\nOptimisation options to reduce the execution time : " << endl;
     wcout << "\t--limitadvancedmasks, -lam [value]\t:\tLimit the size of the advanced masks at [value], if size>[value]: othermasks" << endl;
@@ -386,7 +386,7 @@ void Statsgen::readResult(int res, wstring carac, int & count) {
 
 void Statsgen::print_stats() {
     int count;
-    float perc = (float) (100*total_filter) / total_counter;
+    float perc = (float) 100 * (total_filter / total_counter);
 
     wcout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t(" 
         << perc << " %)" << endl;

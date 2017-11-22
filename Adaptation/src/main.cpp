@@ -31,7 +31,7 @@ int main(int argc,char* argv[]) {
 				i++;
 			}
 
-			else if (string(argv[i]) == "--regex") {
+			else if (string(argv[i]) == "--regex" || string(argv[i]) == "-r") {
 				if (argc == i+1) {
 					wcerr << "Missing argument --top [value]" << endl;
 					return -1;

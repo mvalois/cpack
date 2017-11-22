@@ -56,8 +56,8 @@ private:
 	std::unordered_map<std::wstring, int> stats_charactersets;
 
 
-	int total_counter = 0;
-	int total_filter = 0;
+	double total_counter = 0;
+	double total_filter = 0;
 
 
 	// Minimum password complexity counters
