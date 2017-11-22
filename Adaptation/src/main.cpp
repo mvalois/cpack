@@ -40,6 +40,24 @@ int main(int argc,char* argv[]) {
 				i++;
 			}
 
+			else if (string(argv[i]) == "--limitsimplemasks" || string(argv[i]) == "-lsm") {
+				if (argc == i+1) {
+					wcerr << "Missing argument --limitsimplemasks [value]" << endl;
+					return -1;
+				}
+				test.setLimitSimplemask(atoi(argv[i+1]));
+				i++;
+			}
+
+			else if (string(argv[i]) == "--limitadvancedmasks" || string(argv[i]) == "-lam") {
+				if (argc == i+1) {
+					wcerr << "Missing argument --limitadvancedmasks [value]" << endl;
+					return -1;
+				}
+				test.setLimitAdvancedmask(atoi(argv[i+1]));
+				i++;
+			}
+
 			else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
 				test.showHelp();
 				return 0;

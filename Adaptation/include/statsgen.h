@@ -24,6 +24,8 @@ public:
 	void setTop(int);
 	void setRegex(std::string);
 	void setWithcount(bool);
+	void setLimitSimplemask(int);
+	void setLimitAdvancedmask(int);
 
 	void analyze_password(const std::wstring&, int &, std::wstring &, std::wstring &, std::wstring &,Policy &);
 	int generate_stats(const std::string &);
@@ -46,6 +48,8 @@ private:
 	std::wregex current_regex;
 	bool use_regex = false;
 	bool withcount = false;
+	int limitSimplemask = 0;
+	int limitAdvancedmask = 0;
 
 
 	// dico

@@ -58,6 +58,15 @@ void Statsgen::setWithcount(bool val) {
 }
 
 
+void Statsgen::setLimitSimplemask(int val) {
+    limitSimplemask = val;
+}
+
+void Statsgen::setLimitAdvancedmask(int val) {
+    limitAdvancedmask = val;
+}
+
+
 
 
 /**********************************************************************
@@ -94,14 +103,14 @@ multimap<int, wstring> flip_map(unordered_map<wstring,int> & src) {
 
 void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
                                 wstring & simplemask_string, wstring & advancedmask_string, \
-                                Policy & policy, int & taille, int & taille2) {
-    taille++;
+                                Policy & policy, int & sizeAM, int & sizeSM) {
+    sizeAM++;
 
     if (letter >= L'0' && letter <= L'9') {
         policy.digit++;
         advancedmask_string += L"?d";
         if (last_simplemask != 'd') {
-            taille2++;
+            sizeSM++;
             simplemask_string += L"digit";
             last_simplemask = 'd';
         }
@@ -110,7 +119,7 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
         policy.lower++;
         advancedmask_string += L"?l";
         if (last_simplemask != 'l') {
-            taille2++;
+            sizeSM++;
             simplemask_string += L"lower";
             last_simplemask = 'l';
         }
@@ -119,7 +128,7 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
         policy.upper++;
         advancedmask_string += L"?u";
         if (last_simplemask != 'u') {
-            taille2++;
+            sizeSM++;
             simplemask_string += L"upper";
             last_simplemask = 'u';
         }
@@ -129,7 +138,7 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
         advancedmask_string += L"?s";
 
         if (last_simplemask != 's') {
-            taille2++;
+            sizeSM++;
             simplemask_string += L"special";
             last_simplemask = 's';
         }
@@ -200,20 +209,20 @@ void Statsgen::analyze_password(const wstring & password, int & length, wstring 
     advancedmask_string = L"";
     simplemask_string = L"";
     char last_simplemask = 'a';
-    int taille = 0;
-    int taille2 = 0;
+    int sizeAM = 0;
+    int sizeSM = 0;
     wchar_t letter;
 
     for (int i=0; i<length; i++) {
     	letter = password[i];
-        analyse_letter(letter, last_simplemask, simplemask_string, advancedmask_string, policy, taille, taille2);
+        analyse_letter(letter, last_simplemask, simplemask_string, advancedmask_string, policy, sizeAM, sizeSM);
     }
 
-    if (taille > 10) {
-        advancedmask_string = L"OTHERMASKS";
+    if (limitAdvancedmask > 0 && sizeAM > limitAdvancedmask) {
+        advancedmask_string = L"othermasks";
     }
-    if (taille2 > 3) {
-        simplemask_string = L"OTHERMASKS";
+    if (limitSimplemask >0 && sizeSM > limitSimplemask) {
+        simplemask_string = L"othermasks";
     }
 
     analyse_charset(charset, policy);
@@ -420,12 +429,8 @@ void Statsgen::print_stats() {
     if (count != top) {
         readResult(it1->first, it1->second, count);
     }
-    
 
 
-
-
-    
 
     wcout << "\nStatistics relative to charsets: \n" << endl;
     
@@ -446,7 +451,6 @@ void Statsgen::print_stats() {
     
 
 
-
     wcout << "\nStatistics relative to simplemasks: \n" << endl;
 
     count = 0;
@@ -456,7 +460,8 @@ void Statsgen::print_stats() {
     for(it3 = reverseSimpleMasks.end(); it3 != reverseSimpleMasks.begin(); it3--) {
         if (it3 == reverseSimpleMasks.end()) continue;
         
-        readResult(it3->first, it3->second, count);
+        if (it3->second != L"othermasks")
+            readResult(it3->first, it3->second, count);
         if (top != -1 && count == top) break;
     }
 
@@ -464,6 +469,10 @@ void Statsgen::print_stats() {
         readResult(it3->first, it3->second, count);
     }
 
+    if (limitSimplemask > 0) {
+        wcout << endl;
+        readResult(stats_simplemasks[L"othermasks"], L"othermasks", count);
+    }
 
 
 
@@ -476,13 +485,21 @@ void Statsgen::print_stats() {
     for(it4 = reverseAdvancedMask.end(); it4 != reverseAdvancedMask.begin(); it4--) {
         if (it4 == reverseAdvancedMask.end()) continue;
         
-        readResult(it4->first, it4->second, count);
+        if (it4->second != L"othermasks")
+            readResult(it4->first, it4->second, count);
         if (top != -1 && count == top) break;
     }
 
     if (count != top) {
         readResult(it4->first, it4->second, count);
     }
+
+
+    if (limitAdvancedmask > 0) {
+        wcout << endl;
+        readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count);
+    }
+
 
 }
 
