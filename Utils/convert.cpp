@@ -17,9 +17,9 @@ int main(int argc,char* argv[]) {
 
 	wifstream readfile(filename);
 	wofstream writefile(outputfile.c_str());
-	/*
+	
 	wstring line;
-	wstring cleanKey  = wstring(L"^\\s+");
+	/*wstring cleanKey  = wstring(L"^\\s+");
 	wstring repl = wstring(L"");
 
 	wstring parseKey  = wstring(L"\\s*(\\d+) (.+)");*/
