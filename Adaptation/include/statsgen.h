@@ -1,6 +1,6 @@
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <iostream>
 #include <regex>
 
@@ -32,7 +32,7 @@ public:
 private:
 	// functions
 
-	void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &);
+	void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &, int &, int &);
 	void analyse_charset(std::wstring &, const Policy &);
 
 	void updateMinMax(const Policy &);
@@ -50,10 +50,10 @@ private:
 
 	// dico
 
-	std::map<int, int> stats_length;
-	std::map<std::wstring, int> stats_simplemasks;
-	std::map<std::wstring, int> stats_advancedmasks;
-	std::map<std::wstring, int> stats_charactersets;
+	std::unordered_map<int, int> stats_length;
+	std::unordered_map<std::wstring, int> stats_simplemasks;
+	std::unordered_map<std::wstring, int> stats_advancedmasks;
+	std::unordered_map<std::wstring, int> stats_charactersets;
 
 
 	int total_counter = 0;
@@ -74,13 +74,17 @@ private:
 
 	// Time
 
-	float timeLetterMin = 0;
-	float timeLetterMax = 0;
 	float timeLetterTotal = 0;
+	int nbLetterCalc = 0;
 
-	float timeCharsetMin = 0;
-	float timeCharsetMax = 0;
 	float timeCharsetTotal = 0;
+	int nbCharsetCalc = 0;
+
+	float timeMinMaxTotal = 0;
+	int nbMinMaxCalc = 0;
+
+	float timeGetlineTotal = 0;
+	int nbGetlineCalc = 0;
 
 	float timeTotal = 0;
 

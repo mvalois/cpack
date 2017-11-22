@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <regex>
-#include <time.h>
+
 #include "statsgen.h"
 using namespace std;
 
@@ -24,6 +24,9 @@ void Statsgen::showHelp() {
     wcout << "\t--top, -t [value]\t:\tShow only [value] first results" << endl;
     wcout << "\t--regex [value]\t\t:\tShow result for password, using the regular expression [value]" << endl;
 
+    wcout << "\n\nOptimisation options to reduce the execution time : " << endl;
+    wcout << "\t--limitadvancedmasks, -lam [value]\t:\tLimit the size of the advanced masks at [value], if size>[value]: othermasks" << endl;
+    wcout << "\t--limitsimplemasks, -lsm [value]\t:\tLimit the size of the simple masks at [value], if size>[value]: othermasks" << endl;
     wcout << "\n" << endl;
 }
 
@@ -62,36 +65,26 @@ void Statsgen::setWithcount(bool val) {
  **********************************************************************/
 
 
-
-multimap<int, int> flip_map(map<int,int> & src) {
+multimap<int, int> flip_map(unordered_map<int,int> & src) {
     multimap<int,int> dst;
 
-    for(map<int, int>::const_iterator it = src.begin(); it != src.end(); ++it)
+    for(unordered_map<int, int>::const_iterator it = src.begin(); it != src.end(); ++it)
         dst.insert(pair<int, int>(it -> second, it -> first));
 
     return dst;
 }
 
 
-multimap<int, wstring> flip_map(map<wstring,int> & src) {
+multimap<int, wstring> flip_map(unordered_map<wstring,int> & src) {
     multimap<int, wstring> dst;
 
-    for(map<wstring, int>::const_iterator it = src.begin(); it != src.end(); ++it)
+    for(unordered_map<wstring, int>::const_iterator it = src.begin(); it != src.end(); ++it)
         dst.insert(pair<int, wstring>(it -> second, it -> first));
 
     return dst;
 }
 
 
-void duree(time_t _begin, time_t _end) {
-    double temp; 
-    double hours=0, min=0, sec=0; 
-    double dureeCalc = difftime(_end, _begin);
-    temp = modf(dureeCalc/3600., &hours); 
-    temp = modf(temp*60., &min); 
-    temp = modf(temp*60., &sec); 
-    cout<<"Duree du calcul : "<<hours<<" h "<<min<<" min "<<sec<<" sec"<<endl; 
-}
 
 
 /**********************************************************************
@@ -99,11 +92,16 @@ void duree(time_t _begin, time_t _end) {
  **********************************************************************/
 
 
-void Statsgen::analyse_letter(const char & letter, char & last_simplemask, wstring & simplemask_string, wstring & advancedmask_string, Policy & policy) {
+void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
+                                wstring & simplemask_string, wstring & advancedmask_string, \
+                                Policy & policy, int & taille, int & taille2) {
+    taille++;
+
     if (letter >= L'0' && letter <= L'9') {
         policy.digit++;
         advancedmask_string += L"?d";
         if (last_simplemask != 'd') {
+            taille2++;
             simplemask_string += L"digit";
             last_simplemask = 'd';
         }
@@ -112,6 +110,7 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, wstri
         policy.lower++;
         advancedmask_string += L"?l";
         if (last_simplemask != 'l') {
+            taille2++;
             simplemask_string += L"lower";
             last_simplemask = 'l';
         }
@@ -120,6 +119,7 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, wstri
         policy.upper++;
         advancedmask_string += L"?u";
         if (last_simplemask != 'u') {
+            taille2++;
             simplemask_string += L"upper";
             last_simplemask = 'u';
         }
@@ -127,11 +127,14 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, wstri
     else {
         policy.special++;
         advancedmask_string += L"?s";
+
         if (last_simplemask != 's') {
+            taille2++;
             simplemask_string += L"special";
             last_simplemask = 's';
         }
     }
+
 }
 
 
@@ -197,33 +200,23 @@ void Statsgen::analyze_password(const wstring & password, int & length, wstring 
     advancedmask_string = L"";
     simplemask_string = L"";
     char last_simplemask = 'a';
-
-
-    clock_t t1, t2, t3, t4;
-    float tmp1, tmp2;
- 
+    int taille = 0;
+    int taille2 = 0;
+    wchar_t letter;
 
     for (int i=0; i<length; i++) {
-    	wchar_t letter = password[i];
-        
-        t1 = clock();
-        analyse_letter(letter, last_simplemask, simplemask_string, advancedmask_string, policy);
-        t2 = clock();
-        tmp1 = difftime(t2, t1);
-
-        if (tmp1 < timeLetterMin || timeLetterMin == 0) timeLetterMin = tmp1;
-        if (tmp1 > timeLetterMin) timeLetterMax = tmp1;
-        timeLetterTotal += tmp1;
+    	letter = password[i];
+        analyse_letter(letter, last_simplemask, simplemask_string, advancedmask_string, policy, taille, taille2);
     }
 
-    t3 = clock();
-    analyse_charset(charset, policy);
-    t4 = clock();
-    tmp2 = difftime(t4, t3);
+    if (taille > 10) {
+        advancedmask_string = L"OTHERMASKS";
+    }
+    if (taille2 > 3) {
+        simplemask_string = L"OTHERMASKS";
+    }
 
-    if (tmp2 < timeCharsetMin || timeCharsetMin == 0) timeCharsetMin = tmp2;
-    if (tmp2 > timeCharsetMin) timeCharsetMax = tmp2;
-    timeCharsetTotal += tmp2;
+    analyse_charset(charset, policy);
 }
 
 
@@ -234,19 +227,6 @@ void Statsgen::analyze_password(const wstring & password, int & length, wstring 
  *                        ANALYSE STATISTIQUE                         *
  **********************************************************************/
 
-
-
-bool analyse_withcount(wstring & line) {
-    wstring key  = wstring(L"^\\s+");
-    wstring repl = wstring(L"");
-    wstring key2  = wstring(L"(\\d+) (.+)");
-    
-    wstring cleanLine = regex_replace(line, std::wregex(key),  repl);
-    wsmatch m;
-    regex_match(cleanLine,m,std::wregex(key2));
-
-    return (m.size() > 2);
-}
 
 
 void Statsgen::updateMinMax(const Policy & pol) {
@@ -280,6 +260,7 @@ void Statsgen::updateMinMax(const Policy & pol) {
 }
 
 
+
 int Statsgen::generate_stats(const string & filename) {
     wifstream readfile(filename);
     wstring line;
@@ -292,13 +273,9 @@ int Statsgen::generate_stats(const string & filename) {
     int nbline = 0;
 
 
-
-    clock_t t1, t2;
-
-    t1 = clock();
-
     while(readfile.good()) {
         getline(readfile, line);
+
         nbline++;
 
         if (line.size() == 0) {
@@ -308,7 +285,7 @@ int Statsgen::generate_stats(const string & filename) {
 
 
         if (withcount) {
-            int i = 0;
+            uint i = 0;
             bool number=false;
             for(i=0; i < line.length(); i++) {
                 if(iswdigit(line.at(i))) {
@@ -338,23 +315,20 @@ int Statsgen::generate_stats(const string & filename) {
         else {
             if ( !use_regex || (use_regex && regex_match(line,current_regex)) ) {
                 total_filter++;
-
+                
                 analyze_password(line, pass_length, characterset, simplemask_string, advancedmask_string, pol);
-
+                
                 stats_length[pass_length] += 1;
                 stats_charactersets[characterset] += 1;
                 stats_simplemasks[simplemask_string] += 1;
                 stats_advancedmasks[advancedmask_string] += 1;
+                
             }
             total_counter++;
         }
 
         updateMinMax(pol);
     }
-
-    t2 = clock();
-
-    timeTotal = difftime(t2,t1);
 
     if (!total_counter) {
         wcerr << "Empty file or not existing file" << endl;
@@ -509,15 +483,6 @@ void Statsgen::print_stats() {
     if (count != top) {
         readResult(it4->first, it4->second, count);
     }
-
-
-    wcout << "\n\nLetter --> min : " << timeLetterMin << " / max : " << timeLetterMax << " / total : " << timeLetterTotal << endl;
-    wcout << "Charset --> min : " << timeCharsetMin << " / max : " << timeCharsetMax << " / total : " << timeCharsetTotal << endl;
-    
-    wcout << "\nTotal temps : " << timeTotal << endl;
-    float lost = timeTotal - timeLetterTotal - timeCharsetTotal;
-
-    wcout << "\nTotal restant : " << lost << endl;
 
 }
 
