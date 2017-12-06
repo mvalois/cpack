@@ -4,6 +4,7 @@
 #include <regex>
 
 #include "statsgen.h"
+#include "utils.h"
 using namespace std;
 
 
@@ -69,41 +70,13 @@ void Statsgen::setLimitAdvancedmask(int val) {
 
 
 
-/**********************************************************************
- *                          USEFUL FUNCTIONS                          *
- **********************************************************************/
-
-
-multimap<int, int> flip_map(unordered_map<int,int> & src) {
-    multimap<int,int> dst;
-
-    for(unordered_map<int, int>::const_iterator it = src.begin(); it != src.end(); ++it)
-        dst.insert(pair<int, int>(it -> second, it -> first));
-
-    return dst;
-}
-
-
-multimap<int, wstring> flip_map(unordered_map<wstring,int> & src) {
-    multimap<int, wstring> dst;
-
-    for(unordered_map<wstring, int>::const_iterator it = src.begin(); it != src.end(); ++it)
-        dst.insert(pair<int, wstring>(it -> second, it -> first));
-
-    return dst;
-}
-
-
-
 
 /**********************************************************************
  *                          ANALYSE PASSWORD                          *
  **********************************************************************/
 
 
-void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
-                                wstring & simplemask_string, wstring & advancedmask_string, \
-                                Policy & policy, int & sizeAM, int & sizeSM) {
+void Statsgen::analyse_letter(const char & letter, char & last_simplemask, wstring & simplemask_string, wstring & advancedmask_string, Policy & policy, int & sizeAM, int & sizeSM) {
     sizeAM++;
 
     if (letter >= L'0' && letter <= L'9') {
@@ -143,7 +116,6 @@ void Statsgen::analyse_letter(const char & letter, char & last_simplemask, \
             last_simplemask = 's';
         }
     }
-
 }
 
 
@@ -358,40 +330,6 @@ int Statsgen::generate_stats(const string & filename) {
  **********************************************************************/
 
 
-void Statsgen::readResult(int res, int length, int & count) {
-    float percentage;
-
-    percentage = (float) (100*res) / total_counter;
-
-    if (percentage >= hiderare) {
-        wstring value = to_wstring(percentage);
-        value = value.substr(0,5);
-
-        wcout << setw(40) << right << length << ":  " 
-            << setw(5) << right << value << "%" 
-            << setw(5) << right << "(" << res << ")" << endl;
-
-        count++;
-    }
-}
-
-void Statsgen::readResult(int res, wstring carac, int & count) {
-    float percentage;
-    percentage = (float) (100*res) / total_counter;
-
-    if (percentage >= hiderare) {
-        wstring value = to_wstring(percentage);
-        value = value.substr(0,5);
-
-        wcout << setw(40) << right << carac << ":  " 
-            << setw(5) << right << value << "%" 
-            << setw(5) << right << "(" << res << ")" << endl;
-
-        count++;
-    }
-}
-
-
 
 void Statsgen::print_stats() {
     int count;
@@ -415,91 +353,27 @@ void Statsgen::print_stats() {
 
 
     wcout << "\nStatistics relative to length: \n" << endl;
-
-    count = 0;
-    multimap<int, int> reverseLength = flip_map(stats_length);
-    map<int, int>::const_iterator it1;
-    for(it1 = reverseLength.end(); it1 != reverseLength.begin(); it1--) {
-        if (it1 == reverseLength.end()) continue;
-        
-        readResult(it1->first, it1->second, count);
-        if (top != -1 && count == top) break;
-    }
-
-    if (count != top) {
-        readResult(it1->first, it1->second, count);
-    }
-
-
+    showMap(stats_length, top, total_counter, hiderare, count);
 
     wcout << "\nStatistics relative to charsets: \n" << endl;
-    
-    count = 0;
-    multimap<int, wstring> reverseCharsets = flip_map(stats_charactersets);
-    map<int, wstring>::const_iterator it2;
-
-    for(it2 = reverseCharsets.end(); it2 != reverseCharsets.begin(); it2--) {
-        if (it2 == reverseCharsets.end()) continue;
-
-        readResult(it2->first, it2->second, count);
-        if (top != -1 && count == top) break;
-    }
-
-    if (count != top) {
-        readResult(it2->first, it2->second, count);
-    }
-    
+    showMap(stats_charactersets, top, total_counter, hiderare, count);
 
 
     wcout << "\nStatistics relative to simplemasks: \n" << endl;
-
-    count = 0;
-    multimap<int, wstring> reverseSimpleMasks = flip_map(stats_simplemasks);
-    map<int, wstring>::const_iterator it3;
-
-    for(it3 = reverseSimpleMasks.end(); it3 != reverseSimpleMasks.begin(); it3--) {
-        if (it3 == reverseSimpleMasks.end()) continue;
-        
-        if (it3->second != L"othermasks")
-            readResult(it3->first, it3->second, count);
-        if (top != -1 && count == top) break;
-    }
-
-    if (count != top) {
-        readResult(it3->first, it3->second, count);
-    }
+    showMap(stats_simplemasks, top, total_counter, hiderare, count);
 
     if (limitSimplemask > 0) {
         wcout << endl;
-        readResult(stats_simplemasks[L"othermasks"], L"othermasks", count);
+        readResult(stats_simplemasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
-
 
 
     wcout << "\nStatistics relative to advancedmask: \n" << endl;
-
-    count = 0;
-    multimap<int, wstring> reverseAdvancedMask = flip_map(stats_advancedmasks);
-    map<int, wstring>::const_iterator it4;
-
-    for(it4 = reverseAdvancedMask.end(); it4 != reverseAdvancedMask.begin(); it4--) {
-        if (it4 == reverseAdvancedMask.end()) continue;
-        
-        if (it4->second != L"othermasks")
-            readResult(it4->first, it4->second, count);
-        if (top != -1 && count == top) break;
-    }
-
-    if (count != top) {
-        readResult(it4->first, it4->second, count);
-    }
-
-
+    showMap(stats_advancedmasks, top, total_counter, hiderare, count);
+    
     if (limitAdvancedmask > 0) {
         wcout << endl;
-        readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count);
+        readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
-
-
 }
 

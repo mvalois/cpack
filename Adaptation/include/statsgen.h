@@ -38,8 +38,6 @@ private:
 	void analyse_charset(std::wstring &, const Policy &);
 
 	void updateMinMax(const Policy &);
-	void readResult(int, std::wstring, int &);
-	void readResult(int, int, int &);
 
 	// Filters
 

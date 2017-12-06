@@ -2,27 +2,28 @@ CXX	 = g++
 CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -I./include
 SRC	 = src/
 INC	 = include/
+BIN	 = bin/
 
 
 
 .PHONY 	 = main clean
 
 
-all: main clean
+all: main
 
 
-main: main.o statsgen.o
-	$(CXX) $(CXXFLAGS) $^ -o $@
+main: $(BIN)main.o $(BIN)statsgen.o
+	$(CXX) $^ $(CXXFLAGS) -o $@
 
 
 
-main.o: $(SRC)main.cpp $(INC)statsgen.h
+$(BIN)main.o: $(SRC)main.cpp $(INC)statsgen.h
 	$(CXX) $(CXXFLAGS) $(SRC)main.cpp -c -o $@
 
-statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
+$(BIN)statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
 	$(CXX) $(CXXFLAGS) $(SRC)statsgen.cpp -c -o $@
 
 
 
 clean:
-	rm *.o
+	rm $(BIN)/*.o
