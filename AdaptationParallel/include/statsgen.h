@@ -6,12 +6,20 @@
 
 
 struct Policy{
-	int digit;
-	int lower;
-	int upper;
-	int special;
+	int digit = 0;
+	int lower = 0;
+	int upper = 0;
+	int special = 0;
 };
 
+
+struct Conteneur{
+	int pass_length = 0;
+    std::wstring characterset = L"";
+    std::wstring advancedmask_string = L"";
+    std::wstring simplemask_string = L"";
+    Policy pol;	
+};
 
 class Statsgen {
 
@@ -27,15 +35,11 @@ public:
 	void setLimitSimplemask(int);
 	void setLimitAdvancedmask(int);
 
-	void analyze_password(const std::wstring&, int &, std::wstring &, std::wstring &, std::wstring &,Policy &);
 	int generate_stats(const std::string &);
 	void print_stats();
 
 private:
 	// functions
-
-	void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &, int &, int &);
-	void analyse_charset(std::wstring &, const Policy &);
 
 	void updateMinMax(const Policy &);
 
@@ -73,3 +77,10 @@ private:
 	int minspecial = -1;
 	int maxspecial = -1;
 };
+
+
+
+
+Conteneur analyze_password(const std::wstring&);
+void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &, int &, int &);
+void analyse_charset(std::wstring &, const Policy &);

@@ -1,6 +1,7 @@
 Utils/convert
+Utils/createNewDB
 Adaptation/main
 Adaptation/bin
-AdaprationParallel/main
-AdaprationParallel/bin
+AdaptationParallel/main
+AdaptationParallel/bin
 Pack/

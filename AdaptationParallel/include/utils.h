@@ -6,10 +6,10 @@ using namespace std;
 
 
 template<typename K, typename V>
-using UnorderedMapIterator = typename std::unordered_map<K, V>::const_iterator;
+using UnorderedMapIterator = typename unordered_map<K, V>::const_iterator;
 
 template<typename K, typename V>
-using MapIterator = typename std::map<K, V>::const_iterator;
+using MapIterator = typename map<K, V>::const_iterator;
 
 
 template<typename A> 
