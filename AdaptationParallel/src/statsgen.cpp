@@ -252,23 +252,53 @@ void * generate_stats_thread(void * threadarg) {
         }
 
 
-        my_data->total_counter++;
         if (line.size() == 0) {
             wcout << "Error empty password, line " << my_data->total_counter << endl;
             continue;
         }
 
         Conteneur c;
-        analyze_password(line, c);
-        
-        my_data->total_filter++;
 
-        my_data->length[ c.pass_length ] += 1;
-        my_data->charactersets[ c.characterset ] += 1;
-        my_data->simplemasks[ c.simplemask_string ] += 1;
-        my_data->advancedmasks[ c.advancedmask_string ] += 1;
+        if (my_data->withcount) {
+            uint i = 0;
+            bool number=false;
+            for(i=0; i < line.length(); i++) {
+                if(iswdigit(line.at(i))) {
+                    number=true;
+                }
+                else if (!iswdigit(line.at(i)) && number) {
+                    break;
+                }
+            }
+            wstring password = line.substr(i+1,line.length());
+            int nbPasswords = stoi(line.substr(0,i));
+            
+            my_data->total_counter += nbPasswords;
 
-        updateMinMax(my_data->mindigit, my_data->maxdigit, my_data->minlower, my_data->maxlower, my_data->minupper, my_data->maxupper, my_data->minspecial, my_data->maxspecial, c.pol);
+            if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
+                my_data->total_filter += nbPasswords;
+                analyze_password(password, c);
+
+                my_data->length[ c.pass_length ] += nbPasswords;
+                my_data->charactersets[ c.characterset ] += nbPasswords;
+                my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
+                my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
+            }
+        }
+        else {
+            my_data->total_counter++;
+            if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
+                analyze_password(line, c);
+                
+                my_data->total_filter++;
+
+                my_data->length[ c.pass_length ] += 1;
+                my_data->charactersets[ c.characterset ] += 1;
+                my_data->simplemasks[ c.simplemask_string ] += 1;
+                my_data->advancedmasks[ c.advancedmask_string ] += 1;
+            }
+        }
+         updateMinMax(my_data->mindigit, my_data->maxdigit, my_data->minlower, my_data->maxlower, my_data->minupper, my_data->maxupper, my_data->minspecial, my_data->maxspecial, c.pol);
     }
 
     readfile.close();
@@ -312,6 +342,9 @@ int Statsgen::generate_stats(const string & filename) {
     for( i = 0; i < NB_THREAD; i++ ) {
         td[i].filename = filename;
         td[i].thread_id = i;
+        td[i].current_regex = current_regex;
+        td[i].use_regex = use_regex;
+        td[i].withcount = withcount;
 
         td[i].lineBegin = i*(nbline/NB_THREAD) + 1;
         td[i].lineEnd = (i+1)*nbline/NB_THREAD;
@@ -325,15 +358,15 @@ int Statsgen::generate_stats(const string & filename) {
         }
     }
 
-   // free attribute and wait for the other threads
-   pthread_attr_destroy(&attr);
-   for( i = 0; i < NB_THREAD; i++ ) {
-      rc = pthread_join(threads[i], &status);
-      if (rc) {
-         cout << "Error:unable to join," << rc << endl;
-         exit(-1);
-      }
-   }
+    // free attribute and wait for the other threads
+    pthread_attr_destroy(&attr);
+    for( i = 0; i < NB_THREAD; i++ ) {
+        rc = pthread_join(threads[i], &status);
+        if (rc) {
+            cout << "Error:unable to join," << rc << endl;
+            exit(-1);
+        }
+    }
 
 	for(i=0;i<NB_THREAD;i++)
 	{
@@ -389,8 +422,6 @@ int Statsgen::generate_stats(const string & filename) {
 		{
 			stats_advancedmasks[it->first]+=it->second;
 		}
-		
-		
 	}
 
 

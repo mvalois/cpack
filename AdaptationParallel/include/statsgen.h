@@ -45,6 +45,10 @@ struct thread_data {
 	int maxupper = -1;
 	int minspecial = -1;
 	int maxspecial = -1;
+
+	std::wregex current_regex;
+	bool use_regex = false;
+	bool withcount = false;
 };
 
 
