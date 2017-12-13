@@ -3,12 +3,15 @@
 #include <algorithm>
 #include <vector>
 #include <regex>
+#include <pthread.h>
 
 #include "statsgen.h"
 #include "utils.h"
-#include "ThreadPool.h"
 using namespace std;
 
+
+
+#define NB_THREAD 2
 
 
 /**********************************************************************
@@ -231,48 +234,148 @@ void Statsgen::updateMinMax(const Policy & pol) {
 
 
 
-int Statsgen::generate_stats(const string & filename) {
+
+
+void * generate_stats_thread(void * threadarg) {
+    struct thread_data *my_data;
+    my_data = (struct thread_data *) threadarg;
+
+    wifstream readfile(my_data->filename);
+    wstring line;
+    int nbline = 0;
+
+    while(readfile.good()) {
+        ++nbline;
+        getline(readfile, line);
+        if (nbline < my_data->lineBegin) {
+            continue;
+        }
+        if (nbline > my_data->lineEnd) {
+            break;
+        }
+
+
+
+        
+        my_data->total_counter++;
+        if (line.size() == 0) {
+            wcout << "Error empty password, line " << my_data->total_counter << endl;
+            continue;
+        }
+
+        Conteneur c = analyze_password(line);
+        
+        my_data->total_filter++;
+
+        my_data->length[ c.pass_length ] += 1;
+        my_data->charactersets[ c.characterset ] += 1;
+        my_data->simplemasks[ c.simplemask_string ] += 1;
+        my_data->advancedmasks[ c.advancedmask_string ] += 1;
+        
+        if (my_data->mindigit == -1 || my_data->mindigit > c.pol.digit) {
+            my_data->mindigit = c.pol.digit;
+        }
+        if (my_data->maxdigit == -1 || my_data->maxdigit < c.pol.digit) {
+            my_data->maxdigit = c.pol.digit;
+        }
+
+        if (my_data->minlower == -1 || my_data->minlower > c.pol.lower) {
+            my_data->minlower = c.pol.lower;
+        }
+        if (my_data->maxlower == -1 || my_data->maxlower < c.pol.lower) {
+            my_data->maxlower = c.pol.lower;
+        }
+
+        if (my_data->minupper == -1 || my_data->minupper > c.pol.upper) {
+            my_data->minupper = c.pol.upper;
+        }
+        if (my_data->maxupper == -1 || my_data->maxupper < c.pol.upper) {
+            my_data->maxupper = c.pol.upper;
+        }
+
+        if (my_data->minspecial == -1 || my_data->minspecial > c.pol.special) {
+            my_data->minspecial = c.pol.special;
+        }
+        if (my_data->maxspecial == -1 || my_data->maxspecial < c.pol.special) {
+            my_data->maxspecial = c.pol.special;
+        }
+    }
+
+    readfile.close();
+
+    pthread_exit(NULL);
+}
+
+
+int nbline_file(const string & filename) {
+    wcout << "debut" << endl;
     wifstream readfile(filename);
     wstring line;
-
-
-    ThreadPool pool(4);
-    vector< future<Conteneur> > results;
-
+    int nb = 0;
 
     while(readfile.good()) {
         getline(readfile, line);
-        total_counter++;
+        ++nb;
+    }
 
-        if (line.size() == 0) {
-            wcout << "Error empty password, line " << total_counter << endl;
-            continue;
+    wcout << "fin" << endl;
+    return nb;
+}
+
+
+
+
+
+int Statsgen::generate_stats(const string & filename) {
+    int nbline = nbline_file(filename);
+    wcout << nbline << endl;
+    int rc;
+    int i;
+    pthread_t threads[NB_THREAD];
+    struct thread_data td[NB_THREAD];
+
+    pthread_attr_t attr;
+    void *status;
+
+   // Initialize and set thread joinable
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+    for( i = 0; i < NB_THREAD; i++ ) {
+        td[i].filename = filename;
+        td[i].thread_id = i;
+        td[i].lineBegin = i*(nbline/NB_THREAD);
+        td[i].lineEnd = (i+1)*nbline/NB_THREAD;
+
+        wcout << i << " : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
+        rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
+      
+        if (rc) {
+            cout << "Error:unable to create thread," << rc << endl;
+            exit(-1);
         }
-        
-        total_filter++;
-        
-        results.emplace_back(
-            pool.enqueue([line] {
-                return analyze_password(line);
-            })
-        );
     }
 
-    for(auto && result: results) {
-        Conteneur c = result.get();
-        stats_length[ c.pass_length ] += 1;
-        stats_charactersets[ c.characterset ] += 1;
-        stats_simplemasks[ c.simplemask_string ] += 1;
-        stats_advancedmasks[ c.advancedmask_string ] += 1;
-        updateMinMax(c.pol);
-    }
+   // free attribute and wait for the other threads
+   pthread_attr_destroy(&attr);
+   for( i = 0; i < NB_THREAD; i++ ) {
+      rc = pthread_join(threads[i], &status);
+      if (rc) {
+         cout << "Error:unable to join," << rc << endl;
+         exit(-1);
+      }
+   }
 
+
+
+
+    /*
     if (!total_counter) {
         wcerr << "Empty file or not existing file" << endl;
         return 0;
     }
+    */
 
-    readfile.close();
     return 1;
 }
 

@@ -21,6 +21,33 @@ struct Conteneur{
     Policy pol;	
 };
 
+
+struct thread_data {
+	int thread_id;
+	std::string filename;
+	int lineBegin;
+	int lineEnd;
+
+	double total_counter = 0;
+	double total_filter = 0;
+
+	std::unordered_map<int, int> length;
+	std::unordered_map<std::wstring, int> simplemasks;
+	std::unordered_map<std::wstring, int> advancedmasks;
+	std::unordered_map<std::wstring, int> charactersets;
+
+	int mindigit = -1;
+	int maxdigit = -1;
+	int minlower = -1;
+	int maxlower = -1;
+	int minupper = -1;
+	int maxupper = -1;
+	int minspecial = -1;
+	int maxspecial = -1;
+};
+
+
+
 class Statsgen {
 
 public:
@@ -36,12 +63,14 @@ public:
 	void setLimitAdvancedmask(int);
 
 	int generate_stats(const std::string &);
+	
 	void print_stats();
 
 private:
 	// functions
 
 	void updateMinMax(const Policy &);
+
 
 	// Filters
 
@@ -84,3 +113,5 @@ private:
 Conteneur analyze_password(const std::wstring&);
 void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &, int &, int &);
 void analyse_charset(std::wstring &, const Policy &);
+
+void * generate_stats_thread(void * );
