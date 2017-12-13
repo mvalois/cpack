@@ -22,6 +22,7 @@ struct Conteneur{
 };
 
 
+
 struct thread_data {
 	int thread_id;
 	std::string filename;
@@ -67,11 +68,6 @@ public:
 	void print_stats();
 
 private:
-	// functions
-
-	void updateMinMax(const Policy &);
-
-
 	// Filters
 
 	int hiderare = 0;
@@ -110,8 +106,10 @@ private:
 
 
 
-Conteneur analyze_password(const std::wstring&);
+void analyze_password(const std::wstring &, Conteneur &);
 void analyse_letter(const char &, char &, std::wstring &, std::wstring &, Policy &, int &, int &);
 void analyse_charset(std::wstring &, const Policy &);
+void updateMinMax(int &, int &, int &, int &, int &, int &, int &, int &, const Policy &);
+
 
 void * generate_stats_thread(void * );

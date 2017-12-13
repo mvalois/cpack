@@ -11,7 +11,7 @@ using namespace std;
 
 
 
-#define NB_THREAD 2
+#define NB_THREAD 4
 
 
 /**********************************************************************
@@ -173,23 +173,20 @@ void analyse_charset(wstring & charset, const Policy & policy) {
 }
 
 
-Conteneur analyze_password(const wstring & password) {
-    Conteneur cont;
-    cont.pass_length = password.size();
-    
+void analyze_password(const wstring & password, Conteneur & c) {
+    c.pass_length = password.size();
+
     char last_simplemask = 'a';
     int sizeAM = 0;
     int sizeSM = 0;
     wchar_t letter;
 
-    for (int i=0; i<cont.pass_length; i++) {
+    for (int i=0; i < c.pass_length; i++) {
     	letter = password[i];
-        analyse_letter(letter, last_simplemask, cont.simplemask_string, cont.advancedmask_string, cont.pol, sizeAM, sizeSM);
+        analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAM, sizeSM);
     }
 
-    analyse_charset(cont.characterset, cont.pol);
-
-    return cont;
+    analyse_charset(c.characterset, c.pol);
 }
 
 
@@ -202,7 +199,7 @@ Conteneur analyze_password(const wstring & password) {
 
 
 
-void Statsgen::updateMinMax(const Policy & pol) {
+void updateMinMax(int & mindigit, int & maxdigit, int & minlower, int & maxlower, int & minupper, int & maxupper, int & minspecial, int & maxspecial, const Policy & pol) {
     if (mindigit == -1 || mindigit > pol.digit) {
         mindigit = pol.digit;
     }
@@ -255,15 +252,14 @@ void * generate_stats_thread(void * threadarg) {
         }
 
 
-
-        
         my_data->total_counter++;
         if (line.size() == 0) {
             wcout << "Error empty password, line " << my_data->total_counter << endl;
             continue;
         }
 
-        Conteneur c = analyze_password(line);
+        Conteneur c;
+        analyze_password(line, c);
         
         my_data->total_filter++;
 
@@ -271,34 +267,8 @@ void * generate_stats_thread(void * threadarg) {
         my_data->charactersets[ c.characterset ] += 1;
         my_data->simplemasks[ c.simplemask_string ] += 1;
         my_data->advancedmasks[ c.advancedmask_string ] += 1;
-        
-        if (my_data->mindigit == -1 || my_data->mindigit > c.pol.digit) {
-            my_data->mindigit = c.pol.digit;
-        }
-        if (my_data->maxdigit == -1 || my_data->maxdigit < c.pol.digit) {
-            my_data->maxdigit = c.pol.digit;
-        }
 
-        if (my_data->minlower == -1 || my_data->minlower > c.pol.lower) {
-            my_data->minlower = c.pol.lower;
-        }
-        if (my_data->maxlower == -1 || my_data->maxlower < c.pol.lower) {
-            my_data->maxlower = c.pol.lower;
-        }
-
-        if (my_data->minupper == -1 || my_data->minupper > c.pol.upper) {
-            my_data->minupper = c.pol.upper;
-        }
-        if (my_data->maxupper == -1 || my_data->maxupper < c.pol.upper) {
-            my_data->maxupper = c.pol.upper;
-        }
-
-        if (my_data->minspecial == -1 || my_data->minspecial > c.pol.special) {
-            my_data->minspecial = c.pol.special;
-        }
-        if (my_data->maxspecial == -1 || my_data->maxspecial < c.pol.special) {
-            my_data->maxspecial = c.pol.special;
-        }
+        updateMinMax(my_data->mindigit, my_data->maxdigit, my_data->minlower, my_data->maxlower, my_data->minupper, my_data->maxupper, my_data->minspecial, my_data->maxspecial, c.pol);
     }
 
     readfile.close();
@@ -308,7 +278,6 @@ void * generate_stats_thread(void * threadarg) {
 
 
 int nbline_file(const string & filename) {
-    wcout << "debut" << endl;
     wifstream readfile(filename);
     wstring line;
     int nb = 0;
@@ -318,7 +287,6 @@ int nbline_file(const string & filename) {
         ++nb;
     }
 
-    wcout << "fin" << endl;
     return nb;
 }
 
@@ -328,7 +296,7 @@ int nbline_file(const string & filename) {
 
 int Statsgen::generate_stats(const string & filename) {
     int nbline = nbline_file(filename);
-    wcout << nbline << endl;
+
     int rc;
     int i;
     pthread_t threads[NB_THREAD];
@@ -344,10 +312,11 @@ int Statsgen::generate_stats(const string & filename) {
     for( i = 0; i < NB_THREAD; i++ ) {
         td[i].filename = filename;
         td[i].thread_id = i;
-        td[i].lineBegin = i*(nbline/NB_THREAD);
+
+        td[i].lineBegin = i*(nbline/NB_THREAD) + 1;
         td[i].lineEnd = (i+1)*nbline/NB_THREAD;
 
-        wcout << i << " : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
+        wcout << "Thread " << i << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
         rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
       
         if (rc) {
