@@ -247,7 +247,7 @@ void * generate_stats_thread(void * threadarg) {
         if (nbline < my_data->lineBegin) {
             continue;
         }
-        if (nbline > my_data->lineEnd) {
+        if (nbline >= my_data->lineEnd) {
             break;
         }
 
@@ -340,19 +340,19 @@ int Statsgen::generate_stats(const string & filename) {
 		total_counter+=td[i].total_counter;
 		total_filter+=td[i].total_filter;
 		
-		if(mindigit>td[i].mindigit)
+		if(mindigit == -1 || mindigit>td[i].mindigit)
 		{
 			mindigit=td[i].mindigit;
 		}
-		if(minlower>td[i].minlower)
+		if(minlower == -1 || minlower>td[i].minlower)
 		{
 			minlower=td[i].minlower;
 		}
-		if(minupper>td[i].minupper)
+		if(minupper == -1 || minupper>td[i].minupper)
 		{
 			minupper=td[i].minupper;
 		}
-		if(minspecial>td[i].minspecial)
+		if(minspecial == -1 || minspecial>td[i].minspecial)
 		{
 			minspecial=td[i].minspecial;
 		}
