@@ -335,15 +335,71 @@ int Statsgen::generate_stats(const string & filename) {
       }
    }
 
+	for(i=0;i<NB_THREAD;i++)
+	{
+		total_counter+=td[i].total_counter;
+		total_filter+=td[i].total_filter;
+		
+		if(mindigit>td[i].mindigit)
+		{
+			mindigit=td[i].mindigit;
+		}
+		if(minlower>td[i].minlower)
+		{
+			minlower=td[i].minlower;
+		}
+		if(minupper>td[i].minupper)
+		{
+			minupper=td[i].minupper;
+		}
+		if(minspecial>td[i].minspecial)
+		{
+			minspecial=td[i].minspecial;
+		}
+		if(maxdigit<td[i].maxdigit)
+		{
+			maxdigit=td[i].maxdigit;
+		}
+		if(maxlower<td[i].maxlower)
+		{
+			maxlower=td[i].maxlower;
+		}
+		if(maxupper<td[i].maxupper)
+		{
+			maxupper=td[i].maxupper;
+		}
+		if(maxspecial<td[i].maxspecial)
+		{
+			maxspecial=td[i].maxspecial;
+		}
+		
+		for(auto it=td[i].length.begin();it!=td[i].length.end();it++)
+		{
+			stats_length[it->first]+=it->second;
+		}
+		for(auto it=td[i].charactersets.begin();it!=td[i].charactersets.end();it++)
+		{
+			stats_charactersets[it->first]+=it->second;
+		}
+		for(auto it=td[i].simplemasks.begin();it!=td[i].simplemasks.end();it++)
+		{
+			stats_simplemasks[it->first]+=it->second;
+		}
+		for(auto it=td[i].advancedmasks.begin();it!=td[i].advancedmasks.end();it++)
+		{
+			stats_advancedmasks[it->first]+=it->second;
+		}
+		
+		
+	}
 
 
-
-    /*
+    
     if (!total_counter) {
         wcerr << "Empty file or not existing file" << endl;
         return 0;
     }
-    */
+    
 
     return 1;
 }
