@@ -1,5 +1,15 @@
-#include <iostream>
+/**
+ * @file main.cpp
+ * @brief statical analysis of a database of passwords
+ *
+ * @author Jean-Baptiste Jorand
+ * @author Yannick Bass
+ */
+
+
+
 #include <fstream>
+#include <unistd.h>
 #include "statsgen.h"
 using namespace std;
 
@@ -15,7 +25,7 @@ int main(int argc,char* argv[]) {
 	Statsgen test;
 	string filename;
 
-
+	
 	if (argc > 1) {
 		for (int i = 1; i < argc; i++) {
 			if (string(argv[i]) == "--hiderare" || string(argv[i]) == "-hr") {
@@ -95,7 +105,6 @@ int main(int argc,char* argv[]) {
 	if (test.generate_stats(filename)) {
 		test.print_stats();
 	}
-	
-	
+
 	return 0;
 }

@@ -1,8 +1,16 @@
+/**
+ * @file statsgen.cpp
+ * @brief Creation of all methods from Statsgen
+ *
+ * @author Jean-Baptiste Jorand
+ * @author Yannick Bass
+ */
+
+
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
 #include <vector>
-#include <regex>
 #include <thread>
 #include <pthread.h>
 
@@ -11,10 +19,6 @@
 using namespace std;
 
 
-
-/**********************************************************************
- *                           INITIALISATION                           *
- **********************************************************************/
 
 
 void Statsgen::showHelp() {
@@ -83,255 +87,6 @@ void Statsgen::setNbThread(int nb) {
 }
 
 
-/**********************************************************************
- *                          ANALYSE PASSWORD                          *
- **********************************************************************/
-
-
-void analyse_letter(const char & letter, char & last_simplemask, wstring & simplemask_string, wstring & advancedmask_string, Policy & policy, int & sizeAM, int & sizeSM) {
-    sizeAM++;
-
-    if (letter >= L'0' && letter <= L'9') {
-        policy.digit++;
-        advancedmask_string += L"?d";
-        if (last_simplemask != 'd') {
-            sizeSM++;
-            simplemask_string += L"digit";
-            last_simplemask = 'd';
-        }
-    }
-    else if(letter >= L'a' && letter <= L'z') {
-        policy.lower++;
-        advancedmask_string += L"?l";
-        if (last_simplemask != 'l') {
-            sizeSM++;
-            simplemask_string += L"lower";
-            last_simplemask = 'l';
-        }
-    }
-    else if(letter >= L'A' && letter <= L'Z') {
-        policy.upper++;
-        advancedmask_string += L"?u";
-        if (last_simplemask != 'u') {
-            sizeSM++;
-            simplemask_string += L"upper";
-            last_simplemask = 'u';
-        }
-    }
-    else {
-        policy.special++;
-        advancedmask_string += L"?s";
-
-        if (last_simplemask != 's') {
-            sizeSM++;
-            simplemask_string += L"special";
-            last_simplemask = 's';
-        }
-    }
-}
-
-
-void analyse_charset(wstring & charset, const Policy & policy) {
-    if (policy.digit && !policy.lower && !policy.upper && !policy.special) {
-        charset = L"numeric";
-    }
-    else if (!policy.digit && policy.lower && !policy.upper && !policy.special) {
-        charset = L"loweralpha";
-    }
-    else if (!policy.digit && !policy.lower && policy.upper && !policy.special) {
-        charset = L"upperalpha";
-    }
-    else if (!policy.digit && !policy.lower && !policy.upper && policy.special) {
-        charset = L"special";
-    }
-    else if (!policy.digit && policy.lower && policy.upper && !policy.special) {
-        charset = L"mixedalpha";
-    }
-    else if (policy.digit && policy.lower && !policy.upper && !policy.special) {
-        charset = L"loweralphanum";
-    }
-    else if (policy.digit && !policy.lower && policy.upper && !policy.special) {
-        charset = L"upperalphanum";
-    }
-    else if (!policy.digit && policy.lower && !policy.upper && policy.special) {
-        charset = L"loweralphaspecial";
-    }
-    else if (!policy.digit && !policy.lower && policy.upper && policy.special) {
-        charset = L"upperalphaspecial";
-    }
-    else if (policy.digit && !policy.lower && !policy.upper && policy.special) {
-        charset = L"specialnum";
-    }
-
-    else if (!policy.digit && policy.lower && policy.upper && policy.special) {
-        charset = L"mixedalphaspecial";
-    }
-    else if (policy.digit && !policy.lower && policy.upper && policy.special) {
-        charset = L"upperalphaspecialnum";
-    }
-    else if (policy.digit && policy.lower && !policy.upper && policy.special) {
-        charset = L"loweralphaspecialnum";
-    }
-    else if (policy.digit && policy.lower && policy.upper && !policy.special) {
-        charset = L"mixedalphanum";
-    }
-
-    else {
-        charset = L"all";
-    }
-}
-
-
-void analyze_password(const wstring & password, Conteneur & c) {
-    c.pass_length = password.size();
-
-    char last_simplemask = 'a';
-    int sizeAM = 0;
-    int sizeSM = 0;
-    wchar_t letter;
-
-    for (int i=0; i < c.pass_length; i++) {
-    	letter = password[i];
-        analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAM, sizeSM);
-    }
-
-    analyse_charset(c.characterset, c.pol);
-}
-
-
-
-
-
-/**********************************************************************
- *                        ANALYSE STATISTIQUE                         *
- **********************************************************************/
-
-
-
-void updateMinMax(int & mindigit, int & maxdigit, int & minlower, int & maxlower, int & minupper, int & maxupper, int & minspecial, int & maxspecial, const Policy & pol) {
-    if (mindigit == -1 || mindigit > pol.digit) {
-        mindigit = pol.digit;
-    }
-    if (maxdigit == -1 || maxdigit < pol.digit) {
-        maxdigit = pol.digit;
-    }
-
-    if (minlower == -1 || minlower > pol.lower) {
-        minlower = pol.lower;
-    }
-    if (maxlower == -1 || maxlower < pol.lower) {
-        maxlower = pol.lower;
-    }
-
-    if (minupper == -1 || minupper > pol.upper) {
-        minupper = pol.upper;
-    }
-    if (maxupper == -1 || maxupper < pol.upper) {
-        maxupper = pol.upper;
-    }
-
-    if (minspecial == -1 || minspecial > pol.special) {
-        minspecial = pol.special;
-    }
-    if (maxspecial == -1 || maxspecial < pol.special) {
-        maxspecial = pol.special;
-    }
-}
-
-
-
-
-
-void * generate_stats_thread(void * threadarg) {
-    struct thread_data *my_data;
-    my_data = (struct thread_data *) threadarg;
-
-    wifstream readfile(my_data->filename);
-    wstring line;
-    int nbline = 0;
-
-    while(readfile.good()) {
-        ++nbline;
-        getline(readfile, line);
-        if (nbline < my_data->lineBegin) {
-            continue;
-        }
-        if (nbline >= my_data->lineEnd) {
-            break;
-        }
-
-
-        if (line.size() == 0) {
-            wcout << "Error empty password, line " << my_data->total_counter << endl;
-            continue;
-        }
-
-        Conteneur c;
-
-        if (my_data->withcount) {
-            uint i = 0;
-            bool number=false;
-            for(i=0; i < line.length(); i++) {
-                if(iswdigit(line.at(i))) {
-                    number=true;
-                }
-                else if (!iswdigit(line.at(i)) && number) {
-                    break;
-                }
-            }
-            wstring password = line.substr(i+1,line.length());
-            int nbPasswords = stoi(line.substr(0,i));
-            
-            my_data->total_counter += nbPasswords;
-
-            if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
-                my_data->total_filter += nbPasswords;
-                analyze_password(password, c);
-
-                my_data->length[ c.pass_length ] += nbPasswords;
-                my_data->charactersets[ c.characterset ] += nbPasswords;
-                my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
-                my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
-            }
-        }
-        else {
-            my_data->total_counter++;
-            if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
-                analyze_password(line, c);
-                
-                my_data->total_filter++;
-
-                my_data->length[ c.pass_length ] += 1;
-                my_data->charactersets[ c.characterset ] += 1;
-                my_data->simplemasks[ c.simplemask_string ] += 1;
-                my_data->advancedmasks[ c.advancedmask_string ] += 1;
-            }
-        }
-         updateMinMax(my_data->mindigit, my_data->maxdigit, my_data->minlower, my_data->maxlower, my_data->minupper, my_data->maxupper, my_data->minspecial, my_data->maxspecial, c.pol);
-    }
-
-    readfile.close();
-
-    pthread_exit(NULL);
-}
-
-
-int nbline_file(const string & filename) {
-    wifstream readfile(filename);
-    wstring line;
-    int nb = 0;
-
-    while(readfile.good()) {
-        getline(readfile, line);
-        ++nb;
-    }
-
-    return nb;
-}
-
-
-
-
 
 int Statsgen::generate_stats(const string & filename) {
     int nbline = nbline_file(filename);
@@ -344,7 +99,6 @@ int Statsgen::generate_stats(const string & filename) {
     pthread_attr_t attr;
     void *status;
 
-   // Initialize and set thread joinable
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
@@ -367,7 +121,6 @@ int Statsgen::generate_stats(const string & filename) {
         }
     }
 
-    // free attribute and wait for the other threads
     pthread_attr_destroy(&attr);
     for( i = 0; i < nbThread; i++ ) {
         rc = pthread_join(threads[i], &status);
@@ -377,43 +130,27 @@ int Statsgen::generate_stats(const string & filename) {
         }
     }
 
-	for(i=0;i<nbThread;i++)
-	{
+
+    Policy policyMin;
+    Policy policyMax;
+
+	for(i=0;i<nbThread;i++)	{
 		total_counter+=td[i].total_counter;
 		total_filter+=td[i].total_filter;
-		
-		if(mindigit == -1 || mindigit>td[i].mindigit)
-		{
-			mindigit=td[i].mindigit;
-		}
-		if(minlower == -1 || minlower>td[i].minlower)
-		{
-			minlower=td[i].minlower;
-		}
-		if(minupper == -1 || minupper>td[i].minupper)
-		{
-			minupper=td[i].minupper;
-		}
-		if(minspecial == -1 || minspecial>td[i].minspecial)
-		{
-			minspecial=td[i].minspecial;
-		}
-		if(maxdigit<td[i].maxdigit)
-		{
-			maxdigit=td[i].maxdigit;
-		}
-		if(maxlower<td[i].maxlower)
-		{
-			maxlower=td[i].maxlower;
-		}
-		if(maxupper<td[i].maxupper)
-		{
-			maxupper=td[i].maxupper;
-		}
-		if(maxspecial<td[i].maxspecial)
-		{
-			maxspecial=td[i].maxspecial;
-		}
+
+        policyMin.digit = td[i].minMaxValue.mindigit;
+        policyMin.lower = td[i].minMaxValue.minlower;
+        policyMin.upper = td[i].minMaxValue.minupper;
+        policyMin.special = td[i].minMaxValue.minspecial;
+
+        policyMax.digit = td[i].minMaxValue.maxdigit;
+        policyMax.lower = td[i].minMaxValue.maxlower;
+        policyMax.upper = td[i].minMaxValue.maxupper;
+        policyMax.special = td[i].minMaxValue.maxspecial;
+
+        updateMinMax(minMaxValue, policyMin);
+        updateMinMax(minMaxValue, policyMax);
+
 		
 		for(auto it=td[i].length.begin();it!=td[i].length.end();it++)
 		{
@@ -447,14 +184,6 @@ int Statsgen::generate_stats(const string & filename) {
 
 
 
-
-
-/**********************************************************************
- *                         PRINT STATISTIQUE                          *
- **********************************************************************/
-
-
-
 void Statsgen::print_stats() {
     int count;
     float perc = (float) 100 * (total_filter / total_counter);
@@ -466,13 +195,13 @@ void Statsgen::print_stats() {
 
     wcout << "\nmin - max\n" << endl;
     wcout << setw(43) << right << "digit:  " 
-            << setw(2) << right << mindigit << " - " << maxdigit << endl;
+            << setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
     wcout << setw(43) << right << "lower:  " 
-            << setw(2) << right << minlower << " - " << maxlower << endl;
+            << setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
     wcout << setw(43) << right << "upper:  " 
-            << setw(2) << right << minupper << " - " << maxupper << endl;
+            << setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
     wcout << setw(43) << right << "special:  " 
-            << setw(2) << right << minspecial << " - " << maxspecial << endl;       
+            << setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;       
 
 
 

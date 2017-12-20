@@ -6,18 +6,18 @@ BIN	 = bin/
 
 
 
-.PHONY 	 = main clean
+.PHONY 	 = Stats clean
 
 
-all: main
+all: Stats
 
 
-main: $(BIN)main.o $(BIN)statsgen.o
+Stats: $(BIN)Stats.o $(BIN)statsgen.o
 	$(CXX) $^ $(CXXFLAGS) -o $@
 
 
 
-$(BIN)main.o: $(SRC)main.cpp $(INC)statsgen.h
+$(BIN)Stats.o: $(SRC)main.cpp $(INC)statsgen.h
 	$(CXX) $(CXXFLAGS) $(SRC)main.cpp -c -o $@
 
 $(BIN)statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
