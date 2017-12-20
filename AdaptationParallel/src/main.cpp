@@ -67,6 +67,15 @@ int main(int argc,char* argv[]) {
 				test.setWithcount(true);
 			}
 
+			else if (string(argv[i]) == "--parallel" || string(argv[i]) == "-p") {
+				if (argc == i+1) {
+					wcerr << "Missing argument --parallel [value]" << endl;
+					return -1;
+				}
+				test.setNbThread(atoi(argv[i+1]));
+				i++;
+			}
+
 			else {
 				filename = argv[i];
 			}

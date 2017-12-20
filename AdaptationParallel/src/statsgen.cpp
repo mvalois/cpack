@@ -3,15 +3,13 @@
 #include <algorithm>
 #include <vector>
 #include <regex>
+#include <thread>
 #include <pthread.h>
 
 #include "statsgen.h"
 #include "utils.h"
 using namespace std;
 
-
-
-#define NB_THREAD 4
 
 
 /**********************************************************************
@@ -28,11 +26,13 @@ void Statsgen::showHelp() {
 
     wcout << "\t--hiderare, -hr\t\t:\tHide all statistics below 1%" << endl;
     wcout << "\t--top, -t [value]\t:\tShow only [value] first results" << endl;
-    wcout << "\t--regex, -r [value]\t\t:\tShow result for password, using the regular expression [value]" << endl;
+    wcout << "\t--regex, -r [value]\t:\tShow result for password, using the regular expression [value]" << endl;
 
     wcout << "\n\nOptimisation options to reduce the execution time : " << endl;
     wcout << "\t--limitadvancedmasks, -lam [value]\t:\tLimit the size of the advanced masks at [value], if size>[value]: othermasks" << endl;
     wcout << "\t--limitsimplemasks, -lsm [value]\t:\tLimit the size of the simple masks at [value], if size>[value]: othermasks" << endl;
+    wcout << "\t--parallel, -p [value]\t\t\t:\tNumber of usable threads" << endl;
+    
     wcout << "\n" << endl;
 }
 
@@ -72,6 +72,15 @@ void Statsgen::setLimitAdvancedmask(int val) {
     limitAdvancedmask = val;
 }
 
+
+void Statsgen::setNbThread(int nb) {
+    int max = thread::hardware_concurrency();
+    if (nb > max) {
+        nbThread = max;
+    } else {
+        nbThread = nb;
+    }
+}
 
 
 /**********************************************************************
@@ -329,8 +338,8 @@ int Statsgen::generate_stats(const string & filename) {
 
     int rc;
     int i;
-    pthread_t threads[NB_THREAD];
-    struct thread_data td[NB_THREAD];
+    pthread_t threads[nbThread];
+    struct thread_data td[nbThread];
 
     pthread_attr_t attr;
     void *status;
@@ -339,17 +348,17 @@ int Statsgen::generate_stats(const string & filename) {
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-    for( i = 0; i < NB_THREAD; i++ ) {
+    for( i = 0; i < nbThread; i++ ) {
         td[i].filename = filename;
-        td[i].thread_id = i;
+        td[i].thread_id = i + 1;
         td[i].current_regex = current_regex;
         td[i].use_regex = use_regex;
         td[i].withcount = withcount;
 
-        td[i].lineBegin = i*(nbline/NB_THREAD) + 1;
-        td[i].lineEnd = (i+1)*nbline/NB_THREAD;
+        td[i].lineBegin = i*(nbline/nbThread) + 1;
+        td[i].lineEnd = (i+1)*nbline/nbThread;
 
-        wcout << "Thread " << i << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
+        wcout << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
         rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
       
         if (rc) {
@@ -360,7 +369,7 @@ int Statsgen::generate_stats(const string & filename) {
 
     // free attribute and wait for the other threads
     pthread_attr_destroy(&attr);
-    for( i = 0; i < NB_THREAD; i++ ) {
+    for( i = 0; i < nbThread; i++ ) {
         rc = pthread_join(threads[i], &status);
         if (rc) {
             cout << "Error:unable to join," << rc << endl;
@@ -368,7 +377,7 @@ int Statsgen::generate_stats(const string & filename) {
         }
     }
 
-	for(i=0;i<NB_THREAD;i++)
+	for(i=0;i<nbThread;i++)
 	{
 		total_counter+=td[i].total_counter;
 		total_filter+=td[i].total_filter;

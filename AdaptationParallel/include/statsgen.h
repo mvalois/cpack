@@ -66,6 +66,7 @@ public:
 	void setWithcount(bool);
 	void setLimitSimplemask(int);
 	void setLimitAdvancedmask(int);
+	void setNbThread(int);
 
 	int generate_stats(const std::string &);
 	
@@ -81,6 +82,7 @@ private:
 	bool withcount = false;
 	int limitSimplemask = 0;
 	int limitAdvancedmask = 0;
+	int nbThread = 1;
 
 
 	// dico
