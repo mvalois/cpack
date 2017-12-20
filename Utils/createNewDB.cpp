@@ -15,6 +15,10 @@ void multiplication(int coeff, const string & input, const string & output) {
 
   while(readfile.good()) {
     getline(readfile, line);
+    if (line.size() == 0) {
+      continue;
+    }
+
     for (int i = 0; i<coeff; i++) {
       add = line;
       for (int j = 0; j<i; j++) {
@@ -35,6 +39,9 @@ void division(int coeff, const string &input, const string & output) {
   
   while(readfile.good()) {
     getline(readfile, line);
+    if (line.size() == 0) {
+      continue;
+    }
     nbline++;
     if (nbline%coeff == 0) {
       outfile << line << endl;
