@@ -3,6 +3,6 @@ Utils/createNewDB
 Adaptation/main
 Adaptation/bin
 AdaptationParallel/main
-AdaptationParallel/Stats
+AdaptationParallel/stats
 AdaptationParallel/bin
 Pack/
