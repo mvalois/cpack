@@ -152,6 +152,8 @@ public:
 	 * @brief Print all calculated statistics
 	 */
 	void print_stats();
+	
+	
 
 private:
 	// Filters
@@ -182,4 +184,42 @@ private:
 	minMax minMaxValue;				// save all genral data from passwords 
 };
 
-
+/**
+	 * @brief analyse a letter in a password
+	 * @param letter : current letter
+	 * @param last_simplemask : last analyzed part of the simple masks 
+	 * @param simplemask_string : current simple mask
+	 * @param advancedmask_string : current advanced mask
+	 * @param policy : current number of digit, lower, upper and special for the current password
+	 * @param sizeAdvancedMask : size of the current advanced mask 
+	 * @param sizeSimpleMask : size of the current simple mask
+	 */
+	void analyse_letter(const char & letter, char & last_simplemask, std::wstring & simplemask_string, std::wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
+	
+	/**
+	 * @brief analyse the characterset of the current password
+	 * @param charset : characterset of the current password
+	 * @param policy : current number of digit, lower, upper and special for the current password
+	 */
+	void analyse_charset(std::wstring & charset, const Policy & policy);
+	
+	/**
+	 * @brief analyse a password
+	 * @param password : current password
+	 * @param c : container of all useful data of the password
+	 */
+	void analyze_password(const std::wstring & password, Container & c);
+	
+	/**
+	 * @brief update minima and maxima of all general data from analysed passwords 
+	 * with the analysed passwords
+	 * @param minMaxValue : save all minima and maxima
+	 * @param pol : policy of the last analyzed password
+	 */
+	void updateMinMax(minMax & minMaxValue, const Policy & pol);
+	
+	/**
+	* @brief action of all threads
+	* @param threadarg : all useful argument for the thread
+	*/
+	void * generate_stats_thread(void * threadarg);
