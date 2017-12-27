@@ -9,10 +9,10 @@ BIN	 = bin/
 .PHONY 	 = main clean
 
 
-all: main
+all: stats
 
 
-main: $(BIN)main.o $(BIN)statsgen.o
+stats: $(BIN)main.o $(BIN)statsgen.o
 	$(CXX) $^ $(CXXFLAGS) -o $@
 
 
