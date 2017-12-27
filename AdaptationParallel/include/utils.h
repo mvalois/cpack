@@ -284,7 +284,7 @@ void * generate_stats_thread(void * threadarg) {
         if (nbline < my_data->lineBegin) {
             continue;
         }
-        if (nbline >= my_data->lineEnd) {
+        if (nbline > my_data->lineEnd) {
             break;
         }
 
