@@ -105,8 +105,8 @@ int main(int argc,char* argv[]) {
 	}
 
 
-
-	if (test.generate_stats(filename)) {
+	test.setFilename(filename);
+	if (test.generate_stats()) {
 		test.print_stats();
 	}
 

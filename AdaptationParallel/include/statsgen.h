@@ -103,6 +103,13 @@ public:
 	void showHelp();
 
 	/**
+	 * @brief Initialise the name of the database
+	 * @param : new value for "filename"
+	 */
+	void setFilename(std::string);
+
+
+	/**
 	 * @brief Modify the attribute "hiderare", defining if 
 	 * user wants to see statistics below 1%
 	 * @param : new value for "hiderare"
@@ -159,12 +166,10 @@ public:
 
 
 	/**
-	 * @brief Calculate all statistics for a database which the
-	 * name is given by argument
-	 * @param : database's name
+	 * @brief Calculate all statistics for a database
 	 * @return 0 if error, 1 if success
 	 */
-	int generate_stats(const std::string &);
+	int generate_stats();
 	
 	/**
 	 * @brief Print all calculated statistics
@@ -174,6 +179,9 @@ public:
 	
 
 private:
+	std::string filename;
+
+
 	// Filters
 
 	int hiderare = 0; 				// Hide low statistics

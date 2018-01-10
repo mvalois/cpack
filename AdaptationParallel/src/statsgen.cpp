@@ -25,6 +25,9 @@ using namespace std;
 void Statsgen::showHelp() {
     wcout << "\nUsage: database.txt [options]\n" << endl;
 
+    wcout << "To be sure the database's format can be read, please use this command before:" << endl;
+    wcout << "\ticonv -f ISO-8859-1 -t UTF-8 databaseInput.txt -o databaseOutput.txt\n" << endl;
+
     wcout << "Options:" << endl;
     wcout << "\t--help, -h\t\t:\tShow this help message" << endl;
     wcout << "\t--withcount, -w\t\t:\tMendatory if the input database has the following format : [number of occurence] [password]\n" << endl;
@@ -38,9 +41,15 @@ void Statsgen::showHelp() {
     wcout << "\t--limitsimplemasks, -lsm [value]\t:\tLimit the size of the simple masks at [value], if size>[value]: othermasks" << endl;
     wcout << "\t--parallel, -p [value]\t\t\t:\tNumber of usable threads" << endl;
     
-    wcout << "\n\nSecurity rules : " << endl;
+    wcout << "\n\nSecurity rules: " << endl;
     wcout << "\t--security, -s\t:\tDefine the security rules" << endl;
     wcout << "\n" << endl;
+}
+
+
+
+void Statsgen::setFilename(std::string name) {
+    filename = name;
 }
 
 
@@ -108,7 +117,8 @@ void Statsgen::setSecurityRules() {
 }
 
 
-int Statsgen::generate_stats(const string & filename) {
+
+int Statsgen::generate_stats() {
     int nbline = nbline_file(filename);
 
     int rc;
@@ -217,8 +227,6 @@ int Statsgen::generate_stats(const string & filename) {
 }
 
 
-
-
 void Statsgen::print_stats() {
     int count;
     float perc = (float) 100 * (total_filter / total_counter);
@@ -235,7 +243,7 @@ void Statsgen::print_stats() {
     wcout << "\tMinimum of upper characters in a password: " << minUpper << endl;
 
     float perce = (float) 100 * (nbSecurePassword / total_counter);
-    wcout << "\n\t\t-->" << nbSecurePassword << " passwords\t(" << perce << " %) repect the security rules\n" << endl;
+    wcout << "\n\t\t--> " << nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
     wcout << "\nmin - max\n" << endl;
