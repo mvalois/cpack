@@ -38,6 +38,8 @@ void Statsgen::showHelp() {
     wcout << "\t--limitsimplemasks, -lsm [value]\t:\tLimit the size of the simple masks at [value], if size>[value]: othermasks" << endl;
     wcout << "\t--parallel, -p [value]\t\t\t:\tNumber of usable threads" << endl;
     
+    wcout << "\n\nSecurity rules : " << endl;
+    wcout << "\t--security, -s\t:\tDefine the security rules" << endl;
     wcout << "\n" << endl;
 }
 
@@ -88,6 +90,23 @@ void Statsgen::setNbThread(int nb) {
 }
 
 
+void Statsgen::setSecurityRules() {
+    wcout << "\nMinimal length of a password:" << endl;
+    cin >> minLength;
+
+    wcout << "\nMinimum of special characters in a password:" << endl;
+    cin >> minSpecial;
+
+    wcout << "\nMinimum of digits in a password:" << endl;
+    cin >> minDigit;
+
+    wcout << "\nMinimum of lower characters in a password:" << endl;
+    cin >> minLower;
+
+    wcout << "\nMinimum of upper characters in a password:" << endl;
+    cin >> minUpper;
+}
+
 
 int Statsgen::generate_stats(const string & filename) {
     int nbline = nbline_file(filename);
@@ -112,6 +131,13 @@ int Statsgen::generate_stats(const string & filename) {
 
         td[i].lineBegin = i*(nbline/nbThread) + 1;
         td[i].lineEnd = (i+1)*nbline/nbThread;
+
+        td[i].sr.nbSecurePassword = 0;
+        td[i].sr.minLength = minLength;
+        td[i].sr.minSpecial = minSpecial;
+        td[i].sr.minDigit = minDigit;
+        td[i].sr.minLower = minLower;
+        td[i].sr.minUpper = minUpper;
 
         wcout << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
         rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
@@ -148,6 +174,8 @@ int Statsgen::generate_stats(const string & filename) {
         policyMax.lower = td[i].minMaxValue.maxlower;
         policyMax.upper = td[i].minMaxValue.maxupper;
         policyMax.special = td[i].minMaxValue.maxspecial;
+
+        nbSecurePassword += td[i].sr.nbSecurePassword;
 
         updateMinMax(minMaxValue, policyMin);
         updateMinMax(minMaxValue, policyMax);
@@ -193,6 +221,16 @@ void Statsgen::print_stats() {
         << perc << " %)" << endl;
 
 
+    wcout << "\nSecurity rules : " << endl;
+    wcout << "\tMinimal length of a password: " << minLength << endl;
+    wcout << "\tMinimum of special characters in a password: " << minSpecial << endl;
+    wcout << "\tMinimum of digits in a password: " << minDigit << endl;
+    wcout << "\tMinimum of lower characters in a password: " << minLower << endl;
+    wcout << "\tMinimum of upper characters in a password: " << minUpper << endl;
+
+    float perce = (float) 100 * (nbSecurePassword / total_counter);
+    wcout << "\n\t\t-->" << nbSecurePassword << " passwords\t(" << perce << " %) repect the security rules\n" << endl;
+
 
     wcout << "\nmin - max\n" << endl;
     wcout << setw(43) << right << "digit:  " 
@@ -210,7 +248,7 @@ void Statsgen::print_stats() {
     showMap(stats_length, top, total_counter, hiderare, count);
 
     wcout << "\nStatistics relative to charsets: \n" << endl;
-    showMap(stats_charactersets, top, total_counter, hiderare, count);
+    showMap(stats_charactersets, -1, total_counter, hiderare, count);
 
 
     wcout << "\nStatistics relative to simplemasks: \n" << endl;
@@ -229,7 +267,12 @@ void Statsgen::print_stats() {
         wcout << endl;
         readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
+
 }
+
+
+
+
 
 
 void analyse_letter(const char & letter, char & last_simplemask, wstring & simplemask_string, wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask) {
@@ -273,6 +316,7 @@ void analyse_letter(const char & letter, char & last_simplemask, wstring & simpl
         }
     }
 }
+
 
 void analyse_charset(wstring & charset, const Policy & policy) {
     if (policy.digit && !policy.lower && !policy.upper && !policy.special) {
@@ -325,7 +369,7 @@ void analyse_charset(wstring & charset, const Policy & policy) {
 }
 
 
-void analyze_password(const wstring & password, Container & c) {
+void analyze_password(const wstring & password, Container & c, SecurityRules & sr) {
     c.pass_length = password.size();
 
     char last_simplemask = 'a';
@@ -339,6 +383,14 @@ void analyze_password(const wstring & password, Container & c) {
     }
 
     analyse_charset(c.characterset, c.pol);
+
+    if ( (c.pass_length >= sr.minLength) && 
+         (c.pol.digit >= sr.minDigit) && 
+         (c.pol.lower >= sr.minLower) && 
+         (c.pol.upper >= sr.minUpper) && 
+         (c.pol.special >= sr.minSpecial) ) {
+        sr.nbSecurePassword++;
+    }
 }
 
 
@@ -375,9 +427,6 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol) {
 
 
 
-
-
-
 void * generate_stats_thread(void * threadarg) {
     struct thread_data *my_data;
     my_data = (struct thread_data *) threadarg;
@@ -398,7 +447,6 @@ void * generate_stats_thread(void * threadarg) {
 
 
         if (line.size() == 0) {
-            //wcout << "Error empty password, line " << my_data->total_counter << endl;
             continue;
         }
 
@@ -422,7 +470,7 @@ void * generate_stats_thread(void * threadarg) {
 
             if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
                 my_data->total_filter += nbPasswords;
-                analyze_password(password, c);
+                analyze_password(password, c, my_data->sr);
 
                 my_data->length[ c.pass_length ] += nbPasswords;
                 my_data->charactersets[ c.characterset ] += nbPasswords;
@@ -433,7 +481,7 @@ void * generate_stats_thread(void * threadarg) {
         else {
             my_data->total_counter++;
             if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
-                analyze_password(line, c);
+                analyze_password(line, c, my_data->sr);
                 
                 my_data->total_filter++;
 
@@ -443,7 +491,7 @@ void * generate_stats_thread(void * threadarg) {
                 my_data->advancedmasks[ c.advancedmask_string ] += 1;
             }
         }
-         updateMinMax(my_data->minMaxValue, c.pol);
+        updateMinMax(my_data->minMaxValue, c.pol);
     }
 
     readfile.close();

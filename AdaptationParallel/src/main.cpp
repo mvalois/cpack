@@ -86,6 +86,11 @@ int main(int argc,char* argv[]) {
 				i++;
 			}
 
+			else if (string(argv[i]) == "--security" || string(argv[i]) == "-s") {
+				test.setSecurityRules();
+				i++;
+			}
+
 			else {
 				filename = argv[i];
 			}
@@ -98,7 +103,6 @@ int main(int argc,char* argv[]) {
 		wcerr << "Missing filename" << endl;
 		return -1;
 	}
-
 
 
 

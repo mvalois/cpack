@@ -52,6 +52,16 @@ struct minMax {
 };
 
 
+struct SecurityRules {
+	double nbSecurePassword;
+	int minLength;
+	int minSpecial;
+	int minDigit;
+	int minLower;
+	int minUpper;
+};
+
+
 /**
  * @brief All needed variables to give to each thread
  */
@@ -74,6 +84,8 @@ struct thread_data {
 	std::wregex current_regex;
 	bool use_regex = false;
 	bool withcount = false;
+
+	SecurityRules sr;
 };
 
 
@@ -141,6 +153,12 @@ public:
 
 
 	/**
+	 * @brief Defining all security rules
+	 */
+	void setSecurityRules();
+
+
+	/**
 	 * @brief Calculate all statistics for a database which the
 	 * name is given by argument
 	 * @param : database's name
@@ -182,44 +200,56 @@ private:
 	double total_filter = 0;		// number of analysed passwords after a filter
 
 	minMax minMaxValue;				// save all genral data from passwords 
+
+
+	// Security policy
+
+	double nbSecurePassword = 0;	// all passwords that respect the security rules
+	int minLength = 8;
+	int minSpecial = 0;
+	int minDigit = 1;
+	int minLower = 1;
+	int minUpper = 1;
 };
 
+
+
 /**
-	 * @brief analyse a letter in a password
-	 * @param letter : current letter
-	 * @param last_simplemask : last analyzed part of the simple masks 
-	 * @param simplemask_string : current simple mask
-	 * @param advancedmask_string : current advanced mask
-	 * @param policy : current number of digit, lower, upper and special for the current password
-	 * @param sizeAdvancedMask : size of the current advanced mask 
-	 * @param sizeSimpleMask : size of the current simple mask
-	 */
-	void analyse_letter(const char & letter, char & last_simplemask, std::wstring & simplemask_string, std::wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
-	
-	/**
-	 * @brief analyse the characterset of the current password
-	 * @param charset : characterset of the current password
-	 * @param policy : current number of digit, lower, upper and special for the current password
-	 */
-	void analyse_charset(std::wstring & charset, const Policy & policy);
-	
-	/**
-	 * @brief analyse a password
-	 * @param password : current password
-	 * @param c : container of all useful data of the password
-	 */
-	void analyze_password(const std::wstring & password, Container & c);
-	
-	/**
-	 * @brief update minima and maxima of all general data from analysed passwords 
-	 * with the analysed passwords
-	 * @param minMaxValue : save all minima and maxima
-	 * @param pol : policy of the last analyzed password
-	 */
-	void updateMinMax(minMax & minMaxValue, const Policy & pol);
-	
-	/**
-	* @brief action of all threads
-	* @param threadarg : all useful argument for the thread
-	*/
-	void * generate_stats_thread(void * threadarg);
+ * @brief analyse a letter in a password
+ * @param letter : current letter
+ * @param last_simplemask : last analyzed part of the simple masks 
+ * @param simplemask_string : current simple mask
+ * @param advancedmask_string : current advanced mask
+ * @param policy : current number of digit, lower, upper and special for the current password
+ * @param sizeAdvancedMask : size of the current advanced mask 
+ * @param sizeSimpleMask : size of the current simple mask
+ */
+void analyse_letter(const char & letter, char & last_simplemask, std::wstring & simplemask_string, std::wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
+
+/**
+ * @brief analyse the characterset of the current password
+ * @param charset : characterset of the current password
+ * @param policy : current number of digit, lower, upper and special for the current password
+ */
+void analyse_charset(std::wstring & charset, const Policy & policy);
+
+/**
+ * @brief analyse a password
+ * @param password : current password
+ * @param c : container of all useful data of the password
+ */
+void analyze_password(const std::wstring & password, Container & c);
+
+/**
+ * @brief update minima and maxima of all general data from analysed passwords 
+ * with the analysed passwords
+ * @param minMaxValue : save all minima and maxima
+ * @param pol : policy of the last analyzed password
+ */
+void updateMinMax(minMax & minMaxValue, const Policy & pol);
+
+/**
+* @brief action of all threads
+* @param threadarg : all useful argument for the thread
+*/
+void * generate_stats_thread(void * threadarg);
