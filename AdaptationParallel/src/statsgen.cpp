@@ -131,6 +131,12 @@ int Statsgen::generate_stats(const string & filename) {
 
         td[i].lineBegin = i*(nbline/nbThread) + 1;
         td[i].lineEnd = (i+1)*nbline/nbThread;
+        if (i > 0) {
+            while (td[i].lineBegin <= td[i-1].lineEnd) {
+                td[i].lineBegin++;
+            }
+        }
+        
 
         td[i].sr.nbSecurePassword = 0;
         td[i].sr.minLength = minLength;
