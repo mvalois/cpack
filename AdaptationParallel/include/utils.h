@@ -29,11 +29,11 @@ using MapIterator = typename map<K, V>::const_iterator;
  * @return ordered map
  */
 template<typename A> 
-multimap<int, A> flip_map(const std::unordered_map<A, int> & src) {
-    multimap<int, A> dst;
+multimap<double, A> flip_map(const std::unordered_map<A, double> & src) {
+    multimap<double, A> dst;
 
-    for(UnorderedMapIterator<A, int> it = src.begin(); it != src.end(); ++it)
-        dst.insert(std::pair<int, A>(it->second, it->first));
+    for(UnorderedMapIterator<A, double> it = src.begin(); it != src.end(); ++it)
+        dst.insert(std::pair<double, A>(it->second, it->first));
 
     return dst;
 }
@@ -45,7 +45,7 @@ multimap<int, A> flip_map(const std::unordered_map<A, int> & src) {
  * @param 
  */
 template<typename Type>
-void readResult(int res, Type carac, int & count, const int & total_counter, const int & hiderare) {
+void readResult(double res, Type carac, int & count, const double & total_counter, const int & hiderare) {
     float percentage;
     percentage = (float) (100*res) / total_counter;
 
@@ -71,11 +71,11 @@ void readResult(int res, Type carac, int & count, const int & total_counter, con
  * @param count : number of shown results
  */
 template<typename Type>
-void showMap(const unordered_map<Type, int> & stats, const int & top, const int & total_counter, const int & hiderare, int & count) {
+void showMap(const unordered_map<Type, double> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
 	count = 0;
-    multimap<int, Type> reverse = flip_map<Type>(stats);
+    multimap<double, Type> reverse = flip_map<Type>(stats);
     
-    MapIterator<int, Type> it;
+    MapIterator<double, Type> it;
 	for(it = reverse.end(); it != reverse.begin(); it--) {
         if (it == reverse.end()) continue;
 

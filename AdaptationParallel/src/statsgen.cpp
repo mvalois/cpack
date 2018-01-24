@@ -201,18 +201,22 @@ int Statsgen::generate_stats() {
 		{
 			stats_length[it->first]+=it->second;
 		}
+		td[i].length.clear();
 		for(auto it=td[i].charactersets.begin();it!=td[i].charactersets.end();it++)
 		{
 			stats_charactersets[it->first]+=it->second;
 		}
+		td[i].charactersets.clear();
 		for(auto it=td[i].simplemasks.begin();it!=td[i].simplemasks.end();it++)
 		{
 			stats_simplemasks[it->first]+=it->second;
 		}
+		td[i].simplemasks.clear();
 		for(auto it=td[i].advancedmasks.begin();it!=td[i].advancedmasks.end();it++)
 		{
 			stats_advancedmasks[it->first]+=it->second;
 		}
+		td[i].advancedmasks.clear();
 	}
 
 
