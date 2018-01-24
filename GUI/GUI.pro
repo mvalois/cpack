@@ -13,8 +13,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp\
+        statsgen.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h\
+        statsgen.h\
+        utils.h
 
 FORMS    += mainwindow.ui
+
+
+QMAKE_CXXFLAGS += -std=c++11
