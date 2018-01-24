@@ -1,3 +1,4 @@
+#include "controller.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -33,9 +34,10 @@ void MainWindow::findFile() {
 
 
 void MainWindow::startGame() {
-    stats.setFilename(filename.toStdString());
-    stats.generate_stats();
-    stats.print_stats();
+    Controller * test = new Controller(filename.toStdString());
+
+
+
 
 /*
     QFile file(filename);

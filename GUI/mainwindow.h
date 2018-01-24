@@ -28,7 +28,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QString filename;
-    Statsgen stats;
+    Statsgen * stats;
 };
 
 #endif // MAINWINDOW_H

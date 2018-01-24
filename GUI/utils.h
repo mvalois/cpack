@@ -6,8 +6,14 @@
  * @author Yannick Bass
  */
 
+
+#ifndef UTILS_STATSGEN_H
+#define UTILS_STATSGEN_H
+
+
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 using namespace std;
 
@@ -29,11 +35,11 @@ using MapIterator = typename map<K, V>::const_iterator;
  * @return ordered map
  */
 template<typename A> 
-multimap<int, A> flip_map(const std::unordered_map<A, int> & src) {
-    multimap<int, A> dst;
+multimap<double, A> flip_map(const std::unordered_map<A, double> & src) {
+    multimap<double, A> dst;
 
-    for(UnorderedMapIterator<A, int> it = src.begin(); it != src.end(); ++it)
-        dst.insert(std::pair<int, A>(it->second, it->first));
+    for(UnorderedMapIterator<A, double> it = src.begin(); it != src.end(); ++it)
+        dst.insert(std::pair<double, A>(it->second, it->first));
 
     return dst;
 }
@@ -45,7 +51,7 @@ multimap<int, A> flip_map(const std::unordered_map<A, int> & src) {
  * @param 
  */
 template<typename Type>
-void readResult(int res, Type carac, int & count, const int & total_counter, const int & hiderare) {
+void readResult(double res, Type carac, int & count, const double & total_counter, const int & hiderare) {
     float percentage;
     percentage = (float) (100*res) / total_counter;
 
@@ -53,38 +59,15 @@ void readResult(int res, Type carac, int & count, const int & total_counter, con
         wstring value = to_wstring(percentage);
         value = value.substr(0,5);
 
-        wcout << setw(40) << right << carac << ":  " 
+        /*wcout << setw(40) << right << carac << ":  "
             << setw(5) << right << value << "%" 
             << setw(5) << right << "(" << res << ")" << endl;
+            */
+        wcout << carac << ":  " << value << "%" << "(" << res << ")" << endl;
 
         count++;
     }
 }
-
-
-
-/**
- * @brief print some results
- * @param
- */
-template<typename Type>
-void readResultGUI(int res, Type carac, int & count, const int & total_counter, const int & hiderare) {
-    wstring text;
-    float percentage;
-    percentage = (float) (100*res) / total_counter;
-
-    if (percentage >= hiderare) {
-        wstring value = to_wstring(percentage);
-        value = value.substr(0,5);
-
-        text += carac + ":  " + value + "%" + "(" + res + ")\n";
-
-        count++;
-    }
-    return text;
-}
-
-
 
 
 /**
@@ -96,11 +79,11 @@ void readResultGUI(int res, Type carac, int & count, const int & total_counter, 
  * @param count : number of shown results
  */
 template<typename Type>
-void showMap(const unordered_map<Type, int> & stats, const int & top, const int & total_counter, const int & hiderare, int & count) {
+void showMap(const unordered_map<Type, double> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
 	count = 0;
-    multimap<int, Type> reverse = flip_map<Type>(stats);
+    multimap<double, Type> reverse = flip_map<Type>(stats);
     
-    MapIterator<int, Type> it;
+    MapIterator<double, Type> it;
 	for(it = reverse.end(); it != reverse.begin(); it--) {
         if (it == reverse.end()) continue;
 
@@ -114,39 +97,6 @@ void showMap(const unordered_map<Type, int> & stats, const int & top, const int 
 }
 
 
-
-/**
- * @brief print an unordered map for the GUI
- * @param stats : map to show
- * @param top : number of results to show
- * @param total_counter : number of finded passwords
- * @param hiderare : low statistics to hide
- * @param count : number of shown results
- * @return map converted in a wstring
- */
-/*
-template<typename Type>
-wstring showMapGUI(const unordered_map<Type, int> & stats, const int & top, const int & total_counter, const int & hiderare, int & count) {
-    wstring res = "";
-    count = 0;
-    multimap<int, Type> reverse = flip_map<Type>(stats);
-
-    MapIterator<int, Type> it;
-    for(it = reverse.end(); it != reverse.begin(); it--) {
-        if (it == reverse.end()) continue;
-
-        res += readResultGUI<Type>(it->first, it->second, count, total_counter, hiderare);
-        if (top != -1 && count == top) break;
-    }
-
-    if (count != top) {
-        res += readResultGUI<Type>(it->first, it->second, count, total_counter, hiderare);
-    }
-
-    return res;
-}
-
-*/
 
 
 /**
@@ -168,7 +118,7 @@ int nbline_file(const string & filename) {
 }
 
 
-
+#endif
 
 
 

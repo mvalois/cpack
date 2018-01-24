@@ -7,10 +7,14 @@
  */
 
 
+#ifndef STATSGEN_H
+#define STATSGEN_H
+
 #include <string>
 #include <unordered_map>
 #include <iostream>
 #include <regex>
+#include <QObject>
 
 
 
@@ -77,10 +81,10 @@ struct thread_data {
 	double total_counter = 0;
 	double total_filter = 0;
 
-	std::unordered_map<int, int> length;
-	std::unordered_map<std::wstring, int> simplemasks;
-	std::unordered_map<std::wstring, int> advancedmasks;
-	std::unordered_map<std::wstring, int> charactersets;
+	std::unordered_map<int, double> length;
+	std::unordered_map<std::wstring, double> simplemasks;
+	std::unordered_map<std::wstring, double> advancedmasks;
+	std::unordered_map<std::wstring, double> charactersets;
 
 	minMax minMaxValue;
 
@@ -96,14 +100,13 @@ struct thread_data {
 /**
  * @brief Calcul and save of all analysed statistics
  */
-class Statsgen {
+class Statsgen : public QObject {
 public:
-	Statsgen() {};
+    Statsgen() {};
 	
-	/**
-	 * @brief show all options for the command
-	 */
-	void showHelp();
+    Statsgen(QObject *parent) : QObject(parent) {};
+
+
 
 	/**
 	 * @brief Initialise the name of the database
@@ -167,23 +170,23 @@ public:
 	 */
 	void setSecurityRules();
 
-
-	/**
-	 * @brief Calculate all statistics for a database
-	 * @return 0 if error, 1 if success
-	 */
-	int generate_stats();
 	
 	/**
 	 * @brief Print all calculated statistics
 	 */
 	void print_stats();
-
-    /**
-     * @brief Print all calculated statistics for the GUI
-     */
-    std::wstring print_GUI_stats();
 	
+
+
+public slots:
+    /**
+     * @brief Calculate all statistics for a database
+     */
+    void generate_stats();
+
+
+signals:
+    void resultReady(const std::unordered_map<int, double> &result);
 	
 
 private:
@@ -192,22 +195,22 @@ private:
 
 	// Filters
 
-	int hiderare = 0; 				// Hide low statistics
-	int top = -1;					// Show only a top of statistics
-	std::wregex current_regex;		// Regex for the interesting passwords
-	bool use_regex = false;			// Know if we use a regex or not
-	bool withcount = false;			// Know if the database is at the format withcount or not
-	int limitSimplemask = 0;		// Limit the size of Simple Mask
-	int limitAdvancedmask = 0;		// Limit the size of Advanced Mask
-	int nbThread = 1;				// Number of usable threads, default 1
+    int hiderare = 0;                   // Hide low statistics
+    int top = -1;                       // Show only a top of statistics
+    std::wregex current_regex;          // Regex for the interesting passwords
+    bool use_regex = false;         	// Know if we use a regex or not
+    bool withcount = false;         	// Know if the database is at the format withcount or not
+    int limitSimplemask = 0;        	// Limit the size of Simple Mask
+    int limitAdvancedmask = 0;      	// Limit the size of Advanced Mask
+    int nbThread = 1;                   // Number of usable threads, default 1
 
 
 	// Dictionary
 
-	std::unordered_map<int, int> stats_length;					// Passwords' length linked to their occurrence
-	std::unordered_map<std::wstring, int> stats_simplemasks;	// Passwords' simple mask linked to their occurrence
-	std::unordered_map<std::wstring, int> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
-	std::unordered_map<std::wstring, int> stats_charactersets;	// Passwords' characterset linked to their occurrence
+	std::unordered_map<int, double> stats_length;					// Passwords' length linked to their occurrence
+    std::unordered_map<std::wstring, double> stats_simplemasks;     // Passwords' simple mask linked to their occurrence
+	std::unordered_map<std::wstring, double> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
+	std::unordered_map<std::wstring, double> stats_charactersets;	// Passwords' characterset linked to their occurrence
 
 
 	// Counters
@@ -226,6 +229,18 @@ private:
 	int minDigit = 1;
 	int minLower = 1;
 	int minUpper = 1;
+
+    // QObject interface
+public:
+    bool event(QEvent *);
+    bool eventFilter(QObject *, QEvent *);
+
+protected:
+    void timerEvent(QTimerEvent *);
+    void childEvent(QChildEvent *);
+    void customEvent(QEvent *);
+    void connectNotify(const char *signal);
+    void disconnectNotify(const char *signal);
 };
 
 
@@ -269,3 +284,7 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol);
 * @param threadarg : all useful argument for the thread
 */
 void * generate_stats_thread(void * threadarg);
+
+
+
+#endif

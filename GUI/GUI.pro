@@ -14,13 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp\
-        statsgen.cpp
+        statsgen.cpp \
+    controller.cpp
 
 HEADERS  += mainwindow.h\
         statsgen.h\
-        utils.h
+        utils.h \
+    controller.h
 
 FORMS    += mainwindow.ui
 
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -lpthread
