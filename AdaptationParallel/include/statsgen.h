@@ -52,6 +52,9 @@ struct minMax {
 };
 
 
+/**
+ * @biref All needed variables for the security rules
+ */
 struct SecurityRules {
 	double nbSecurePassword;
 	int minLength;

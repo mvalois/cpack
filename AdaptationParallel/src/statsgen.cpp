@@ -281,7 +281,6 @@ void Statsgen::print_stats() {
         wcout << endl;
         readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
-
 }
 
 
