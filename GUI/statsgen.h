@@ -168,7 +168,7 @@ public:
 	 */
 	void setSecurityRules();
 
-	
+    void setSecurityRules(int length,int special,int digit,int upper,int lower);
 	/**
 	 * @brief Print all calculated statistics
 	 */

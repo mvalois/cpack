@@ -119,9 +119,24 @@ void MainWindow::startGame() {
         }
 
     }
-    if(ui->hiderareCheckBox->isChecked())
+
+    try
     {
-        stats->setHiderare(1);
+        int length=std::stoi(ui->lengthLineEdit->text().toStdString());
+        int special=std::stoi(ui->specialLineEdit->text().toStdString());
+        int digit=std::stoi(ui->digitLineEdit->text().toStdString());
+        int upper=std::stoi(ui->upperLineEdit->text().toStdString());
+        int lower=std::stoi(ui->lowerLineEdit->text().toStdString());
+
+        stats->setSecurityRules(length,special,digit,upper,lower);
+    }
+    catch(std::invalid_argument)
+    {
+        stats->setSecurityRules(8,0,1,1,1);
+    }
+    catch(std::out_of_range)
+    {
+        stats->setSecurityRules(8,0,1,1,1);
     }
 
 

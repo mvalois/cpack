@@ -101,7 +101,7 @@
             <x>66</x>
             <y>30</y>
             <width>321</width>
-            <height>156</height>
+            <height>189</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
@@ -135,12 +135,18 @@
              </property>
             </widget>
            </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="SimplelineEdit"/>
+           </item>
            <item row="2" column="0">
             <widget class="QCheckBox" name="regexCheckBox">
              <property name="text">
               <string>Regular expression</string>
              </property>
             </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="AdvancedlineEdit"/>
            </item>
            <item row="3" column="0">
             <widget class="QCheckBox" name="maxSimpleCheckBox">
@@ -149,18 +155,22 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="SimplelineEdit"/>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="AdvancedlineEdit"/>
-           </item>
            <item row="4" column="0">
             <widget class="QCheckBox" name="maxAdvancedCheckBox">
              <property name="text">
               <string>Maximum advanced mask size</string>
              </property>
             </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QCheckBox" name="topCheckBox">
+             <property name="text">
+              <string>Top X answers to display</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLineEdit" name="topLineEdit"/>
            </item>
           </layout>
          </widget>
@@ -169,32 +179,85 @@
        <item row="2" column="0" colspan="3">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Display</string>
+          <string>Security rules</string>
          </property>
          <widget class="QWidget" name="gridLayoutWidget_3">
           <property name="geometry">
            <rect>
             <x>70</x>
             <y>30</y>
-            <width>291</width>
-            <height>131</height>
+            <width>321</width>
+            <height>161</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QCheckBox" name="topCheckBox">
+           <item row="3" column="0">
+            <widget class="QLabel" name="upperLabel">
              <property name="text">
-              <string>Top X answers to display</string>
+              <string>Min Occurences of upper characters</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="lengthLabel">
+             <property name="text">
+              <string>Min Length</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="specialLabel">
+             <property name="text">
+              <string>Min Occurences of special characters</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="lowerLabel">
+             <property name="text">
+              <string>Min Occurences of lower characters</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="digitLabel">
+             <property name="text">
+              <string>Min Occurences of digit characters</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="topLineEdit"/>
-           </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="hiderareCheckBox">
+            <widget class="QLineEdit" name="lengthLineEdit">
              <property name="text">
-              <string>Hide rare stats</string>
+              <string>8</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="specialLineEdit">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="digitLineEdit">
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="upperLineEdit">
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="lowerLineEdit">
+             <property name="text">
+              <string>1</string>
              </property>
             </widget>
            </item>

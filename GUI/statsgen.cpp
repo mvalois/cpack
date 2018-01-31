@@ -95,7 +95,14 @@ void Statsgen::setSecurityRules() {
     cin >> minUpper;
 }
 
+void Statsgen::setSecurityRules(int length,int special,int digit,int upper,int lower) {
+    minLength=length;
+    minSpecial=special;
+    minDigit=digit;
+    minUpper=upper;
+    minLower=lower;
 
+}
 
 
 
