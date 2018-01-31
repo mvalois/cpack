@@ -14,7 +14,11 @@
 #include <unordered_map>
 #include <iostream>
 #include <regex>
-#include <QObject>
+
+#include <QFrame>
+#include <QtCharts>
+
+using namespace QtCharts;
 
 
 
@@ -100,12 +104,9 @@ struct thread_data {
 /**
  * @brief Calcul and save of all analysed statistics
  */
-class Statsgen : public QObject {
+class Statsgen {
 public:
-    Statsgen() {};
-	
-    Statsgen(QObject *parent) : QObject(parent) {};
-
+    Statsgen();
 
 
 	/**
@@ -177,17 +178,15 @@ public:
 	void print_stats();
 	
 
-
-public slots:
     /**
      * @brief Calculate all statistics for a database
      */
     void generate_stats();
 
 
-signals:
-    void resultReady(const std::unordered_map<int, double> &result);
-	
+
+    QPieSeries *getLengthPiechart(QFrame*);
+
 
 private:
 	std::string filename;
@@ -229,18 +228,6 @@ private:
 	int minDigit = 1;
 	int minLower = 1;
 	int minUpper = 1;
-
-    // QObject interface
-public:
-    bool event(QEvent *);
-    bool eventFilter(QObject *, QEvent *);
-
-protected:
-    void timerEvent(QTimerEvent *);
-    void childEvent(QChildEvent *);
-    void customEvent(QEvent *);
-    void connectNotify(const char *signal);
-    void disconnectNotify(const char *signal);
 };
 
 

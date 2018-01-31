@@ -59,11 +59,9 @@ void readResult(double res, Type carac, int & count, const double & total_counte
         wstring value = to_wstring(percentage);
         value = value.substr(0,5);
 
-        /*wcout << setw(40) << right << carac << ":  "
+        wcout << setw(40) << right << carac << ":  "
             << setw(5) << right << value << "%" 
             << setw(5) << right << "(" << res << ")" << endl;
-            */
-        wcout << carac << ":  " << value << "%" << "(" << res << ")" << endl;
 
         count++;
     }
