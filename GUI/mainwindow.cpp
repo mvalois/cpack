@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked(bool)), this, SLOT(startGame()));
     connect(ui->withcountButton,SIGNAL(clicked()),this,SLOT(enableWithCount()));
     connect(ui->classicButton,SIGNAL(clicked()),this,SLOT(disableWithCount()));
-    connect(ui->hiderareCheckBox,SIGNAL(clicked(bool)),this,SLOT(hiderare(bool)));
 }
 
 
@@ -44,10 +43,87 @@ void MainWindow::startGame() {
     stats->setFilename(ui->fileLine->text().toStdString());
 
     if(ui->withcountButton->isChecked())
+    {
         stats->setWithcount(true);
+    }
 
-    stats->setTop(10);
-    stats->setNbThread(4);
+    if(ui->threadsCheckBox->isChecked())
+    {
+        try
+        {
+            stats->setNbThread(std::stoi(ui->ThreadlineEdit->text().toStdString()));
+        }
+        catch(std::invalid_argument)
+        {
+            stats->setNbThread(1);
+        }
+        catch(std::out_of_range)
+        {
+            stats->setNbThread(1);
+        }
+
+    }
+
+    if(ui->regexCheckBox->isChecked())
+    {
+        stats->setRegex(ui->RegexlineEdit->text().toStdString());
+    }
+
+    if(ui->maxSimpleCheckBox->isChecked())
+    {
+        try
+        {
+            stats->setLimitSimplemask(std::stoi(ui->SimplelineEdit->text().toStdString()));
+        }
+        catch(std::invalid_argument)
+        {
+            stats->setLimitSimplemask(100);
+        }
+        catch(std::out_of_range)
+        {
+            stats->setLimitSimplemask(100);
+        }
+
+    }
+
+    if(ui->maxAdvancedCheckBox->isChecked())
+    {
+        try
+        {
+            stats->setLimitAdvancedmask(std::stoi(ui->AdvancedlineEdit->text().toStdString()));
+        }
+        catch(std::invalid_argument)
+        {
+            stats->setLimitAdvancedmask(100);
+        }
+        catch(std::out_of_range)
+        {
+            stats->setLimitAdvancedmask(100);
+        }
+
+    }
+
+    if(ui->topCheckBox->isChecked())
+    {
+        try
+        {
+            stats->setTop(std::stoi(ui->topLineEdit->text().toStdString()));
+        }
+        catch(std::invalid_argument)
+        {
+            stats->setTop(10);
+        }
+        catch(std::out_of_range)
+        {
+            stats->setTop(10);
+        }
+
+    }
+    if(ui->hiderareCheckBox->isChecked())
+    {
+        stats->setHiderare(1);
+    }
+
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
@@ -87,14 +163,6 @@ void MainWindow::handleResults()
 {
     waitBox.close();
     stats->print_stats();
-}
-
-void MainWindow::hiderare(bool checked)
-{
-    if(checked)
-        stats->setHiderare(1);
-    else
-        stats->setHiderare(0);
 }
 
 

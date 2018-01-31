@@ -27,8 +27,6 @@ public slots:
     void handleResults();
     void enableWithCount();
     void disableWithCount();
-    void hiderare(bool);
-    void top(bool);
 
 
 
