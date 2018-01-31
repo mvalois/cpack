@@ -1,10 +1,15 @@
-#include "controller.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
 #include <QTextStream>
 #include <iostream>
+
+
+#include <QtCharts>
+
+using namespace QtCharts;
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -34,9 +39,21 @@ void MainWindow::findFile() {
 
 
 void MainWindow::startGame() {
-    Controller * test = new Controller(filename.toStdString());
+    stats = new Statsgen();
 
+    stats->setTop(10);
+    stats->generate_stats();
+    stats->print_stats();
 
+    QPieSeries * length = stats->getLengthPiechart(ui->resultFrame);
+
+    QChart *chart = new QChart();
+    chart->addSeries(length);
+    chart->setTitle("Length pichart");
+    //chart->legend()->hide();
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
 
 
 /*

@@ -4,9 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT      += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+QT      += charts
 
 TARGET = GUI
 TEMPLATE = app
@@ -14,13 +16,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp\
-        statsgen.cpp \
-    controller.cpp
+        statsgen.cpp
 
 HEADERS  += mainwindow.h\
         statsgen.h\
-        utils.h \
-    controller.h
+        utils.h
 
 FORMS    += mainwindow.ui
 

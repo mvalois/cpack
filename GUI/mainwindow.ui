@@ -202,15 +202,18 @@
       </layout>
      </item>
      <item>
-      <widget class="QTextEdit" name="teResult">
-       <property name="enabled">
-        <bool>false</bool>
+      <widget class="QFrame" name="resultFrame">
+       <property name="minimumSize">
+        <size>
+         <width>450</width>
+         <height>0</height>
+        </size>
        </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>70</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
        </property>
       </widget>
      </item>

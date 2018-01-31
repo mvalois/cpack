@@ -15,11 +15,19 @@
 #include <pthread.h>
 
 
+#include <QtCharts>
+
+using namespace QtCharts;
+
 #include "statsgen.h"
 #include "utils.h"
 using namespace std;
 
 
+
+
+
+Statsgen::Statsgen() {}
 
 
 
@@ -261,6 +269,37 @@ void Statsgen::print_stats() {
         readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
 }
+
+
+
+
+
+
+QPieSeries *Statsgen::getLengthPiechart(QFrame * parent) {
+    QPieSeries *series = new QPieSeries(parent);
+
+    float percentage;
+    multimap<double, int> reverse = flip_map<int>(stats_length);
+
+    MapIterator<double, int> it;
+    for(it = reverse.end(); it != reverse.begin(); it--) {
+        if (it == reverse.end()) continue;
+
+
+        percentage = (float) (100*it->second) / total_counter;
+        series->append(stats_length[it->second], percentage);
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
