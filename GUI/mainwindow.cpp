@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->Browser, SIGNAL(clicked(bool)), this, SLOT(findFile()));
     connect(ui->startButton, SIGNAL(clicked(bool)), this, SLOT(startGame()));
+    connect(ui->withcountButton,SIGNAL(clicked()),this,SLOT(enableWithCount()));
+    connect(ui->classicButton,SIGNAL(clicked()),this,SLOT(disableWithCount()));
+    connect(ui->hiderareCheckBox,SIGNAL(clicked(bool)),this,SLOT(hiderare(bool)));
 }
 
 
@@ -31,7 +34,7 @@ MainWindow::~MainWindow()
 /***************************************************/
 
 void MainWindow::findFile() {
-    filename = QFileDialog::getOpenFileName(this, tr("Browser"), QDir::currentPath(), tr("Text files (*.txt)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Browser"), QDir::currentPath(), tr("Text files (*.txt)"));
     ui->fileLine->setText(filename);
 }
 
@@ -39,6 +42,10 @@ void MainWindow::findFile() {
 void MainWindow::startGame() {
     stats = new Statsgen();
     stats->setFilename(ui->fileLine->text().toStdString());
+
+    if(ui->withcountButton->isChecked())
+        stats->setWithcount(true);
+
     stats->setTop(10);
     stats->setNbThread(4);
 
@@ -46,7 +53,9 @@ void MainWindow::startGame() {
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
     workerThread->start();
+    waitBox.setText("Analysis in progress");
 
+    waitBox.exec();
 /*
     QFile file(filename);
 
@@ -64,7 +73,28 @@ void MainWindow::startGame() {
 
 }
 
+void MainWindow::enableWithCount()
+{
+    ui->classicButton->setChecked(false);
+}
+
+void MainWindow::disableWithCount()
+{
+    ui->withcountButton->setChecked(false);
+}
+
 void MainWindow::handleResults()
 {
+    waitBox.close();
     stats->print_stats();
 }
+
+void MainWindow::hiderare(bool checked)
+{
+    if(checked)
+        stats->setHiderare(1);
+    else
+        stats->setHiderare(0);
+}
+
+

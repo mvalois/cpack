@@ -5,6 +5,8 @@
 
 #include <QMainWindow>
 #include <QThread>
+#include <QMessageBox>
+
 namespace Ui {
 class MainWindow;
 }
@@ -23,13 +25,18 @@ public slots:
     void findFile();
     void startGame();
     void handleResults();
+    void enableWithCount();
+    void disableWithCount();
+    void hiderare(bool);
+    void top(bool);
 
 
 
 private:
     Ui::MainWindow *ui;
-    QString filename;
     Statsgen * stats;
+    QMessageBox waitBox;
+
 };
 
 
