@@ -6,9 +6,7 @@
 #include <iostream>
 
 
-#include <QtCharts>
 
-using namespace QtCharts;
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -40,21 +38,14 @@ void MainWindow::findFile() {
 
 void MainWindow::startGame() {
     stats = new Statsgen();
-
+    stats->setFilename(ui->fileLine->text().toStdString());
     stats->setTop(10);
-    stats->generate_stats();
-    stats->print_stats();
+    stats->setNbThread(4);
 
-    QPieSeries * length = stats->getLengthPiechart(ui->resultFrame);
-
-    QChart *chart = new QChart();
-    chart->addSeries(length);
-    chart->setTitle("Length pichart");
-    //chart->legend()->hide();
-
-    QChartView *chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-
+    WorkerThread *workerThread = new WorkerThread(stats);
+    connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
+    connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
+    workerThread->start();
 
 /*
     QFile file(filename);
@@ -71,4 +62,9 @@ void MainWindow::startGame() {
     ui->teResult->setText(QString::number(c));
     */
 
+}
+
+void MainWindow::handleResults()
+{
+    stats->print_stats();
 }

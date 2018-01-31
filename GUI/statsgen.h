@@ -16,9 +16,6 @@
 #include <regex>
 
 #include <QFrame>
-#include <QtCharts>
-
-using namespace QtCharts;
 
 
 
@@ -185,7 +182,6 @@ public:
 
 
 
-    QPieSeries *getLengthPiechart(QFrame*);
 
 
 private:
