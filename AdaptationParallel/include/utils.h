@@ -17,6 +17,10 @@ using namespace std;
 
 
 
+#ifndef UTILS_STATSGEN_H
+#define UTILS_STATSGEN_H
+
+
 template<typename K, typename V>
 using UnorderedMapIterator = typename unordered_map<K, V>::const_iterator;
 
@@ -27,9 +31,8 @@ using MapIterator = typename map<K, V>::const_iterator;
 
 
 /**
- * @brief Useful functions to order an unoredered map
- * whatever the key's type
- * @param src : unoredered map than needed to be ordered
+ * @brief Order an unoredered map whatever the key's type
+ * @param src: unoredered map than needed to be ordered
  * @return ordered map
  */
 template<typename A> 
@@ -45,8 +48,8 @@ multimap<double, A> flip_map(const std::unordered_map<A, double> & src) {
 
 
 /**
- * @brief print a line of statistics
- * @param res : value of this statistic
+ * @brief Print a line of statistics
+ * @param res: value of this statistic
  * @param crac: the statistic to display
  * @param count: the number of statistics already displayed
  * @param total_counter:total number of password analysed
@@ -71,12 +74,12 @@ void readResult(double res, Type carac, int & count, const double & total_counte
 
 
 /**
- * @brief print an unordered map
- * @param stats : map to show
- * @param top : number of results to show
- * @param total_counter : number of finded passwords
- * @param hiderare : low statistics to hide
- * @param count : number of shown results
+ * @brief Print an unordered map
+ * @param stats: map to show
+ * @param top: number of results to show
+ * @param total_counter: number of finded passwords
+ * @param hiderare: low statistics to hide
+ * @param count: number of shown results
  */
 template<typename Type>
 void showMap(const unordered_map<Type, double> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
@@ -100,9 +103,9 @@ void showMap(const unordered_map<Type, double> & stats, const int & top, const d
 
 
 /**
- * @brief calculate the number of line in a file
- * @param filename : name of the file
- * @return : number of line
+ * @brief Calculate the number of line in a file
+ * @param filename: name of the file
+ * @return number of line
  */
 int nbline_file(const string & filename) {
     wifstream readfile(filename);
@@ -119,7 +122,7 @@ int nbline_file(const string & filename) {
 
 
 
-
+#endif
 
 
 

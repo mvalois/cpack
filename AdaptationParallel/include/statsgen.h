@@ -11,6 +11,10 @@
  */
 
 
+#ifndef STATSGEN_H
+#define STATSGEN_H
+
+
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -98,7 +102,7 @@ struct thread_data {
 
 
 /**
- * @brief Calcul and save of all analysed statistics
+ * @brief Calcul and save all analysed statistics
  */
 class Statsgen {
 public:
@@ -111,59 +115,56 @@ public:
 
 	/**
 	 * @brief Initialise the name of the database
-	 * @param : new value for "filename"
+	 * @param name: name of the file
 	 */
-	void setFilename(std::string);
+	void setFilename(std::string name);
 
 
 	/**
-	 * @brief Modify the attribute "hiderare", defining if 
-	 * user wants to see statistics below 1%
-	 * @param : new value for "hiderare"
+	 * @brief useful to hide statistics below 1%
+	 * @param hr: 1 to hide, else 0
 	 */
-	void setHiderare(int);
+	void setHiderare(int hr);
 
 	/**
-	 * @brief Modify the attribute "top", defining the number
-	 * of best results the user wants to see
-	 * @param : new value for "top"
+	 * @brief Defining the number of best results the user wants to see,
+	 * and so the result should be clearer
+	 * @param t: number of interesting results
 	 */
-	void setTop(int);
+	void setTop(int t);
 
 	/**
-	 * @brief Modify the attribute "regex", defining the regular 
-	 * expression of the interesting passwords
-	 * @param : new value for "regex"
+	 * @brief Defining a regular expression to analyse only
+	 * some interesting passwords
+	 * @param reg: regular expression
 	 */
-	void setRegex(std::string);
+	void setRegex(std::string reg);
 
 	/**
-	 * @brief Modify the attribute "withcount", useful to know
-	 * if the database uses the format withcount
-	 * @param : new value for "withcount"
+	 * @brief Useful to know if the database uses the format withcount
+	 * @param var: true if database uses the format withcount, else false
 	 */
-	void setWithcount(bool);
+	void setWithcount(bool var);
 
 	/**
-	 * @brief Modify the attribute "limitSimplemask", a filter
-	 * for the size of the simple masks
-	 * @param : new value for "limitSimplemask"
+	 * @brief Filter for the size of the simple masks, can be
+	 * used as an optimisation option
+	 * @param limit: number that limit the size of the simple masks
 	 */
-	void setLimitSimplemask(int);
+	void setLimitSimplemask(int limit);
 
 	/**
-	 * @brief Modify the attribute "limitAdvancedmask", a filter
-	 * for the size of the advanced masks
-	 * @param : new value for "limitAdvancedmask"
+	 * @brief Filter for the size of the advanced masks, can be
+	 * used as an optimisation option
+	 * @param limit: number that limit the size of the advanced masks
 	 */
-	void setLimitAdvancedmask(int);
+	void setLimitAdvancedmask(int limit);
 
 	/**
-	 * @brief Modify the attribute "nbThread", defining the number
-	 * of threads the user wants to use
-	 * @param : new value for "nbThread"
+	 * @brief Number of threads the user wants to use
+	 * @param nb: number of usable threads
 	 */
-	void setNbThread(int);
+	void setNbThread(int nb);
 
 
 	/**
@@ -178,6 +179,7 @@ public:
 	 */
 	int generate_stats();
 	
+
 	/**
 	 * @brief Print all calculated statistics
 	 */
@@ -230,41 +232,44 @@ private:
 
 
 /**
- * @brief analyse a letter in a password
- * @param letter : current letter
- * @param last_simplemask : last analyzed part of the simple masks 
- * @param simplemask_string : current simple mask
- * @param advancedmask_string : current advanced mask
- * @param policy : current number of digit, lower, upper and special for the current password
- * @param sizeAdvancedMask : size of the current advanced mask 
- * @param sizeSimpleMask : size of the current simple mask
+ * @brief Analyse a letter in a password
+ * @param letter: current letter
+ * @param last_simplemask: last analyzed part of the simple masks 
+ * @param simplemask_string: current simple mask
+ * @param advancedmask_string: current advanced mask
+ * @param policy: current number of digit, lower, upper and special for the current password
+ * @param sizeAdvancedMask: size of the current advanced mask 
+ * @param sizeSimpleMask: size of the current simple mask
  */
 void analyse_letter(const char & letter, char & last_simplemask, std::wstring & simplemask_string, std::wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
 
 /**
- * @brief analyse the characterset of the current password
- * @param charset : characterset of the current password
- * @param policy : current number of digit, lower, upper and special for the current password
+ * @brief Analyse the characterset of the current password
+ * @param charset: characterset of the current password
+ * @param policy: current number of digit, lower, upper and special for the current password
  */
 void analyse_charset(std::wstring & charset, const Policy & policy);
 
 /**
- * @brief analyse a password
- * @param password : current password
- * @param c : container of all useful data of the password
+ * @brief Analyse a password
+ * @param password: current password
+ * @param c: container of all useful data of the password
  */
 void analyze_password(const std::wstring & password, Container & c);
 
 /**
- * @brief update minima and maxima of all general data from analysed passwords 
+ * @brief Update minima and maxima of all general data from analysed passwords 
  * with the analysed passwords
- * @param minMaxValue : save all minima and maxima
+ * @param minMaxValue: save all minima and maxima
  * @param pol : policy of the last analyzed password
  */
 void updateMinMax(minMax & minMaxValue, const Policy & pol);
 
 /**
-* @brief action of all threads
+* @brief Action of all threads
 * @param threadarg : all useful argument for the thread
 */
 void * generate_stats_thread(void * threadarg);
+
+
+#endif

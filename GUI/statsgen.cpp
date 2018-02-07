@@ -4,7 +4,12 @@
  *
  * @author Jean-Baptiste Jorand
  * @author Yannick Bass
+ * Copyright (c) 2018 Jorand Jean-baptiste Bass Yannick
+ * All rights reserved.
+ *
+ * Please see the attached LICENSE file for additional licensing information.
  */
+
 
 
 #include <fstream>
