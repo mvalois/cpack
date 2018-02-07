@@ -4,6 +4,10 @@
  *
  * @author Jean-Baptiste Jorand
  * @author Yannick Bass
+ * Copyright (c) 2018 Jorand Jean-baptiste Bass Yannick
+ * All rights reserved.
+ *
+ * Please see the attached LICENSE file for additional licensing information.
  */
 
 
@@ -109,38 +113,39 @@ public:
 
 	/**
 	 * @brief Initialise the name of the database
-	 * @param : new value for "filename"
+     * @param name: name of the file
 	 */
-    void setFilename(QString);
+    void setFilename(QString name);
 
 
-	/**
-	 * @brief Modify the attribute "hiderare", defining if 
-	 * user wants to see statistics below 1%
-	 * @param : new value for "hiderare"
-	 */
-	void setHiderare(int);
+    /**
+     * @brief Modify the attribute "hiderare", defining if
+     * user wants to see statistics below 1%
+     * @param hr: 1 to hide, else 0
+     */
+    void setHiderare(int hr);
+
 
 	/**
 	 * @brief Modify the attribute "top", defining the number
 	 * of best results the user wants to see
-	 * @param : new value for "top"
+     * @param t: number of interesting results
 	 */
-	void setTop(int);
+	void setTop(int t);
 
 	/**
 	 * @brief Modify the attribute "regex", defining the regular 
 	 * expression of the interesting passwords
-	 * @param : new value for "regex"
+	 * @param reg: regular expression
 	 */
-	void setRegex(std::string);
+	void setRegex(std::string reg);
 
 	/**
 	 * @brief Modify the attribute "withcount", useful to know
 	 * if the database uses the format withcount
-	 * @param : new value for "withcount"
+	 * @param var: true if database uses the format withcount, else false
 	 */
-	void setWithcount(bool);
+	void setWithcount(bool var);
 
 	/**
 	 * @brief Modify the attribute "limitSimplemask", a filter
@@ -166,11 +171,12 @@ public:
 
 	/**
 	 * @brief Defining all security rules
-	 */
-	void setSecurityRules();
-
+     */
     void setSecurityRules(int length,int special,int digit,int upper,int lower);
-	/**
+
+
+
+    /**
 	 * @brief Print all calculated statistics
 	 */
 	void print_stats();

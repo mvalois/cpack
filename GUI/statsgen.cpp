@@ -83,24 +83,6 @@ void Statsgen::setNbThread(int nb) {
 }
 
 
-void Statsgen::setSecurityRules() {
-    wcout << "\nMinimal length of a password:" << endl;
-    cin >> minLength;
-
-    wcout << "\nMinimum of special characters in a password:" << endl;
-    cin >> minSpecial;
-
-    wcout << "\nMinimum of digits in a password:" << endl;
-    cin >> minDigit;
-
-    wcout << "\nMinimum of lower characters in a password:" << endl;
-    cin >> minLower;
-
-    wcout << "\nMinimum of upper characters in a password:" << endl;
-    cin >> minUpper;
-}
-
-
 void Statsgen::setSecurityRules(int length,int special,int digit,int upper,int lower) {
     minLength=length;
     minSpecial=special;
@@ -453,7 +435,6 @@ void analyze_password(const wstring & password, Container & c, SecurityRules & s
 }
 
 
-
 void updateMinMax(minMax & minMaxValue, const Policy & pol) {
     if (minMaxValue.mindigit == -1 || minMaxValue.mindigit > pol.digit) {
         minMaxValue.mindigit = pol.digit;
@@ -483,7 +464,6 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol) {
         minMaxValue.maxspecial = pol.special;
     }
 }
-
 
 
 void * generate_stats_thread(void * threadarg) {

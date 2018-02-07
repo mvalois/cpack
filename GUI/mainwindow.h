@@ -34,7 +34,8 @@ private:
     Ui::MainWindow *ui;
     Statsgen * stats;
     QMessageBox waitBox;
-
+    QVBoxLayout * layoutCharset;
+    QVBoxLayout * layoutLength;
 };
 
 

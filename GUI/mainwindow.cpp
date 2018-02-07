@@ -43,6 +43,10 @@ void MainWindow::startGame() {
     stats = new Statsgen();
     stats->setFilename(ui->fileLine->text());
 
+    ui->AnalyzedLabel->setText("");
+    ui->securityLabel->setText("");
+    ui->resultLabel->setText("");
+
     if(ui->withcountButton->isChecked())
     {
         stats->setWithcount(true);
@@ -140,13 +144,33 @@ void MainWindow::startGame() {
         stats->setSecurityRules(8,0,1,1,1);
     }
 
+    ui->ThreadlineEdit->setDisabled(true);
+    ui->topLineEdit->setDisabled(true);
+    ui->SimplelineEdit->setDisabled(true);
+    ui->AdvancedlineEdit->setDisabled(true);
+    ui->RegexlineEdit->setDisabled(true);
+    ui->lengthLineEdit->setDisabled(true);
+    ui->lowerLineEdit->setDisabled(true);
+    ui->upperLineEdit->setDisabled(true);
+    ui->specialLineEdit->setDisabled(true);
+    ui->digitLineEdit->setDisabled(true);
+    ui->startButton->setDisabled(true);
+    ui->threadsCheckBox->setDisabled(true);
+    ui->topCheckBox->setDisabled(true);
+    ui->regexCheckBox->setDisabled(true);
+    ui->maxAdvancedCheckBox->setDisabled(true);
+    ui->maxSimpleCheckBox->setDisabled(true);
+
+    delete layoutCharset;
+    delete layoutLength;
+
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
     workerThread->start();
-    waitBox.setText("Analysis in progress");
 
+    waitBox.setText("Analysis in progress");
     waitBox.exec();
 }
 
@@ -166,6 +190,24 @@ void MainWindow::handleResults()
 {
     waitBox.close();
 
+    ui->ThreadlineEdit->setDisabled(false);
+    ui->topLineEdit->setDisabled(false);
+    ui->SimplelineEdit->setDisabled(false);
+    ui->AdvancedlineEdit->setDisabled(false);
+    ui->RegexlineEdit->setDisabled(false);
+    ui->lengthLineEdit->setDisabled(false);
+    ui->lowerLineEdit->setDisabled(false);
+    ui->upperLineEdit->setDisabled(false);
+    ui->specialLineEdit->setDisabled(false);
+    ui->digitLineEdit->setDisabled(false);
+    ui->startButton->setDisabled(false);
+    ui->threadsCheckBox->setDisabled(false);
+    ui->topCheckBox->setDisabled(false);
+    ui->regexCheckBox->setDisabled(false);
+    ui->maxAdvancedCheckBox->setDisabled(false);
+    ui->maxSimpleCheckBox->setDisabled(false);
+
+
     QBarSeries * barLength = new QBarSeries();
     QPieSeries * pieCharset = new QPieSeries();
     double percentageTotal, percentageSecurity, total_counter, total_filter;
@@ -182,9 +224,9 @@ void MainWindow::handleResults()
     QChartView *chartViewL = new QChartView(chartL);
     chartViewL->setRenderHint(QPainter::Antialiasing);
 
-    auto layoutL = new QVBoxLayout();
-    layoutL->addWidget(chartViewL);
-    ui->lengthWidget->setLayout(layoutL);
+    layoutLength = new QVBoxLayout();
+    layoutLength->addWidget(chartViewL);
+    ui->lengthWidget->setLayout(layoutLength);
 
 
     /* PIECHART FOR CHARSET */
@@ -204,9 +246,9 @@ void MainWindow::handleResults()
     QChartView *chartViewC = new QChartView(chartC);
     chartViewC->setRenderHint(QPainter::Antialiasing);
 
-    auto layoutC = new QVBoxLayout();
-    layoutC->addWidget(chartViewC);
-    ui->charsetWidget->setLayout(layoutC);
+    layoutCharset = new QVBoxLayout();
+    layoutCharset->addWidget(chartViewC);
+    ui->charsetWidget->setLayout(layoutCharset);
 
 
     /* LABELS */
@@ -218,7 +260,8 @@ void MainWindow::handleResults()
                                + " passwords (" + QString::number(percentageTotal, 'f', 2) + "%)");
 
 
-    ui->securityLabel->setText(QString::number(percentageSecurity, 'f', 2) + "% of the passwords respects the security rules");
+    ui->securityLabel->setText("--> " + QString::number(percentageSecurity, 'f', 2)
+                               + "% of the passwords respects the security rules");
 
     stats->print_stats();
 
