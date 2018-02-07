@@ -16,6 +16,7 @@
 #include <regex>
 
 #include <QFrame>
+#include <QtCharts>
 
 
 
@@ -181,6 +182,14 @@ public:
     void generate_stats();
 
 
+    /**
+     * @brief initialize charts for GUI
+     * @param
+     * @param
+     * @param
+     * @param
+     */
+    void initGraphicalStats(QBarSeries *, QPieSeries *, double &, double &, double &, double &);
 
 
 

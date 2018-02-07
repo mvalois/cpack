@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <iostream>
+#include <QtCharts>
 
 
 
@@ -164,7 +165,64 @@ void MainWindow::disableWithCount()
 void MainWindow::handleResults()
 {
     waitBox.close();
+
+    QBarSeries * barLength = new QBarSeries();
+    QPieSeries * pieCharset = new QPieSeries();
+    double percentageTotal, percentageSecurity, total_counter, total_filter;
+
+    stats->initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity, total_counter, total_filter);
+
+
+
+    /* HISTOGRAM FOR LENGTH */
+    QChart *chartL = new QChart();
+    chartL->addSeries(barLength);
+    chartL->setTitle("Length");
+
+    QChartView *chartViewL = new QChartView(chartL);
+    chartViewL->setRenderHint(QPainter::Antialiasing);
+
+    auto layoutL = new QVBoxLayout();
+    layoutL->addWidget(chartViewL);
+    ui->lengthWidget->setLayout(layoutL);
+
+
+    /* PIECHART FOR CHARSET */
+    pieCharset->setLabelsVisible();
+
+    QPieSlice *slice = pieCharset->slices().at(1);
+    slice->setExploded();
+    slice->setLabelVisible();
+    slice->setPen(QPen(Qt::darkGreen, 2));
+    slice->setBrush(Qt::green);
+
+    QChart *chartC = new QChart();
+    chartC->addSeries(pieCharset);
+    chartC->setTitle("Charset");
+    chartC->legend()->hide();
+
+    QChartView *chartViewC = new QChartView(chartC);
+    chartViewC->setRenderHint(QPainter::Antialiasing);
+
+    auto layoutC = new QVBoxLayout();
+    layoutC->addWidget(chartViewC);
+    ui->charsetWidget->setLayout(layoutC);
+
+
+    /* LABELS */
+
+    ui->AnalyzedLabel->setText("Number of analyzed passwords: "
+                               + QString::number(total_filter)
+                               + " on a total of "
+                               + QString::number(total_counter)
+                               + " passwords (" + QString::number(percentageTotal, 'f', 2) + "%)");
+
+
+    ui->securityLabel->setText(QString::number(percentageSecurity, 'f', 2) + "% of the passwords respects the security rules");
+
     stats->print_stats();
+
+    ui->resultLabel->setText("For more detailed statistics, check the file \"result.txt\"");
 }
 
 

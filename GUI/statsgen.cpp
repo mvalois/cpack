@@ -13,11 +13,14 @@
 #include <vector>
 #include <thread>
 #include <pthread.h>
-#include <QFile>
-
 
 #include "statsgen.h"
 #include "utils.h"
+
+#include <QFile>
+#include <QString>
+
+
 using namespace std;
 
 
@@ -223,56 +226,109 @@ void Statsgen::print_stats() {
     int count;
     float perc = (float) 100 * (total_filter / total_counter);
 
-    wcout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t(" 
+    wofstream writeFile("result.txt");
+
+    writeFile << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
         << perc << " %)" << endl;
 
 
-    wcout << "\nSecurity rules : " << endl;
-    wcout << "\tMinimal length of a password: " << minLength << endl;
-    wcout << "\tMinimum of special characters in a password: " << minSpecial << endl;
-    wcout << "\tMinimum of digits in a password: " << minDigit << endl;
-    wcout << "\tMinimum of lower characters in a password: " << minLower << endl;
-    wcout << "\tMinimum of upper characters in a password: " << minUpper << endl;
+    writeFile << "\nSecurity rules : " << endl;
+    writeFile << "\tMinimal length of a password: " << minLength << endl;
+    writeFile << "\tMinimum of special characters in a password: " << minSpecial << endl;
+    writeFile << "\tMinimum of digits in a password: " << minDigit << endl;
+    writeFile << "\tMinimum of lower characters in a password: " << minLower << endl;
+    writeFile << "\tMinimum of upper characters in a password: " << minUpper << endl;
 
     float perce = (float) 100 * (nbSecurePassword / total_counter);
-    wcout << "\n\t\t--> " << nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
+    writeFile << "\n\t\t--> " << nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
-    wcout << "\nmin - max\n" << endl;
-    wcout << setw(43) << right << "digit:  " 
+    writeFile << "\nmin - max\n" << endl;
+    writeFile << setw(43) << right << "digit:  "
             << setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
-    wcout << setw(43) << right << "lower:  " 
+    writeFile << setw(43) << right << "lower:  "
             << setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
-    wcout << setw(43) << right << "upper:  " 
+    writeFile << setw(43) << right << "upper:  "
             << setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
-    wcout << setw(43) << right << "special:  " 
+    writeFile << setw(43) << right << "special:  "
             << setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;       
 
 
 
-    wcout << "\nStatistics relative to length: \n" << endl;
-    showMap(stats_length, top, total_counter, hiderare, count);
+    writeFile << "\nStatistics relative to length: \n" << endl;
+    showMap(writeFile, stats_length, top, total_counter, hiderare, count);
 
-    wcout << "\nStatistics relative to charsets: \n" << endl;
-    showMap(stats_charactersets, -1, total_counter, hiderare, count);
+    writeFile << "\nStatistics relative to charsets: \n" << endl;
+    showMap(writeFile, stats_charactersets, -1, total_counter, hiderare, count);
 
 
-    wcout << "\nStatistics relative to simplemasks: \n" << endl;
-    showMap(stats_simplemasks, top, total_counter, hiderare, count);
+    writeFile << "\nStatistics relative to simplemasks: \n" << endl;
+    showMap(writeFile, stats_simplemasks, top, total_counter, hiderare, count);
 
     if (limitSimplemask > 0) {
         wcout << endl;
-        readResult(stats_simplemasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
+        readResult(writeFile, stats_simplemasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
 
 
-    wcout << "\nStatistics relative to advancedmask: \n" << endl;
-    showMap(stats_advancedmasks, top, total_counter, hiderare, count);
+    writeFile << "\nStatistics relative to advancedmask: \n" << endl;
+    showMap(writeFile, stats_advancedmasks, top, total_counter, hiderare, count);
     
     if (limitAdvancedmask > 0) {
         wcout << endl;
-        readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
+        readResult(writeFile, stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
     }
+}
+
+
+
+
+void Statsgen::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity, double & total, double & filter) {
+    total = total_counter;
+    filter = total_filter;
+    percentageTotal = (double) 100 * (total_filter / total_counter);
+    percentageSecurity = (double) 100 * (nbSecurePassword / total_counter);
+
+    /* LENGTH HISTOGRAM */
+    multimap<double, int> reverseL = flip_map<int>(stats_length);
+    double percentageL;
+    double nbHideL = 0;
+
+    MapIterator<double, int> itL;
+    for(itL = reverseL.end(); itL != reverseL.begin(); itL--) {
+        if (itL == reverseL.end()) continue;
+
+        percentageL = (double) (100*itL->first) / total_counter;
+        if (percentageL >= 2) {
+            QBarSet *set = new QBarSet(QString::number(itL->second));
+            *set << itL->first;
+            barLength->append(set);
+        } else {
+            nbHideL += itL->first;
+        }
+    }
+
+    QBarSet *set = new QBarSet("Other lengths");
+    *set << nbHideL;
+    barLength->append(set);
+
+
+    /* CHARSET PIECHART */
+    multimap<double, wstring> reverseC = flip_map<wstring>(stats_charactersets);
+    int top = 0;
+    double nbHideC = 0;
+
+    MapIterator<double, wstring> itC;
+    for(itC = reverseC.end(); itC != reverseC.begin(); itC--) {
+        if (itC == reverseC.end()) continue;
+        top++;
+        if (top <= 5) {
+            pieCharset->append(QString::fromStdWString(itC->second), itC->first);
+        } else {
+            nbHideC += itC->first;
+        }
+    }
+    pieCharset->append("Other charsets", nbHideC);
 }
 
 
@@ -427,7 +483,6 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol) {
         minMaxValue.maxspecial = pol.special;
     }
 }
-
 
 
 

@@ -1,16 +1,9 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2018-01-10T12:47:54
-#
-#-------------------------------------------------
 
-QT      += core gui
+QT += core gui
+QT += widgets
+QT += charts
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-
-QT      += widgets
-TARGET = GUI
+TARGET  = GUI
 TEMPLATE = app
 
 

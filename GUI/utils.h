@@ -18,6 +18,7 @@
 #include <QString>
 #include <QFile>
 #include <QTextStream>
+#include <QtCharts/QPieSeries>
 using namespace std;
 
 
@@ -54,7 +55,7 @@ multimap<double, A> flip_map(const std::unordered_map<A, double> & src) {
  * @param 
  */
 template<typename Type>
-void readResult(double res, Type carac, int & count, const double & total_counter, const int & hiderare) {
+void readResult(wostream & writeFile, double res, Type carac, int & count, const double & total_counter, const int & hiderare) {
     float percentage;
     percentage = (float) (100*res) / total_counter;
 
@@ -62,7 +63,7 @@ void readResult(double res, Type carac, int & count, const double & total_counte
         wstring value = to_wstring(percentage);
         value = value.substr(0,5);
 
-        wcout << setw(40) << right << carac << ":  "
+        writeFile << setw(40) << right << carac << ":  "
             << setw(5) << right << value << "%" 
             << setw(5) << right << "(" << res << ")" << endl;
 
@@ -75,6 +76,7 @@ void readResult(double res, Type carac, int & count, const double & total_counte
 
 /**
  * @brief print an unordered map
+ * @param writeFile : output file
  * @param stats : map to show
  * @param top : number of results to show
  * @param total_counter : number of finded passwords
@@ -82,7 +84,7 @@ void readResult(double res, Type carac, int & count, const double & total_counte
  * @param count : number of shown results
  */
 template<typename Type>
-void showMap(const unordered_map<Type, double> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
+void showMap(wofstream & writeFile, const unordered_map<Type, double> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
 	count = 0;
     multimap<double, Type> reverse = flip_map<Type>(stats);
     
@@ -90,12 +92,12 @@ void showMap(const unordered_map<Type, double> & stats, const int & top, const d
 	for(it = reverse.end(); it != reverse.begin(); it--) {
         if (it == reverse.end()) continue;
 
-        readResult<Type>(it->first, it->second, count, total_counter, hiderare);
+        readResult<Type>(writeFile, it->first, it->second, count, total_counter, hiderare);
         if (top != -1 && count == top) break;
     }
 
     if (count != top) {
-        readResult<Type>(it->first, it->second, count, total_counter, hiderare);
+        readResult<Type>(writeFile, it->first, it->second, count, total_counter, hiderare);
     }
 }
 
