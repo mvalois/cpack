@@ -40,7 +40,7 @@ void MainWindow::findFile() {
 
 void MainWindow::startGame() {
     stats = new Statsgen();
-    stats->setFilename(ui->fileLine->text().toStdString());
+    stats->setFilename(ui->fileLine->text());
 
     if(ui->withcountButton->isChecked())
     {
@@ -147,22 +147,9 @@ void MainWindow::startGame() {
     waitBox.setText("Analysis in progress");
 
     waitBox.exec();
-/*
-    QFile file(filename);
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    QTextStream in(&file);
-    int c = 0;
-    while (!in.atEnd()) {
-        QString line = in.readLine();
-        c++;
-    }
-    ui->teResult->setText(QString::number(c));
-    */
-
 }
+
+
 
 void MainWindow::enableWithCount()
 {

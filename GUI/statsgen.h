@@ -75,7 +75,7 @@ struct SecurityRules {
  */
 struct thread_data {
 	int thread_id;
-	std::string filename;
+    QString filename;
 	int lineBegin;
 	int lineEnd;
 
@@ -110,7 +110,7 @@ public:
 	 * @brief Initialise the name of the database
 	 * @param : new value for "filename"
 	 */
-	void setFilename(std::string);
+    void setFilename(QString);
 
 
 	/**
@@ -185,7 +185,7 @@ public:
 
 
 private:
-	std::string filename;
+    QString filename;
 
 
 	// Filters

@@ -15,6 +15,9 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <QString>
+#include <QFile>
+#include <QTextStream>
 using namespace std;
 
 
@@ -68,6 +71,8 @@ void readResult(double res, Type carac, int & count, const double & total_counte
 }
 
 
+
+
 /**
  * @brief print an unordered map
  * @param stats : map to show
@@ -102,13 +107,15 @@ void showMap(const unordered_map<Type, double> & stats, const int & top, const d
  * @param filename : name of the file
  * @return : number of line
  */
-int nbline_file(const string & filename) {
-    wifstream readfile(filename);
-    wstring line;
+int nbline_file(const QString & filename) {
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream flux(&file);
     int nb = 0;
 
-    while(readfile.good()) {
-        getline(readfile, line);
+    QString ligne;
+    while(! flux.atEnd()) {
+        ligne = flux.readLine();
         ++nb;
     }
 

@@ -13,6 +13,7 @@
 #include <vector>
 #include <thread>
 #include <pthread.h>
+#include <QFile>
 
 
 #include "statsgen.h"
@@ -27,7 +28,7 @@ Statsgen::Statsgen() {}
 
 
 
-void Statsgen::setFilename(std::string name) {
+void Statsgen::setFilename(QString name) {
     filename = name;
 }
 
@@ -63,6 +64,7 @@ void Statsgen::setLimitSimplemask(int val) {
     limitSimplemask = val;
 }
 
+
 void Statsgen::setLimitAdvancedmask(int val) {
     limitAdvancedmask = val;
 }
@@ -95,13 +97,13 @@ void Statsgen::setSecurityRules() {
     cin >> minUpper;
 }
 
+
 void Statsgen::setSecurityRules(int length,int special,int digit,int upper,int lower) {
     minLength=length;
     minSpecial=special;
     minDigit=digit;
     minUpper=upper;
     minLower=lower;
-
 }
 
 
@@ -273,6 +275,9 @@ void Statsgen::print_stats() {
     }
 }
 
+
+
+
 void analyse_letter(const char & letter, char & last_simplemask, wstring & simplemask_string, wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask) {
     sizeAdvancedMask++;
 
@@ -424,17 +429,24 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol) {
 }
 
 
+
+
 void * generate_stats_thread(void * threadarg) {
     struct thread_data *my_data;
     my_data = (struct thread_data *) threadarg;
 
-    wifstream readfile(my_data->filename);
+    QFile file(my_data->filename);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream flux(&file);
+
+    QString qline;
     wstring line;
     int nbline = 0;
 
-    while(readfile.good()) {
+    while(! flux.atEnd()) {
         ++nbline;
-        getline(readfile, line);
+        qline = flux.readLine();
+
         if (nbline < my_data->lineBegin) {
             continue;
         }
@@ -443,6 +455,7 @@ void * generate_stats_thread(void * threadarg) {
         }
 
 
+        line = qline.toStdWString();
         if (line.size() == 0) {
             continue;
         }
@@ -490,8 +503,6 @@ void * generate_stats_thread(void * threadarg) {
         }
         updateMinMax(my_data->minMaxValue, c.pol);
     }
-
-    readfile.close();
 
     pthread_exit(NULL);
 }
