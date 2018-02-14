@@ -9,21 +9,21 @@ BIN	 = bin/
 .PHONY 	 = stats clean
 
 
-all: stats
+all: stats clean
 
 
-stats: $(BIN)stats.o $(BIN)statsgen.o
+stats: stats.o statsgen.o
 	$(CXX) $^ $(CXXFLAGS) -o $@
 
 
 
-$(BIN)stats.o: $(SRC)main.cpp $(INC)statsgen.h
+stats.o: $(SRC)main.cpp $(INC)statsgen.h
 	$(CXX) $(CXXFLAGS) $(SRC)main.cpp -c -o $@
 
-$(BIN)statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
+statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
 	$(CXX) $(CXXFLAGS) $(SRC)statsgen.cpp -c -o $@
 
 
 
 clean:
-	rm $(BIN)/*.o
+	rm *.o
