@@ -47,6 +47,7 @@ private:
     QMessageBox waitBox;
     QVBoxLayout * layoutCharset;
     QVBoxLayout * layoutLength;
+    int firstTime=1;
 };
 
 

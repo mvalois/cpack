@@ -54,10 +54,6 @@ void MainWindow::startGame() {
     stats = new Statsgen();
     stats->setFilename(ui->fileLine->text());
 
-    ui->AnalyzedLabel->setText("");
-    ui->securityLabel->setText("");
-    ui->resultLabel->setText("");
-
     if(ui->withcountButton->isChecked())
     {
         stats->setWithcount(true);
@@ -172,15 +168,14 @@ void MainWindow::startGame() {
     ui->maxAdvancedCheckBox->setDisabled(true);
     ui->maxSimpleCheckBox->setDisabled(true);
 
+
     delete layoutCharset;
     delete layoutLength;
-
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
     workerThread->start();
-
     waitBox.setText("Analysis in progress");
     waitBox.exec();
 }
@@ -199,8 +194,10 @@ void MainWindow::disableWithCount()
 
 void MainWindow::handleResults()
 {
-    waitBox.close();
 
+    waitBox.close();
+    ui->charsetWidget->setHidden(false);
+    ui->lengthWidget->show();
     ui->ThreadlineEdit->setDisabled(false);
     ui->topLineEdit->setDisabled(false);
     ui->SimplelineEdit->setDisabled(false);
