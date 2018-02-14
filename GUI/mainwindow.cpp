@@ -240,7 +240,7 @@ void MainWindow::handleResults()
     /* PIECHART FOR CHARSET */
     pieCharset->setLabelsVisible();
 
-    QPieSlice *slice = pieCharset->slices().at(1);
+    QPieSlice *slice = pieCharset->slices().at(0);
     slice->setExploded();
     slice->setLabelVisible();
     slice->setPen(QPen(Qt::darkGreen, 2));
