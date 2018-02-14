@@ -52,6 +52,14 @@ Dans le dossier GUI, une interface en QT est disponible pour une version simplif
 	--> Requiert la version de QT comprenant QtCharts (version 5 minimum)
 	--> Programme développé en version 5.9.4
 
+
+## Fonctions utilitaies
+
+Dans le dossier Utils, trois programmes ont été créées
+ * convert.cpp : permet de créer une liste de mots de passe à partir d'une liste au format withcount
+ * createNewDB.cpp : permet de créer des listes de mots de passe plus ou moins grandes, utile pour nos tests
+ * memory.sh : permet de connaître la mémoire vive utilisée pour un certain processus
+
 ## License
 
 Voir [LICENSE](LICENSE) pour plus de détails.
