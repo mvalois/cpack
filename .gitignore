@@ -1,10 +1,7 @@
 Utils/convert
 Utils/createNewDB
-Adaptation/main
-Adaptation/bin
-AdaptationParallel/main
-AdaptationParallel/stats
-AdaptationParallel/bin
+Statsgen/stats
+Statsgen/bin
 Pack/
 GUI/GUI.pro.user
 GUI/GUI.pro.user.da6987d
