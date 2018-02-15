@@ -415,7 +415,7 @@ void analyse_charset(wstring & charset, const Policy & policy) {
 }
 
 
-void analyze_password(const wstring & password, Container & c, SecurityRules & sr) {
+void analyze_password(const wstring & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
     c.pass_length = password.size();
 
     char last_simplemask = 'a';
@@ -430,14 +430,23 @@ void analyze_password(const wstring & password, Container & c, SecurityRules & s
 
     analyse_charset(c.characterset, c.pol);
 
-    if ( (c.pass_length >= sr.minLength) && 
-         (c.pol.digit >= sr.minDigit) && 
-         (c.pol.lower >= sr.minLower) && 
-         (c.pol.upper >= sr.minUpper) && 
+    if ( (c.pass_length >= sr.minLength) &&
+         (c.pol.digit >= sr.minDigit) &&
+         (c.pol.lower >= sr.minLower) &&
+         (c.pol.upper >= sr.minUpper) &&
          (c.pol.special >= sr.minSpecial) ) {
         sr.nbSecurePassword++;
     }
+
+    if (sizeAdvancedMask > limitAdvancedmask) {
+        c.advancedmask_string = L"othermasks";
+    }
+
+    if (sizeSimpleMask > limitSimplemask) {
+        c.simplemask_string = L"othermasks";
+    }
 }
+
 
 
 void updateMinMax(minMax & minMaxValue, const Policy & pol) {
@@ -520,7 +529,7 @@ void * generate_stats_thread(void * threadarg) {
 
             if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
                 my_data->total_filter += nbPasswords;
-                analyze_password(password, c, my_data->sr);
+                analyze_password(password, c, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
 
                 my_data->length[ c.pass_length ] += nbPasswords;
                 my_data->charactersets[ c.characterset ] += nbPasswords;
@@ -531,7 +540,7 @@ void * generate_stats_thread(void * threadarg) {
         else {
             my_data->total_counter++;
             if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
-                analyze_password(line, c, my_data->sr);
+                analyze_password(line, c, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
                 
                 my_data->total_filter++;
 
