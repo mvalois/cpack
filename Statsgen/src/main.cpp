@@ -65,7 +65,7 @@ void showHelp() {
 
 int main(int argc,char* argv[]) {
 	locale::global(locale(""));
-	Statsgen test;
+	Statsgen statsgen;
 	string filename;
 
 	int opt;
@@ -74,21 +74,21 @@ int main(int argc,char* argv[]) {
 			case 'h':
 				showHelp(); break;
 			case 'w':
-				test.setWithcount(true); break;
+				statsgen.setWithcount(true); break;
 			case 'H':
-				test.setHiderare(1); break;
+				statsgen.setHiderare(1); break;
 			case 't':
-				test.setTop(atoi(optarg)); break;
+				statsgen.setTop(atoi(optarg)); break;
 			case 'r':
-				test.setRegex(optarg); break;
+				statsgen.setRegex(optarg); break;
 			case 'A':
-				test.setLimitAdvancedmask(atoi(optarg)); break;
+				statsgen.setLimitAdvancedmask(atoi(optarg)); break;
 			case 'S':
-				test.setLimitSimplemask(atoi(optarg)); break;
+				statsgen.setLimitSimplemask(atoi(optarg)); break;
 			case 'p':
-				test.setNbThread(atoi(optarg)); break;
+				statsgen.setNbThread(atoi(optarg)); break;
 			case 's':
-				test.setSecurityRules(); break;
+				statsgen.setSecurityRules(); break;
 			default:
 				showHelp(); break;
 		}
@@ -98,9 +98,9 @@ int main(int argc,char* argv[]) {
 	if(argc > 1) filename = argv[optind];
 	else showHelp();
 
-	test.setFilename(filename);
-	if (test.generate_stats()) {
-		test.print_stats();
+	statsgen.setFilename(filename);
+	if (statsgen.generate_stats()) {
+		statsgen.print_stats();
 	}
 
 	return 0;
