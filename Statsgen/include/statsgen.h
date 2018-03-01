@@ -202,12 +202,12 @@ private:
 	// Filters
 
 	int hiderare = 0; 				// Hide low statistics
-	int top = -1;					// Show only a top of statistics
+	int top = 10;					// Show only a top of statistics
 	std::wregex current_regex;		// Regex for the interesting passwords
 	bool use_regex = false;			// Know if we use a regex or not
 	bool withcount = false;			// Know if the database is at the format withcount or not
-	int limitSimplemask = 0;		// Limit the size of Simple Mask
-	int limitAdvancedmask = 0;		// Limit the size of Advanced Mask
+	int limitSimplemask = 12;		// Limit the size of Simple Mask
+	int limitAdvancedmask = 12;		// Limit the size of Advanced Mask
 	int nbThread = 1;				// Number of usable threads, default 1
 	std::string outfile_name;		// File where to write masks
 
