@@ -25,7 +25,12 @@ using namespace std;
 
 
 void Statsgen::setFilename(std::string name) {
-	filename = name;
+	if (name == "-"){
+		is_stdin = 1;
+	}
+	else {
+		filename = name;
+	}
 }
 
 
@@ -99,7 +104,10 @@ void Statsgen::setSecurityRules() {
 
 
 int Statsgen::generate_stats() {
-	int nbline = nbline_file(filename);
+	int nbline = 0;
+	if (!is_stdin){
+		nbline = nbline_file(filename);
+	}
 
 	int rc;
 	int i;
@@ -112,22 +120,45 @@ int Statsgen::generate_stats() {
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
+	// split stdin into nbThread files on disk
+	if (is_stdin){
+		ofstream filestreams[nbThread];
+		for (i=0; i < nbThread; i++){
+			filestreams[i].open("statsgen_tmp" + to_string(i));
+		}
+		std::string line;
+		nbline = 0;
+		while(getline(cin, line)){
+			filestreams[nbline%nbThread] << line << endl;
+			nbline++;
+		}
+		for (i=0; i < nbThread; i++){
+			filestreams[i].close();
+		}
+	}
+
 	for( i = 0; i < nbThread; i++ ) {
-		td[i].filename = filename;
+		if (is_stdin){
+			td[i].filename = "statsgen_tmp" + to_string(i);
+			td[i].lineBegin = 0;
+			td[i].lineEnd = nbline_file(td[i].filename);
+		}
+		else {
+			td[i].filename = filename;
+			td[i].lineBegin = i*(nbline/nbThread) + 1;
+			td[i].lineEnd = (i+1)*nbline/nbThread;
+			if (i > 0) {
+				while (td[i].lineBegin <= td[i-1].lineEnd) {
+					td[i].lineBegin++;
+				}
+			}
+		}
 		td[i].thread_id = i + 1;
 		td[i].current_regex = current_regex;
 		td[i].use_regex = use_regex;
 		td[i].withcount = withcount;
 		td[i].limitSimplemask = limitSimplemask;
 		td[i].limitAdvancedmask = limitAdvancedmask;
-
-		td[i].lineBegin = i*(nbline/nbThread) + 1;
-		td[i].lineEnd = (i+1)*nbline/nbThread;
-		if (i > 0) {
-			while (td[i].lineBegin <= td[i-1].lineEnd) {
-				td[i].lineBegin++;
-			}
-		}
 		
 
 		td[i].sr.nbSecurePassword = 0;

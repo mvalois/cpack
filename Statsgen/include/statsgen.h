@@ -210,6 +210,7 @@ private:
 	int limitAdvancedmask = 12;		// Limit the size of Advanced Mask
 	int nbThread = 1;				// Number of usable threads, default 1
 	std::string outfile_name;		// File where to write masks
+	int is_stdin = 0;				// If filename is stdin
 
 
 	// Dictionary
