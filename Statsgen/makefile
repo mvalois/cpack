@@ -1,5 +1,5 @@
 CXX	 = g++
-CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -I./include -lpthread -O3
+CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -Iinclude -lpthread -O3
 SRC	 = src/
 INC	 = include/
 BIN	 = bin/
