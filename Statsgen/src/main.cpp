@@ -10,13 +10,27 @@
  * Please see the attached LICENSE file for additional licensing information.
  */
 
-
-
 #include <fstream>
 #include <unistd.h>
+#include <getopt.h>
 #include "statsgen.h"
 
 using namespace std;
+
+#define MISSING_FILENAME "Missing filename"
+
+static struct option long_options[] = {
+	{"help", no_argument, NULL, 'h'},
+	{"withcount", no_argument, NULL, 'w'},
+	{"hiderare", no_argument, NULL, 'H'},
+	{"top", required_argument, NULL, 't'},
+	{"regex", required_argument, NULL, 'r'},
+	{"limit-advanced-masks", required_argument, NULL, 'A'},
+	{"limit-simple-masks", required_argument, NULL, 'S'},
+	{"parallel", required_argument, NULL, 'p'},
+	{"security", no_argument, NULL, 's'},
+	{NULL, 0, NULL, 0}
+};
 
 
 void showHelp() {
@@ -50,94 +64,39 @@ void showHelp() {
 
 
 int main(int argc,char* argv[]) {
-	if(argc < 2){
-		wcerr << "\nMissing arguments\n\t--help for information\n" << endl;
-		return -1;
-	}
-
 	locale::global(locale(""));
 	Statsgen test;
 	string filename;
 
-	
-	if (argc > 1) {
-		for (int i = 1; i < argc; i++) {
-			if (string(argv[i]) == "--hiderare" || string(argv[i]) == "-hr") {
-				test.setHiderare(1);
-			}
-
-			else if (string(argv[i]) == "--top" || string(argv[i]) == "-t") {
-				if (argc == i+1) {
-					wcerr << "Missing argument --top [value]" << endl;
-					return -1;
-				}
-				test.setTop(atoi(argv[i+1]));
-				i++;
-			}
-
-			else if (string(argv[i]) == "--regex" || string(argv[i]) == "-r") {
-				if (argc == i+1) {
-					wcerr << "Missing argument --top [value]" << endl;
-					return -1;
-				}
-				test.setRegex(argv[i+1]);
-				i++;
-			}
-
-			else if (string(argv[i]) == "--limitsimplemasks" || string(argv[i]) == "-lsm") {
-				if (argc == i+1) {
-					wcerr << "Missing argument --limitsimplemasks [value]" << endl;
-					return -1;
-				}
-				test.setLimitSimplemask(atoi(argv[i+1]));
-				i++;
-			}
-
-			else if (string(argv[i]) == "--limitadvancedmasks" || string(argv[i]) == "-lam") {
-				if (argc == i+1) {
-					wcerr << "Missing argument --limitadvancedmasks [value]" << endl;
-					return -1;
-				}
-				test.setLimitAdvancedmask(atoi(argv[i+1]));
-				i++;
-			}
-
-			else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
-				showHelp();
-				return 0;
-			}
-
-			else if (string(argv[i]) == "--withcount" || string(argv[i]) == "-w") {
-				test.setWithcount(true);
-			}
-
-			else if (string(argv[i]) == "--parallel" || string(argv[i]) == "-p") {
-				if (argc == i+1) {
-					wcerr << "Missing argument --parallel [value]" << endl;
-					return -1;
-				}
-				test.setNbThread(atoi(argv[i+1]));
-				i++;
-			}
-
-			else if (string(argv[i]) == "--security" || string(argv[i]) == "-s") {
-				test.setSecurityRules();
-				i++;
-			}
-
-			else {
-				filename = argv[i];
-			}
+	int opt;
+	while ((opt = getopt_long(argc, argv, "hwHt:r:A:S:p:s", long_options, NULL)) != -1){
+		switch(opt){
+			case 'h':
+				showHelp(); break;
+			case 'w':
+				test.setWithcount(true); break;
+			case 'H':
+				test.setHiderare(1); break;
+			case 't':
+				test.setTop(atoi(optarg)); break;
+			case 'r':
+				test.setRegex(optarg); break;
+			case 'A':
+				test.setLimitAdvancedmask(atoi(optarg)); break;
+			case 'S':
+				test.setLimitSimplemask(atoi(optarg)); break;
+			case 'p':
+				test.setNbThread(atoi(optarg)); break;
+			case 's':
+				test.setSecurityRules(); break;
+			default:
+				showHelp(); break;
 		}
+
 	}
 
-
-
-	if (filename == "") {
-		wcerr << "Missing filename" << endl;
-		return -1;
-	}
-
+	if(argc > 1) filename = argv[optind];
+	else showHelp();
 
 	test.setFilename(filename);
 	if (test.generate_stats()) {
