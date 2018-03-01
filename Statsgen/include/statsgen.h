@@ -38,10 +38,10 @@ struct Policy{
  */
 struct Container {
 	int pass_length = 0;
-    std::wstring characterset = L"";
-    std::wstring advancedmask_string = L"";
-    std::wstring simplemask_string = L"";
-    Policy pol;	
+	std::wstring characterset = L"";
+	std::wstring advancedmask_string = L"";
+	std::wstring simplemask_string = L"";
+	Policy pol;	
 };
 
 
