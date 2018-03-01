@@ -103,8 +103,8 @@ int Statsgen::generate_stats() {
 
 	int rc;
 	int i;
-	pthread_t threads[nbThread];
-	struct thread_data td[nbThread];
+	pthread_t threads[MAX_THREADS];
+	struct thread_data td[MAX_THREADS];
 
 	pthread_attr_t attr;
 	void *status;

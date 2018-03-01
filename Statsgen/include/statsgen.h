@@ -20,6 +20,8 @@
 #include <iostream>
 #include <regex>
 
+#define MAX_THREADS 32
+
 
 
 /**
