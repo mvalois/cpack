@@ -24,34 +24,6 @@
 using namespace std;
 
 
-
-
-void Statsgen::showHelp() {
-	wcout << "\nUsage: database.txt [options]\n" << endl;
-
-	wcout << "To be sure the database's format can be read, please use this command before:" << endl;
-	wcout << "\ticonv -f ISO-8859-1 -t UTF-8 databaseInput.txt -o databaseOutput.txt\n" << endl;
-
-	wcout << "Options:" << endl;
-	wcout << "\t--help, -h\t\t:\tShow this help message" << endl;
-	wcout << "\t--withcount, -w\t\t:\tMendatory if the input database has the following format : [number of occurence] [password]\n" << endl;
-
-	wcout << "\t--hiderare, -hr\t\t:\tHide all statistics below 1%" << endl;
-	wcout << "\t--top, -t [value]\t:\tShow only [value] first results" << endl;
-	wcout << "\t--regex, -r [value]\t:\tShow result for password, using the regular expression [value]" << endl;
-
-	wcout << "\n\nOptimisation options to reduce the execution time : " << endl;
-	wcout << "\t--limitadvancedmasks, -lam [value]\t:\tLimit the size of the advanced masks at [value], if size>[value]: othermasks" << endl;
-	wcout << "\t--limitsimplemasks, -lsm [value]\t:\tLimit the size of the simple masks at [value], if size>[value]: othermasks" << endl;
-	wcout << "\t--parallel, -p [value]\t\t\t:\tNumber of usable threads" << endl;
-	
-	wcout << "\n\nSecurity rules: " << endl;
-	wcout << "\t--security, -s\t:\tDefine the security rules" << endl;
-	wcout << "\n" << endl;
-}
-
-
-
 void Statsgen::setFilename(std::string name) {
 	filename = name;
 }

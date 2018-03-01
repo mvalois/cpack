@@ -15,8 +15,38 @@
 #include <fstream>
 #include <unistd.h>
 #include "statsgen.h"
+
 using namespace std;
 
+
+void showHelp() {
+	static const char* USAGE[] = {
+		"Usage: stats database.txt [OPTIONS]",
+		"To be sure the database's format can be read, please use this command before:",
+		"	iconv -f ISO-8859-1 -t UTF-8 databaseInput.txt -o databaseOutput.txt",
+		"Options:",
+		"	--help, -h          Show this help message",
+		"	--withcount, -w     Mendatory if the input database has the following format : [number of occurence] [password]",
+		"	--hiderare, -hr     Hide all statistics below 1%",
+		"	--top, -t [value]   Show only [value] first results",
+		"	--regex, -r [value] Show result for password, using the regular expression [value]",
+		"",
+		"Optimisation options to reduce the execution time : ",
+		"	--limitadvancedmasks, -lam [value]  Limit the size of the advanced masks at [value], if size>[value]: othermasks",
+		"	--limitsimplemasks, -lsm [value]    Limit the size of the simple masks at [value], if size>[value]: othermasks",
+		"	--parallel, -p [value]              Number of usable threads",
+		"",
+		"",
+		"Security rules: ",
+		"	--security, -s		Define the security rules",
+		"",
+        NULL
+    };
+    for(int line = 0; USAGE[line] != NULL; line++){
+            cerr << USAGE[line] << endl;
+    }
+    exit(EXIT_FAILURE);
+}
 
 
 int main(int argc,char* argv[]) {
@@ -73,7 +103,7 @@ int main(int argc,char* argv[]) {
 			}
 
 			else if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
-				test.showHelp();
+				showHelp();
 				return 0;
 			}
 
