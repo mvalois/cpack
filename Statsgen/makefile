@@ -18,4 +18,4 @@ statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
 	$(CXX) $(CXXFLAGS) $(SRC)statsgen.cpp -c -o $@
 
 clean:
-	-rm *.o stats
+	-rm -f *.o stats
