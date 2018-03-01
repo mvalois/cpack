@@ -264,9 +264,13 @@ void Statsgen::print_stats() {
 	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
 
 	if (outfile_name != ""){
+		locale::global(locale("C"));
 		wofstream outfile_stream(outfile_name);
-		for(auto it=stats_advancedmasks.begin();it!=stats_advancedmasks.end();it++){
-			outfile_stream << it->first << "," << it->second << endl;
+		multimap<double, wstring> reverse = flip_map<wstring>(stats_advancedmasks);
+		for(auto it=reverse.end();it!=reverse.begin();it--){
+			if (it == reverse.end()) continue;
+			if(it->second == L"othermasks") continue;
+			outfile_stream << it->second << "," << it->first << endl;
 		}
 		outfile_stream.close();
 	}
