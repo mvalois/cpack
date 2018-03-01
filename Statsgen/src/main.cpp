@@ -42,7 +42,7 @@ void showHelp() {
 		"Options:",
 		"	--help, -h          Show this help message",
 		"	--withcount, -w     Mendatory if the input database has the following format : [number of occurence] [password]",
-		"	--hiderare, -H     Hide all statistics below 1%",
+		"	--hiderare, -H      Hide all statistics below 1%",
 		"	--top, -t [value]   Show only [value] first results",
 		"	--regex, -r [value] Show result for password, using the regular expression [value]",
 		"	--out, -o [value]   Writes masks into [value] file",
@@ -56,12 +56,12 @@ void showHelp() {
 		"Security rules: ",
 		"	--security, -s		Define the security rules",
 		"",
-        NULL
-    };
-    for(int line = 0; USAGE[line] != NULL; line++){
-            cerr << USAGE[line] << endl;
-    }
-    exit(EXIT_FAILURE);
+		NULL
+	};
+	for(int line = 0; USAGE[line] != NULL; line++){
+			cerr << USAGE[line] << endl;
+	}
+	exit(EXIT_FAILURE);
 }
 
 
