@@ -74,6 +74,10 @@ void Statsgen::setNbThread(int nb) {
 	}
 }
 
+void Statsgen::setOutfile(string outfile){
+	outfile_name = outfile;
+}
+
 
 void Statsgen::setSecurityRules() {
 	wcout << "\nMinimal length of a password:" << endl;
@@ -258,6 +262,14 @@ void Statsgen::print_stats() {
 
 	wcout << "\nStatistics relative to advancedmask: \n" << endl;
 	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
+
+	if (outfile_name != ""){
+		wofstream outfile_stream(outfile_name);
+		for(auto it=stats_advancedmasks.begin();it!=stats_advancedmasks.end();it++){
+			outfile_stream << it->first << "," << it->second << endl;
+		}
+		outfile_stream.close();
+	}
 	
 	if (limitAdvancedmask > 0) {
 		wcout << endl;

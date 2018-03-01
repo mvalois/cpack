@@ -175,6 +175,11 @@ public:
 	 */
 	void setSecurityRules();
 
+	/**
+	 * @brief Where to write masks
+	 * @param outfie: the file where to write masks
+	 */
+	void setOutfile(std::string outfile);
 
 	/**
 	 * @brief Calculate all statistics for a database
@@ -204,6 +209,7 @@ private:
 	int limitSimplemask = 0;		// Limit the size of Simple Mask
 	int limitAdvancedmask = 0;		// Limit the size of Advanced Mask
 	int nbThread = 1;				// Number of usable threads, default 1
+	std::string outfile_name;		// File where to write masks
 
 
 	// Dictionary

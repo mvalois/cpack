@@ -25,6 +25,7 @@ static struct option long_options[] = {
 	{"hiderare", no_argument, NULL, 'H'},
 	{"top", required_argument, NULL, 't'},
 	{"regex", required_argument, NULL, 'r'},
+	{"out", required_argument, NULL, 'o'},
 	{"limit-advanced-masks", required_argument, NULL, 'A'},
 	{"limit-simple-masks", required_argument, NULL, 'S'},
 	{"parallel", required_argument, NULL, 'p'},
@@ -44,6 +45,7 @@ void showHelp() {
 		"	--hiderare, -H     Hide all statistics below 1%",
 		"	--top, -t [value]   Show only [value] first results",
 		"	--regex, -r [value] Show result for password, using the regular expression [value]",
+		"	--out, -o [value]   Writes masks into [value] file",
 		"",
 		"Optimisation options to reduce the execution time : ",
 		"	--limit-advanced-masks, -A [value]  Limit the size of the advanced masks at [value], if size>[value]: othermasks",
@@ -69,7 +71,7 @@ int main(int argc,char* argv[]) {
 	string filename;
 
 	int opt;
-	while ((opt = getopt_long(argc, argv, "hwHt:r:A:S:p:s", long_options, NULL)) != -1){
+	while ((opt = getopt_long(argc, argv, "hwHt:r:o:A:S:p:s", long_options, NULL)) != -1){
 		switch(opt){
 			case 'h':
 				showHelp(); break;
@@ -81,6 +83,8 @@ int main(int argc,char* argv[]) {
 				statsgen.setTop(atoi(optarg)); break;
 			case 'r':
 				statsgen.setRegex(optarg); break;
+			case 'o':
+				statsgen.setOutfile(optarg); break;
 			case 'A':
 				statsgen.setLimitAdvancedmask(atoi(optarg)); break;
 			case 'S':
