@@ -1,21 +1,17 @@
 CXX	 = g++
-CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -I./include -lpthread -O3
-SRC	 = src/
-INC	 = include/
-BIN	 = bin/
+CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -Iinclude -O3
+LDFLAGS  = -lpthread
+SRC	 = src
+INC	 = include
+BIN  = cstatsgen
 
 .PHONY = clean
 
-all: stats
+$(BIN): main.o statsgen.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
-stats: stats.o statsgen.o
-	$(CXX) $^ $(CXXFLAGS) -o $@
-
-stats.o: $(SRC)main.cpp $(INC)statsgen.h
-	$(CXX) $(CXXFLAGS) $(SRC)main.cpp -c -o $@
-
-statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
-	$(CXX) $(CXXFLAGS) $(SRC)statsgen.cpp -c -o $@
+%.o: $(SRC)/%.cpp $(INC)/statsgen.h
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean:
-	-rm *.o stats
+	-rm -f *.o stats
