@@ -9,7 +9,7 @@ BIN	 = bin/
 .PHONY 	 = stats clean
 
 
-all: stats clean
+all: stats
 
 
 stats: stats.o statsgen.o
@@ -26,4 +26,4 @@ statsgen.o: $(SRC)statsgen.cpp $(INC)statsgen.h
 
 
 clean:
-	rm *.o
+	-rm *.o stats
