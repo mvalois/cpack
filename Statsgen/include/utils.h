@@ -10,15 +10,15 @@
  * Please see the attached LICENSE file for additional licensing information.
  */
 
+#ifndef UTILS_STATSGEN_H
+#define UTILS_STATSGEN_H
+
 #include <map>
 #include <iostream>
 #include <unordered_map>
 using namespace std;
 
 
-
-#ifndef UTILS_STATSGEN_H
-#define UTILS_STATSGEN_H
 
 
 template<typename K, typename V>
