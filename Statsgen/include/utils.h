@@ -116,6 +116,11 @@ int nbline_file(const string & filename) {
 		getline(readfile, line);
 		++nb;
 	}
+	// we have not read the whole file
+	if (readfile.fail() && !readfile.eof()){
+		cerr << "There was an error reading the file at line " << nb << endl;
+		return 0;
+	}
 
 	return nb;
 }

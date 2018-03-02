@@ -108,6 +108,9 @@ int Statsgen::generate_stats() {
 	int nbline = 0;
 	if (!is_stdin){
 		nbline = nbline_file(filename);
+		if (!nbline){ // error reading the file
+			return 0;
+		}
 	}
 
 	int rc;
