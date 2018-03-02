@@ -17,6 +17,7 @@
 #include <vector>
 #include <thread>
 #include <pthread.h>
+#include <chrono>
 
 
 #include "statsgen.h"
@@ -122,37 +123,17 @@ int Statsgen::generate_stats() {
 
 	// split stdin into nbThread files on disk
 	if (is_stdin){
-		ofstream filestreams[nbThread];
-		for (i=0; i < nbThread; i++){
-			filestreams[i].open("statsgen_tmp" + to_string(i));
-		}
-		std::string line;
+		wstring line;
 		nbline = 0;
-		while(getline(cin, line)){
-			filestreams[nbline%nbThread] << line << endl;
+		while(getline(wcin, line)){
+			td[nbline%nbThread].password_queue.push(line);
 			nbline++;
 		}
-		for (i=0; i < nbThread; i++){
-			filestreams[i].close();
-		}
+		for(i=0; i < nbThread; i++) td[i].queue_full = 1;
 	}
 
 	for( i = 0; i < nbThread; i++ ) {
-		if (is_stdin){
-			td[i].filename = "statsgen_tmp" + to_string(i);
-			td[i].lineBegin = 0;
-			td[i].lineEnd = nbline_file(td[i].filename);
-		}
-		else {
-			td[i].filename = filename;
-			td[i].lineBegin = i*(nbline/nbThread) + 1;
-			td[i].lineEnd = (i+1)*nbline/nbThread;
-			if (i > 0) {
-				while (td[i].lineBegin <= td[i-1].lineEnd) {
-					td[i].lineBegin++;
-				}
-			}
-		}
+		td[i].filename = filename;
 		td[i].thread_id = i + 1;
 		td[i].current_regex = current_regex;
 		td[i].use_regex = use_regex;
@@ -160,6 +141,14 @@ int Statsgen::generate_stats() {
 		td[i].limitSimplemask = limitSimplemask;
 		td[i].limitAdvancedmask = limitAdvancedmask;
 		
+		td[i].lineBegin = i*(nbline/nbThread) + 1;
+		td[i].lineEnd = (i+1)*nbline/nbThread;
+		if (i > 0) {
+			while (td[i].lineBegin <= td[i-1].lineEnd) {
+				td[i].lineBegin++;
+			}
+		}
+
 
 		td[i].sr.nbSecurePassword = 0;
 		td[i].sr.minLength = minLength;
@@ -169,7 +158,14 @@ int Statsgen::generate_stats() {
 		td[i].sr.minUpper = minUpper;
 
 		wcout << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
-		rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
+		// We use std::queue if input is from stdin
+		if (is_stdin) {
+			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );
+		}
+		// Else we split the file in nbThread threads
+		else {
+			rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
+		}
 	  
 		if (rc) {
 			cout << "Error:unable to create thread," << rc << endl;
@@ -475,6 +471,50 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol) {
 	}
 }
 
+
+void * generate_stats_thread_queue(void * threadarg) {
+	struct thread_data *my_data;
+	my_data = (struct thread_data *) threadarg;
+
+	wstring line;
+	int nbline = 0;
+	while(1) {
+		// there are passwords in stdin but they have not been pushed to the queue yet
+		if (my_data->password_queue.empty() && !my_data->queue_full){
+			this_thread::sleep_for(chrono::milliseconds(500));
+			continue;
+		}
+		// there is no more password
+		if (my_data->password_queue.empty() && my_data->queue_full){
+			break;
+		}
+		++nbline;
+		line = my_data->password_queue.front();
+		my_data->password_queue.pop();
+
+		if (line.size() == 0) {
+			continue;
+		}
+
+		Container c;
+
+		my_data->total_counter++;
+		if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
+			analyze_password(line, c, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
+
+			my_data->total_filter++;
+
+			my_data->length[ c.pass_length ] += 1;
+			my_data->charactersets[ c.characterset ] += 1;
+			my_data->simplemasks[ c.simplemask_string ] += 1;
+			my_data->advancedmasks[ c.advancedmask_string ] += 1;
+		}
+		updateMinMax(my_data->minMaxValue, c.pol);
+	}
+	wcout << my_data->total_counter << endl;
+
+	pthread_exit(NULL);
+}
 
 
 void * generate_stats_thread(void * threadarg) {

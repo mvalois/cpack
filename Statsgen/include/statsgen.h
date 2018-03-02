@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <regex>
+#include <queue>
 
 #define MAX_THREADS 32
 
@@ -83,6 +84,7 @@ struct thread_data {
 	std::string filename;
 	int lineBegin;
 	int lineEnd;
+	int queue_full = 0;
 
 	double total_counter = 0;
 	double total_filter = 0;
@@ -91,6 +93,7 @@ struct thread_data {
 	std::unordered_map<std::wstring, double> simplemasks;
 	std::unordered_map<std::wstring, double> advancedmasks;
 	std::unordered_map<std::wstring, double> charactersets;
+	std::queue<std::wstring> password_queue;
 
 	minMax minMaxValue;
 
@@ -285,6 +288,12 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol);
 * @param threadarg : all useful argument for the thread
 */
 void * generate_stats_thread(void * threadarg);
+
+/**
+ * @brief Compute statistics by consumming password from a queue
+ * @param threadarg : arguments required by the thread
+ */
+void * generate_stats_thread_queue(void * threadarg);
 
 
 #endif
