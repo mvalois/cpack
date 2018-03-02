@@ -514,7 +514,6 @@ void * generate_stats_thread_queue(void * threadarg) {
 		}
 		updateMinMax(my_data->minMaxValue, c.pol);
 	}
-	wcout << my_data->total_counter << endl;
 
 	pthread_exit(NULL);
 }
