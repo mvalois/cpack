@@ -296,7 +296,7 @@ void Statsgen::print_stats() {
 	if (outfile_name != ""){
 		locale::global(locale("C"));
 		wofstream outfile_stream(outfile_name);
-		multimap<double, wstring> reverse = flip_map<wstring>(stats_advancedmasks);
+		multimap<uint64_t, wstring> reverse = flip_map<wstring>(stats_advancedmasks);
 		for(auto it=reverse.end();it!=reverse.begin();it--){
 			if (it == reverse.end()) continue;
 			if(it->second == L"othermasks") continue;

@@ -36,11 +36,11 @@ using MapIterator = typename map<K, V>::const_iterator;
  * @return ordered map
  */
 template<typename A> 
-multimap<double, A> flip_map(const std::unordered_map<A, double> & src) {
-	multimap<double, A> dst;
+multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
+	multimap<uint64_t, A> dst;
 
-	for(UnorderedMapIterator<A, double> it = src.begin(); it != src.end(); ++it)
-		dst.insert(std::pair<double, A>(it->second, it->first));
+	for(UnorderedMapIterator<A, uint64_t> it = src.begin(); it != src.end(); ++it)
+		dst.insert(std::pair<uint64_t, A>(it->second, it->first));
 
 	return dst;
 }
@@ -82,11 +82,11 @@ void readResult(double res, Type carac, int & count, const double & total_counte
  * @param count: number of shown results
  */
 template<typename Type>
-void showMap(const unordered_map<Type, double> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
+void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
 	count = 0;
-	multimap<double, Type> reverse = flip_map<Type>(stats);
+	multimap<uint64_t, Type> reverse = flip_map<Type>(stats);
 	
-	MapIterator<double, Type> it;
+	MapIterator<uint64_t, Type> it;
 	for(it = reverse.end(); it != reverse.begin(); it--) {
 		if (it == reverse.end()) continue;
 

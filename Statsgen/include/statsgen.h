@@ -89,10 +89,10 @@ struct thread_data {
 	double total_counter = 0;
 	double total_filter = 0;
 
-	std::unordered_map<int, double> length;
-	std::unordered_map<std::wstring, double> simplemasks;
-	std::unordered_map<std::wstring, double> advancedmasks;
-	std::unordered_map<std::wstring, double> charactersets;
+	std::unordered_map<int, uint64_t> length;
+	std::unordered_map<std::wstring, uint64_t> simplemasks;
+	std::unordered_map<std::wstring, uint64_t> advancedmasks;
+	std::unordered_map<std::wstring, uint64_t> charactersets;
 	std::queue<std::wstring> password_queue;
 
 	minMax minMaxValue;
@@ -220,10 +220,10 @@ private:
 
 	// Dictionary
 
-	std::unordered_map<int, double> stats_length;					// Passwords' length linked to their occurrence
-	std::unordered_map<std::wstring, double> stats_simplemasks;	// Passwords' simple mask linked to their occurrence
-	std::unordered_map<std::wstring, double> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
-	std::unordered_map<std::wstring, double> stats_charactersets;	// Passwords' characterset linked to their occurrence
+	std::unordered_map<int, uint64_t> stats_length;					// Passwords' length linked to their occurrence
+	std::unordered_map<std::wstring, uint64_t> stats_simplemasks;	// Passwords' simple mask linked to their occurrence
+	std::unordered_map<std::wstring, uint64_t> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
+	std::unordered_map<std::wstring, uint64_t> stats_charactersets;	// Passwords' characterset linked to their occurrence
 
 
 	// Counters
