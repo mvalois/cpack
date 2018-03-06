@@ -44,7 +44,7 @@ struct Container {
 	std::wstring characterset = L"";
 	std::wstring advancedmask_string = L"";
 	std::wstring simplemask_string = L"";
-	Policy pol;	
+	Policy pol;
 };
 
 
@@ -115,7 +115,7 @@ struct thread_data {
 class Statsgen {
 public:
 	Statsgen() {};
-	
+
 	/**
 	 * @brief show all options for the command
 	 */
@@ -191,14 +191,14 @@ public:
 	 * @return 0 if error, 1 if success
 	 */
 	int generate_stats();
-	
+
 
 	/**
 	 * @brief Print all calculated statistics
 	 */
 	void print_stats();
-	
-	
+
+
 
 private:
 	std::string filename;
@@ -231,7 +231,7 @@ private:
 	uint64_t total_counter = 0;		// number of analysed passwords
 	uint64_t total_filter = 0;		// number of analysed passwords after a filter
 
-	minMax minMaxValue;				// save all genral data from passwords 
+	minMax minMaxValue;				// save all genral data from passwords
 
 
 	// Security policy
@@ -249,11 +249,11 @@ private:
 /**
  * @brief Analyse a letter in a password
  * @param letter: current letter
- * @param last_simplemask: last analyzed part of the simple masks 
+ * @param last_simplemask: last analyzed part of the simple masks
  * @param simplemask_string: current simple mask
  * @param advancedmask_string: current advanced mask
  * @param policy: current number of digit, lower, upper and special for the current password
- * @param sizeAdvancedMask: size of the current advanced mask 
+ * @param sizeAdvancedMask: size of the current advanced mask
  * @param sizeSimpleMask: size of the current simple mask
  */
 void analyse_letter(const char & letter, char & last_simplemask, std::wstring & simplemask_string, std::wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
@@ -276,7 +276,7 @@ void analyse_charset(std::wstring & charset, const Policy & policy);
 void analyze_password(const std::wstring & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
 
 /**
- * @brief Update minima and maxima of all general data from analysed passwords 
+ * @brief Update minima and maxima of all general data from analysed passwords
  * with the analysed passwords
  * @param minMaxValue: save all minima and maxima
  * @param pol : policy of the last analyzed password

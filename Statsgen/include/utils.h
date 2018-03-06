@@ -35,7 +35,7 @@ using MapIterator = typename map<K, V>::const_iterator;
  * @param src: unoredered map than needed to be ordered
  * @return ordered map
  */
-template<typename A> 
+template<typename A>
 multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
 	multimap<uint64_t, A> dst;
 
@@ -64,8 +64,8 @@ void readResult(uint64_t res, Type carac, int & count, const uint64_t & total_co
 		wstring value = to_wstring(percentage);
 		value = value.substr(0,5);
 
-		wcout << setw(40) << right << carac << ":  " 
-			<< setw(5) << right << value << "%" 
+		wcout << setw(40) << right << carac << ":  "
+			<< setw(5) << right << value << "%"
 			<< setw(5) << right << "(" << res << ")" << endl;
 
 		count++;
@@ -85,7 +85,7 @@ template<typename Type>
 void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const uint64_t & total_counter, const int & hiderare, int & count) {
 	count = 0;
 	multimap<uint64_t, Type> reverse = flip_map<Type>(stats);
-	
+
 	MapIterator<uint64_t, Type> it;
 	for(it = reverse.end(); it != reverse.begin(); it--) {
 		if (it == reverse.end()) continue;

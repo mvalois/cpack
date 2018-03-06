@@ -143,7 +143,7 @@ int Statsgen::generate_stats() {
 		td[i].withcount = withcount;
 		td[i].limitSimplemask = limitSimplemask;
 		td[i].limitAdvancedmask = limitAdvancedmask;
-		
+
 		td[i].lineBegin = i*(nbline/nbThread) + 1;
 		td[i].lineEnd = (i+1)*nbline/nbThread;
 		if (i > 0) {
@@ -169,7 +169,7 @@ int Statsgen::generate_stats() {
 		else {
 			rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
 		}
-	  
+
 		if (rc) {
 			cout << "Error:unable to create thread," << rc << endl;
 			exit(-1);
@@ -208,7 +208,7 @@ int Statsgen::generate_stats() {
 		updateMinMax(minMaxValue, policyMin);
 		updateMinMax(minMaxValue, policyMax);
 
-		
+
 		for(auto it=td[i].length.begin();it!=td[i].length.end();it++)
 		{
 			stats_length[it->first]+=it->second;
@@ -232,13 +232,13 @@ int Statsgen::generate_stats() {
 	}
 
 
-	
+
 	if (!total_counter) {
 		wcerr << "Empty file or not existing file" << endl;
 		return 0;
 	}
-	
-	
+
+
 	return 1;
 }
 
@@ -247,7 +247,7 @@ void Statsgen::print_stats() {
 	int count;
 	float perc = (float) 100 * (total_filter / total_counter);
 
-	wcout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t(" 
+	wcout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
 		<< perc << " %)" << endl;
 
 
@@ -263,14 +263,14 @@ void Statsgen::print_stats() {
 
 
 	wcout << "\nmin - max\n" << endl;
-	wcout << setw(43) << right << "digit:  " 
+	wcout << setw(43) << right << "digit:  "
 			<< setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
-	wcout << setw(43) << right << "lower:  " 
+	wcout << setw(43) << right << "lower:  "
 			<< setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
-	wcout << setw(43) << right << "upper:  " 
+	wcout << setw(43) << right << "upper:  "
 			<< setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
-	wcout << setw(43) << right << "special:  " 
-			<< setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;       
+	wcout << setw(43) << right << "special:  "
+			<< setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;
 
 
 
@@ -304,7 +304,7 @@ void Statsgen::print_stats() {
 		}
 		outfile_stream.close();
 	}
-	
+
 	if (limitAdvancedmask > 0) {
 		wcout << endl;
 		readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
@@ -425,10 +425,10 @@ void analyze_password(const wstring & password, Container & c, SecurityRules & s
 
 	analyse_charset(c.characterset, c.pol);
 
-	if ( (c.pass_length >= sr.minLength) && 
-		 (c.pol.digit >= sr.minDigit) && 
-		 (c.pol.lower >= sr.minLower) && 
-		 (c.pol.upper >= sr.minUpper) && 
+	if ( (c.pass_length >= sr.minLength) &&
+		 (c.pol.digit >= sr.minDigit) &&
+		 (c.pol.lower >= sr.minLower) &&
+		 (c.pol.upper >= sr.minUpper) &&
 		 (c.pol.special >= sr.minSpecial) ) {
 		sr.nbSecurePassword++;
 	}
@@ -557,7 +557,7 @@ void * generate_stats_thread(void * threadarg) {
 			}
 			wstring password = line.substr(i+1,line.length());
 			uint64_t nbPasswords = stoi(line.substr(0,i));
-			
+
 			my_data->total_counter += nbPasswords;
 
 			if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
@@ -574,7 +574,7 @@ void * generate_stats_thread(void * threadarg) {
 			my_data->total_counter++;
 			if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
 				analyze_password(line, c, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
-				
+
 				my_data->total_filter++;
 
 				my_data->length[ c.pass_length ] += 1;
