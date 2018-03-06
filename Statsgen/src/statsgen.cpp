@@ -27,6 +27,7 @@ using namespace std;
 void Statsgen::setFilename(std::string name) {
 	if (name == "-"){
 		is_stdin = true;
+		warn("reading from stdin enabled, loading the whole list in memory");
 	}
 	else {
 		filename = name;
@@ -81,6 +82,18 @@ void Statsgen::setNbThread(int nb) {
 
 void Statsgen::setOutfile(string outfile){
 	outfile_name = outfile;
+}
+
+void Statsgen::enableDebug(){
+	debug_enabled = true;
+}
+
+void Statsgen::warn(const string & message){
+	cerr << "[Warning] " << message << endl;
+}
+void Statsgen::debug(const string & message){
+	if (debug_enabled)
+		cerr << "[Debug] " << message << endl;
 }
 
 

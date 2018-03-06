@@ -181,9 +181,26 @@ public:
 
 	/**
 	 * @brief Where to write masks
-	 * @param outfie: the file where to write masks
+	 * @param outfile: the file where to write masks
 	 */
 	void setOutfile(std::string outfile);
+
+	/**
+	 * @brief enable debugging
+	 */
+	void enableDebug();
+
+	/**
+	 * @brief print the warning message
+	 * @param message: the warning message
+	 */
+	void warn(const std::string & message);
+
+	/**
+	 * @brief print the debug message if debug enabled
+	 * @param message: the debug message
+	 * */
+	void debug(const std::string & message);
 
 	/**
 	 * @brief Calculate all statistics for a database
@@ -215,6 +232,7 @@ private:
 	int nbThread = 1;				// Number of usable threads, default 1
 	std::string outfile_name;		// File where to write masks
 	bool is_stdin = false;				// If filename is stdin
+	bool debug_enabled = false;		// Enable debug output
 
 
 	// Dictionary
