@@ -84,7 +84,6 @@ struct thread_data {
 	std::string filename;
 	uint64_t lineBegin;
 	uint64_t lineEnd;
-	bool queue_full = false;
 
 	uint64_t total_counter = 0;
 	uint64_t total_filter = 0;

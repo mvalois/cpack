@@ -17,7 +17,6 @@
 #include <vector>
 #include <thread>
 #include <pthread.h>
-#include <chrono>
 
 
 #include "statsgen.h"
@@ -132,7 +131,6 @@ int Statsgen::generate_stats() {
 			td[nbline%nbThread].password_queue.push(line);
 			nbline++;
 		}
-		for(i=0; i < nbThread; i++) td[i].queue_full = true;
 	}
 
 	for( i = 0; i < nbThread; i++ ) {
@@ -481,16 +479,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 
 	wstring line;
 	uint64_t nbline = 0;
-	while(1) {
-		// there are passwords in stdin but they have not been pushed to the queue yet
-		if (my_data->password_queue.empty() && !my_data->queue_full){
-			this_thread::sleep_for(chrono::milliseconds(500));
-			continue;
-		}
-		// there is no more password
-		if (my_data->password_queue.empty() && my_data->queue_full){
-			break;
-		}
+	while(!my_data->password_queue.empty()) {
 		++nbline;
 		line = my_data->password_queue.front();
 		my_data->password_queue.pop();
