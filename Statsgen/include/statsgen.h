@@ -67,7 +67,7 @@ struct minMax {
  * @brief All needed variables for the security rules
  */
 struct SecurityRules {
-	double nbSecurePassword;
+	uint64_t nbSecurePassword;
 	int minLength;
 	int minSpecial;
 	int minDigit;
@@ -82,12 +82,12 @@ struct SecurityRules {
 struct thread_data {
 	int thread_id;
 	std::string filename;
-	int lineBegin;
-	int lineEnd;
+	uint64_t lineBegin;
+	uint64_t lineEnd;
 	int queue_full = 0;
 
-	double total_counter = 0;
-	double total_filter = 0;
+	uint64_t total_counter = 0;
+	uint64_t total_filter = 0;
 
 	std::unordered_map<int, uint64_t> length;
 	std::unordered_map<std::wstring, uint64_t> simplemasks;
@@ -228,15 +228,15 @@ private:
 
 	// Counters
 
-	double total_counter = 0;		// number of analysed passwords
-	double total_filter = 0;		// number of analysed passwords after a filter
+	uint64_t total_counter = 0;		// number of analysed passwords
+	uint64_t total_filter = 0;		// number of analysed passwords after a filter
 
 	minMax minMaxValue;				// save all genral data from passwords 
 
 
 	// Security policy
 
-	double nbSecurePassword = 0;	// all passwords that respect the security rules
+	uint64_t nbSecurePassword = 0;	// all passwords that respect the security rules
 	int minLength = 8;
 	int minSpecial = 0;
 	int minDigit = 1;

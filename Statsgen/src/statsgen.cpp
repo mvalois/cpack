@@ -105,7 +105,7 @@ void Statsgen::setSecurityRules() {
 
 
 int Statsgen::generate_stats() {
-	int nbline = 0;
+	uint64_t nbline = 0;
 	if (!is_stdin){
 		nbline = nbline_file(filename);
 		if (!nbline){ // error reading the file
@@ -480,7 +480,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 	my_data = (struct thread_data *) threadarg;
 
 	wstring line;
-	int nbline = 0;
+	uint64_t nbline = 0;
 	while(1) {
 		// there are passwords in stdin but they have not been pushed to the queue yet
 		if (my_data->password_queue.empty() && !my_data->queue_full){
@@ -525,7 +525,7 @@ void * generate_stats_thread(void * threadarg) {
 
 	wifstream readfile(my_data->filename);
 	wstring line;
-	int nbline = 0;
+	uint64_t nbline = 0;
 
 	while(readfile.good()) {
 		++nbline;
@@ -545,7 +545,7 @@ void * generate_stats_thread(void * threadarg) {
 		Container c;
 
 		if (my_data->withcount) {
-			uint i = 0;
+			uint64_t i = 0;
 			bool number=false;
 			for(i=0; i < line.length(); i++) {
 				if(iswdigit(line.at(i))) {
@@ -556,7 +556,7 @@ void * generate_stats_thread(void * threadarg) {
 				}
 			}
 			wstring password = line.substr(i+1,line.length());
-			int nbPasswords = stoi(line.substr(0,i));
+			uint64_t nbPasswords = stoi(line.substr(0,i));
 			
 			my_data->total_counter += nbPasswords;
 

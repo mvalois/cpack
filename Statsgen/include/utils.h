@@ -56,7 +56,7 @@ multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
  * @param hiderare: flag to hide statistics under 1%
  */
 template<typename Type>
-void readResult(double res, Type carac, int & count, const double & total_counter, const int & hiderare) {
+void readResult(uint64_t res, Type carac, int & count, const uint64_t & total_counter, const int & hiderare) {
 	float percentage;
 	percentage = (float) (100*res) / total_counter;
 
@@ -82,7 +82,7 @@ void readResult(double res, Type carac, int & count, const double & total_counte
  * @param count: number of shown results
  */
 template<typename Type>
-void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const double & total_counter, const int & hiderare, int & count) {
+void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const uint64_t & total_counter, const int & hiderare, int & count) {
 	count = 0;
 	multimap<uint64_t, Type> reverse = flip_map<Type>(stats);
 	
@@ -107,10 +107,10 @@ void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const
  * @param filename: name of the file
  * @return number of line
  */
-int nbline_file(const string & filename) {
+uint64_t nbline_file(const string & filename) {
 	wifstream readfile(filename);
 	wstring line;
-	int nb = 0;
+	uint64_t nb = 0;
 
 	while(readfile.good()) {
 		getline(readfile, line);
