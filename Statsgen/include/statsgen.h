@@ -84,7 +84,7 @@ struct thread_data {
 	std::string filename;
 	uint64_t lineBegin;
 	uint64_t lineEnd;
-	int queue_full = 0;
+	bool queue_full = false;
 
 	uint64_t total_counter = 0;
 	uint64_t total_filter = 0;
@@ -215,7 +215,7 @@ private:
 	int limitAdvancedmask = 12;		// Limit the size of Advanced Mask
 	int nbThread = 1;				// Number of usable threads, default 1
 	std::string outfile_name;		// File where to write masks
-	int is_stdin = 0;				// If filename is stdin
+	bool is_stdin = false;				// If filename is stdin
 
 
 	// Dictionary

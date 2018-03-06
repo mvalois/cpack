@@ -27,7 +27,7 @@ using namespace std;
 
 void Statsgen::setFilename(std::string name) {
 	if (name == "-"){
-		is_stdin = 1;
+		is_stdin = true;
 	}
 	else {
 		filename = name;
@@ -132,7 +132,7 @@ int Statsgen::generate_stats() {
 			td[nbline%nbThread].password_queue.push(line);
 			nbline++;
 		}
-		for(i=0; i < nbThread; i++) td[i].queue_full = 1;
+		for(i=0; i < nbThread; i++) td[i].queue_full = true;
 	}
 
 	for( i = 0; i < nbThread; i++ ) {
