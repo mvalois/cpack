@@ -17,6 +17,7 @@
 #include <vector>
 #include <thread>
 #include <pthread.h>
+#include <cstdarg>
 
 
 #include "statsgen.h"
@@ -88,12 +89,41 @@ void Statsgen::enableDebug(){
 	debug_enabled = true;
 }
 
-void Statsgen::warn(const string & message){
-	cerr << "[Warning] " << message << endl;
+void Statsgen::warn(const char* messages...){
+	va_list args;
+	va_start(args, messages);
+	cerr << "[Warning]";
+	while (*messages != '\0'){
+			cerr << " ";
+			if (*messages == 'd') {
+				cerr << va_arg(args, int);
+			}
+			else{
+				cerr << va_arg(args, char*);
+			}
+			messages++;
+	}
+	cerr << endl;
+	va_end(args);
 }
-void Statsgen::debug(const string & message){
-	if (debug_enabled)
-		cerr << "[Debug] " << message << endl;
+
+void Statsgen::debug(const char* messages...){
+	if (!debug_enabled) return;
+	va_list args;
+	va_start(args, messages);
+	cerr << "[Debug]";
+	while (*messages != '\0'){
+			cerr << " ";
+			if (*messages == 'd') {
+				cerr << va_arg(args, int);
+			}
+			else{
+				cerr << va_arg(args, char*);
+			}
+			messages++;
+	}
+	cerr << endl;
+	va_end(args);
 }
 
 
@@ -171,7 +201,7 @@ int Statsgen::generate_stats() {
 		td[i].sr.minLower = minLower;
 		td[i].sr.minUpper = minUpper;
 
-		wcout << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
+		debug("Thread", td[i].thread_id, "analyse :", td[i].lineBegin, " -->", td[i].lineEnd);
 		// We use std::queue if input is from stdin
 		if (is_stdin) {
 			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );

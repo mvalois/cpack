@@ -194,13 +194,13 @@ public:
 	 * @brief print the warning message
 	 * @param message: the warning message
 	 */
-	void warn(const std::string & message);
+	void warn(const char* messages...);
 
 	/**
 	 * @brief print the debug message if debug enabled
 	 * @param message: the debug message
 	 * */
-	void debug(const std::string & message);
+	void debug(const char* messages...);
 
 	/**
 	 * @brief Calculate all statistics for a database
