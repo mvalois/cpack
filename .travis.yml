@@ -1,0 +1,1 @@
+script: make -C Statsgen -j2
