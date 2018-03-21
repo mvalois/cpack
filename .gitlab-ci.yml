@@ -1,0 +1,6 @@
+before_script:
+  - apt-get update && apt-get install -y build-essential
+build:
+  script:
+    - cd Statsgen
+    - make -j2
