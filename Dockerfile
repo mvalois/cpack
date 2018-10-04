@@ -1,7 +1,7 @@
-FROM ubuntu:bionic
+FROM b90727ba45c9
 
 RUN apt-get -qq update
-RUN apt-get -qq -y install build-essential qt5-default libqt5charts5-dev >/dev/null
+RUN apt-get -qq -y install build-essential >/dev/null
 
 COPY GUI /opt/GUI
 

@@ -1,20 +1,16 @@
-image: ubuntu:18.04
+image: matlink/qt5-linux:latest
+
+before_script:
+  - apt-get -qq update
+  - apt-get -qq -y install build-essential > /dev/null
 
 build-cli:
-  before_script:
-    - apt-get -qq update
-    - apt-get -qq -y install build-essential > /dev/null
   script: make -C Statsgen -j$(nproc)
   artifacts:
     paths:
       - Statsgen/cstatsgen
 
 build-gui:
-  before_script:
-    - apt-get -qq update
-    - apt-get -y install build-essential
-                             qt5-default
-                             libqt5charts5-dev
   script:
     - cd GUI
     - qmake
