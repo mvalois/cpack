@@ -45,7 +45,7 @@ MainWindow::~MainWindow()
 /***************************************************/
 
 void MainWindow::findFile() {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Browser"), QDir::currentPath(), tr("Text files (*.txt)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Browser"), QDir::currentPath(), tr("Text files (*.txt);; All Files (*)"));
     ui->fileLine->setText(filename);
 }
 
