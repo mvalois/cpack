@@ -4,8 +4,11 @@ LDFLAGS  = -lpthread
 SRC	 = src
 INC	 = include
 BIN  = cstatsgen
+BINGUI = cstatsgen-gui
 
 .PHONY = clean
+
+all: $(BIN) $(BINGUI)
 
 $(BIN): main.o statsgen.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
@@ -18,3 +21,7 @@ statsgen.o: $(SRC)/core/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
 
 clean:
 	-rm -f *.o stats
+
+$(BINGUI): statsgen.o
+	qmake -o qmakefile
+	make -f qmakefile
