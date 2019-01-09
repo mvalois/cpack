@@ -10,10 +10,10 @@ BIN  = cstatsgen
 $(BIN): main.o statsgen.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
-main.o: $(SRC)/main.cpp $(INC)/statsgen.h
+main.o: $(SRC)/cli/main.cpp $(INC)/statsgen.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-statsgen.o: $(SRC)/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
+statsgen.o: $(SRC)/core/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean:
