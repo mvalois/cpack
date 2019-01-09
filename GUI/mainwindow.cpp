@@ -169,7 +169,7 @@ void MainWindow::startGame() {
     ui->maxSimpleCheckBox->setDisabled(true);
 
 
-    delete layoutCharset;
+    //delete layoutCharset;
     delete layoutLength;
 
     WorkerThread *workerThread = new WorkerThread(stats);
