@@ -18,4 +18,4 @@ HEADERS  += mainwindow.h\
 FORMS    += mainwindow.ui
 
 
-QMAKE_CXXFLAGS += -std=c++11 -lpthread
+QMAKE_CXXFLAGS += -std=c++11 -lpthread -static
