@@ -35,7 +35,6 @@ void Statsgen::setFilename(std::string name) {
 	}
 }
 
-
 void Statsgen::setHiderare(int val) {
 	hiderare = val;
 }
@@ -142,6 +141,14 @@ void Statsgen::setSecurityRules() {
 
 	wcout << "\nMinimum of upper characters in a password:" << endl;
 	cin >> minUpper;
+}
+
+void Statsgen::setSecurityRules(int length,int special,int digit,int upper,int lower) {
+    minLength=length;
+    minSpecial=special;
+    minDigit=digit;
+    minUpper=upper;
+    minLower=lower;
 }
 
 
@@ -623,3 +630,41 @@ void * generate_stats_thread(void * threadarg) {
 	pthread_exit(NULL);
 }
 
+uint64_t Statsgen::getTotalCounter() {
+	return total_counter;
+}
+
+uint64_t Statsgen::getTotalFilter() {
+	return total_filter;
+}
+
+uint64_t Statsgen::getNbSecurePasswords() {
+	return nbSecurePassword;
+}
+
+std::unordered_map<int, uint64_t> Statsgen::getStatsLength(){
+	return stats_length;
+}
+
+std::unordered_map<std::wstring, uint64_t> Statsgen::getStatsCharsets(){
+	return stats_charactersets;
+}
+
+
+uint64_t nbline_file(const string & filename) {
+	wifstream readfile(filename);
+	wstring line;
+	uint64_t nb = 0;
+
+	while(readfile.good()) {
+		getline(readfile, line);
+		++nb;
+	}
+	// we have not read the whole file
+	if (readfile.fail() && !readfile.eof()){
+		cerr << "There was an error reading the file at line " << nb << endl;
+		return 0;
+	}
+
+	return nb;
+}

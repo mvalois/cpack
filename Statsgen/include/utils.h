@@ -15,7 +15,10 @@
 
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
+#include <iomanip>
+
 using namespace std;
 
 
@@ -107,27 +110,5 @@ void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const
  * @param filename: name of the file
  * @return number of line
  */
-uint64_t nbline_file(const string & filename) {
-	wifstream readfile(filename);
-	wstring line;
-	uint64_t nb = 0;
-
-	while(readfile.good()) {
-		getline(readfile, line);
-		++nb;
-	}
-	// we have not read the whole file
-	if (readfile.fail() && !readfile.eof()){
-		cerr << "There was an error reading the file at line " << nb << endl;
-		return 0;
-	}
-
-	return nb;
-}
-
-
-
+uint64_t nbline_file(const string & filename);
 #endif
-
-
-

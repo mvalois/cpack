@@ -11,15 +11,12 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "utils.h"
 
 #include <QFileDialog>
 #include <QTextStream>
 #include <iostream>
 #include <QtCharts>
-
-
-
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -52,7 +49,7 @@ void MainWindow::findFile() {
 
 void MainWindow::startGame() {
     stats = new Statsgen();
-    stats->setFilename(ui->fileLine->text());
+    stats->setFilename((ui->fileLine->text()).toUtf8().constData());
 
     if(ui->withcountButton->isChecked())
     {
@@ -192,6 +189,54 @@ void MainWindow::disableWithCount()
     ui->withcountButton->setChecked(false);
 }
 
+void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity, double & total, double & filter) {
+    total = stats->getTotalCounter();
+    filter = stats->getTotalFilter();
+    percentageTotal = (double) 100 * (filter / total);
+    percentageSecurity = (double) 100 * (stats->getNbSecurePasswords() / total);
+
+    /* LENGTH HISTOGRAM */
+    std::multimap<uint64_t, int> reverseL = flip_map<int>(stats->getStatsLength());
+    double percentageL;
+    uint64_t nbHideL = 0;
+
+    MapIterator<uint64_t, int> itL;
+    for(itL = reverseL.end(); itL != reverseL.begin(); itL--) {
+        if (itL == reverseL.end()) continue;
+
+        percentageL = (double) (100*itL->first) / total;
+        if (percentageL >= 2) {
+            QBarSet *set = new QBarSet(QString::number(itL->second));
+            *set << itL->first;
+            barLength->append(set);
+        } else {
+            nbHideL += itL->first;
+        }
+    }
+
+    QBarSet *set = new QBarSet("Other lengths");
+    *set << nbHideL;
+    barLength->append(set);
+
+
+    /* CHARSET PIECHART */
+    std::multimap<uint64_t, wstring> reverseC = flip_map<wstring>(stats->getStatsCharsets());
+    int top = 0;
+    uint64_t nbHideC = 0;
+
+    MapIterator<uint64_t, wstring> itC;
+    for(itC = reverseC.end(); itC != reverseC.begin(); itC--) {
+        if (itC == reverseC.end()) continue;
+        top++;
+        if (top <= 5) {
+            pieCharset->append(QString::fromStdWString(itC->second), itC->first);
+        } else {
+            nbHideC += itC->first;
+        }
+    }
+    pieCharset->append("Other charsets", nbHideC);
+}
+
 void MainWindow::handleResults()
 {
 
@@ -220,7 +265,7 @@ void MainWindow::handleResults()
     QPieSeries * pieCharset = new QPieSeries();
     double percentageTotal, percentageSecurity, total_counter, total_filter;
 
-    stats->initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity, total_counter, total_filter);
+    initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity, total_counter, total_filter);
 
 
 
@@ -275,5 +320,3 @@ void MainWindow::handleResults()
 
     ui->resultLabel->setText("For more detailed statistics, check the file \"result.txt\"");
 }
-
-

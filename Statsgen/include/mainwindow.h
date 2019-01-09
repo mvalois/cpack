@@ -17,6 +17,8 @@
 #include <QMainWindow>
 #include <QThread>
 #include <QMessageBox>
+#include <QVBoxLayout>
+#include <QtCharts>
 
 namespace Ui {
 class MainWindow;
@@ -48,6 +50,7 @@ private:
     QVBoxLayout * layoutCharset;
     QVBoxLayout * layoutLength;
     int firstTime=1;
+    void initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity, double & total, double & filter);
 };
 
 

@@ -178,6 +178,7 @@ public:
 	 * @brief Defining all security rules
 	 */
 	void setSecurityRules();
+	void setSecurityRules(int length,int special,int digit,int upper,int lower);
 
 	/**
 	 * @brief Where to write masks
@@ -213,6 +214,13 @@ public:
 	 * @brief Print all calculated statistics
 	 */
 	void print_stats();
+
+	uint64_t getTotalCounter();
+	uint64_t getTotalFilter();
+	uint64_t getNbSecurePasswords();
+	std::unordered_map<int, uint64_t> getStatsLength();
+	std::unordered_map<std::wstring, uint64_t> getStatsCharsets();
+
 
 
 
