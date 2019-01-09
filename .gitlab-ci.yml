@@ -1,3 +1,4 @@
+image: localhost:5000/stretch
 before_script:
   - export http_proxy=http://10.14.128.99:3128
   - apt-get -qq update && apt-get -qq -y install build-essential > /dev/null
