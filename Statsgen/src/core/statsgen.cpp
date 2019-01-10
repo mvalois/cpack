@@ -47,10 +47,10 @@ void Statsgen::setTop(int val) {
 
 
 void Statsgen::setRegex(string expr) {
-	wstring tmp(expr.length(),L' ');
+	string tmp(expr.length(),' ');
 	copy(expr.begin(), expr.end(), tmp.begin());
 
-	wregex tmp_reg(tmp);
+	regex tmp_reg(tmp);
 	current_regex = tmp_reg;
 
 	use_regex = true;
@@ -175,9 +175,9 @@ int Statsgen::generate_stats() {
 
 	// split stdin into nbThread files on disk
 	if (is_stdin){
-		wstring line;
+		string line;
 		nbline = 0;
-		while(getline(wcin, line)){
+		while(getline(cin, line)){
 			td[nbline%nbThread].password_queue.push(line);
 			nbline++;
 		}
@@ -286,6 +286,7 @@ int Statsgen::generate_stats() {
 		return 0;
 	}
 
+	cout << "total counter " << total_counter << endl;
 
 	return 1;
 }
@@ -334,7 +335,7 @@ void Statsgen::print_stats() {
 
 	if (limitSimplemask > 0) {
 		wcout << endl;
-		readResult(stats_simplemasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
+		readResult(stats_simplemasks["othermasks"], "othermasks", count, total_counter, hiderare);
 	}
 
 
@@ -343,11 +344,11 @@ void Statsgen::print_stats() {
 
 	if (outfile_name != ""){
 		locale::global(locale("C"));
-		wofstream outfile_stream(outfile_name);
-		multimap<uint64_t, wstring> reverse = flip_map<wstring>(stats_advancedmasks);
+		ofstream outfile_stream(outfile_name);
+		multimap<uint64_t, string> reverse = flip_map<string>(stats_advancedmasks);
 		for(auto it=reverse.end();it!=reverse.begin();it--){
 			if (it == reverse.end()) continue;
-			if(it->second == L"othermasks") continue;
+			if(it->second == "othermasks") continue;
 			outfile_stream << it->second << "," << it->first << endl;
 		}
 		outfile_stream.close();
@@ -355,7 +356,7 @@ void Statsgen::print_stats() {
 
 	if (limitAdvancedmask > 0) {
 		wcout << endl;
-		readResult(stats_advancedmasks[L"othermasks"], L"othermasks", count, total_counter, hiderare);
+		readResult(stats_advancedmasks["othermasks"], "othermasks", count, total_counter, hiderare);
 	}
 }
 
@@ -364,101 +365,101 @@ void Statsgen::print_stats() {
 
 
 
-void analyse_letter(const char & letter, char & last_simplemask, wstring & simplemask_string, wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask) {
+void analyse_letter(const char & letter, char & last_simplemask, string & simplemask_string, string & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask) {
 	sizeAdvancedMask++;
 
-	if (letter >= L'0' && letter <= L'9') {
+	if (letter >= '0' && letter <= '9') {
 		policy.digit++;
-		advancedmask_string += L"?d";
+		advancedmask_string += "?d";
 		if (last_simplemask != 'd') {
 			sizeSimpleMask++;
-			simplemask_string += L"digit";
+			simplemask_string += "digit";
 			last_simplemask = 'd';
 		}
 	}
-	else if(letter >= L'a' && letter <= L'z') {
+	else if(letter >= 'a' && letter <= 'z') {
 		policy.lower++;
-		advancedmask_string += L"?l";
+		advancedmask_string += "?l";
 		if (last_simplemask != 'l') {
 			sizeSimpleMask++;
-			simplemask_string += L"lower";
+			simplemask_string += "lower";
 			last_simplemask = 'l';
 		}
 	}
-	else if(letter >= L'A' && letter <= L'Z') {
+	else if(letter >= 'A' && letter <= 'Z') {
 		policy.upper++;
-		advancedmask_string += L"?u";
+		advancedmask_string += "?u";
 		if (last_simplemask != 'u') {
 			sizeSimpleMask++;
-			simplemask_string += L"upper";
+			simplemask_string += "upper";
 			last_simplemask = 'u';
 		}
 	}
 	else {
 		policy.special++;
-		advancedmask_string += L"?s";
+		advancedmask_string += "?s";
 
 		if (last_simplemask != 's') {
 			sizeSimpleMask++;
-			simplemask_string += L"special";
+			simplemask_string += "special";
 			last_simplemask = 's';
 		}
 	}
 }
 
 
-void analyse_charset(wstring & charset, const Policy & policy) {
+void analyse_charset(string & charset, const Policy & policy) {
 	if (policy.digit && !policy.lower && !policy.upper && !policy.special) {
-		charset = L"numeric";
+		charset = "numeric";
 	}
 	else if (!policy.digit && policy.lower && !policy.upper && !policy.special) {
-		charset = L"loweralpha";
+		charset = "loweralpha";
 	}
 	else if (!policy.digit && !policy.lower && policy.upper && !policy.special) {
-		charset = L"upperalpha";
+		charset = "upperalpha";
 	}
 	else if (!policy.digit && !policy.lower && !policy.upper && policy.special) {
-		charset = L"special";
+		charset = "special";
 	}
 	else if (!policy.digit && policy.lower && policy.upper && !policy.special) {
-		charset = L"mixedalpha";
+		charset = "mixedalpha";
 	}
 	else if (policy.digit && policy.lower && !policy.upper && !policy.special) {
-		charset = L"loweralphanum";
+		charset = "loweralphanum";
 	}
 	else if (policy.digit && !policy.lower && policy.upper && !policy.special) {
-		charset = L"upperalphanum";
+		charset = "upperalphanum";
 	}
 	else if (!policy.digit && policy.lower && !policy.upper && policy.special) {
-		charset = L"loweralphaspecial";
+		charset = "loweralphaspecial";
 	}
 	else if (!policy.digit && !policy.lower && policy.upper && policy.special) {
-		charset = L"upperalphaspecial";
+		charset = "upperalphaspecial";
 	}
 	else if (policy.digit && !policy.lower && !policy.upper && policy.special) {
-		charset = L"specialnum";
+		charset = "specialnum";
 	}
 
 	else if (!policy.digit && policy.lower && policy.upper && policy.special) {
-		charset = L"mixedalphaspecial";
+		charset = "mixedalphaspecial";
 	}
 	else if (policy.digit && !policy.lower && policy.upper && policy.special) {
-		charset = L"upperalphaspecialnum";
+		charset = "upperalphaspecialnum";
 	}
 	else if (policy.digit && policy.lower && !policy.upper && policy.special) {
-		charset = L"loweralphaspecialnum";
+		charset = "loweralphaspecialnum";
 	}
 	else if (policy.digit && policy.lower && policy.upper && !policy.special) {
-		charset = L"mixedalphanum";
+		charset = "mixedalphanum";
 	}
 
 	else {
-		charset = L"all";
+		charset = "all";
 	}
 }
 
 
-void analyze_password(const wstring & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
+void analyze_password(const string & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
 	c.pass_length = password.size();
 
 	char last_simplemask = 'a';
@@ -482,11 +483,11 @@ void analyze_password(const wstring & password, Container & c, SecurityRules & s
 	}
 
 	if (sizeAdvancedMask > limitAdvancedmask) {
-		c.advancedmask_string = L"othermasks";
+		c.advancedmask_string = "othermasks";
 	}
 
 	if (sizeSimpleMask > limitSimplemask) {
-		c.simplemask_string = L"othermasks";
+		c.simplemask_string = "othermasks";
 	}
 }
 
@@ -527,7 +528,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 	struct thread_data *my_data;
 	my_data = (struct thread_data *) threadarg;
 
-	wstring line;
+	string line;
 	uint64_t nbline = 0;
 	while(!my_data->password_queue.empty()) {
 		++nbline;
@@ -562,8 +563,8 @@ void * generate_stats_thread(void * threadarg) {
 	struct thread_data *my_data;
 	my_data = (struct thread_data *) threadarg;
 
-	wifstream readfile(my_data->filename);
-	wstring line;
+	ifstream readfile(my_data->filename);
+	string line;
 	uint64_t nbline = 0;
 
 	while(readfile.good()) {
@@ -594,7 +595,7 @@ void * generate_stats_thread(void * threadarg) {
 					break;
 				}
 			}
-			wstring password = line.substr(i+1,line.length());
+			string password = line.substr(i+1,line.length());
 			uint64_t nbPasswords = stoi(line.substr(0,i));
 
 			my_data->total_counter += nbPasswords;
@@ -646,14 +647,14 @@ std::unordered_map<int, uint64_t> Statsgen::getStatsLength(){
 	return stats_length;
 }
 
-std::unordered_map<std::wstring, uint64_t> Statsgen::getStatsCharsets(){
+std::unordered_map<std::string, uint64_t> Statsgen::getStatsCharsets(){
 	return stats_charactersets;
 }
 
 
 uint64_t nbline_file(const string & filename) {
-	wifstream readfile(filename);
-	wstring line;
+	ifstream readfile(filename);
+	string line;
 	uint64_t nb = 0;
 
 	while(readfile.good()) {

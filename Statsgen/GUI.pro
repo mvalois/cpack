@@ -8,7 +8,7 @@ TEMPLATE = app
 INCLUDEPATH += include
 
 
-SOURCES += src/gui/main.cpp\
+SOURCES += src/gui/maingui.cpp\
         src/gui/mainwindow.cpp\
         src/core/statsgen.cpp
 

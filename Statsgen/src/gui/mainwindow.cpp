@@ -166,7 +166,7 @@ void MainWindow::startGame() {
     ui->maxSimpleCheckBox->setDisabled(true);
 
 
-    //delete layoutCharset;
+    // delete layoutCharset;
     delete layoutLength;
 
     WorkerThread *workerThread = new WorkerThread(stats);
@@ -220,16 +220,16 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
 
 
     /* CHARSET PIECHART */
-    std::multimap<uint64_t, wstring> reverseC = flip_map<wstring>(stats->getStatsCharsets());
+    std::multimap<uint64_t, string> reverseC = flip_map<string>(stats->getStatsCharsets());
     int top = 0;
     uint64_t nbHideC = 0;
 
-    MapIterator<uint64_t, wstring> itC;
+    MapIterator<uint64_t, string> itC;
     for(itC = reverseC.end(); itC != reverseC.begin(); itC--) {
         if (itC == reverseC.end()) continue;
         top++;
         if (top <= 5) {
-            pieCharset->append(QString::fromStdWString(itC->second), itC->first);
+            pieCharset->append(QString::fromStdString(itC->second), itC->first);
         } else {
             nbHideC += itC->first;
         }

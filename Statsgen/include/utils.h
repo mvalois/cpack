@@ -61,13 +61,15 @@ multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
 template<typename Type>
 void readResult(uint64_t res, Type carac, int & count, const uint64_t & total_counter, const int & hiderare) {
 	float percentage;
+	std::ostringstream ss;
 	percentage = (float) (100*res) / total_counter;
 
 	if (percentage >= hiderare) {
-		wstring value = to_wstring(percentage);
+		ss << percentage;
+		std::string value(ss.str());
 		value = value.substr(0,5);
 
-		wcout << setw(40) << right << carac << ":  "
+		cout << setw(40) << right << carac << ":  "
 			<< setw(5) << right << value << "%"
 			<< setw(5) << right << "(" << res << ")" << endl;
 

@@ -41,9 +41,9 @@ struct Policy{
  */
 struct Container {
 	int pass_length = 0;
-	std::wstring characterset = L"";
-	std::wstring advancedmask_string = L"";
-	std::wstring simplemask_string = L"";
+	std::string characterset = "";
+	std::string advancedmask_string = "";
+	std::string simplemask_string = "";
 	Policy pol;
 };
 
@@ -89,14 +89,14 @@ struct thread_data {
 	uint64_t total_filter = 0;
 
 	std::unordered_map<int, uint64_t> length;
-	std::unordered_map<std::wstring, uint64_t> simplemasks;
-	std::unordered_map<std::wstring, uint64_t> advancedmasks;
-	std::unordered_map<std::wstring, uint64_t> charactersets;
-	std::queue<std::wstring> password_queue;
+	std::unordered_map<std::string, uint64_t> simplemasks;
+	std::unordered_map<std::string, uint64_t> advancedmasks;
+	std::unordered_map<std::string, uint64_t> charactersets;
+	std::queue<std::string> password_queue;
 
 	minMax minMaxValue;
 
-	std::wregex current_regex;
+	std::regex current_regex;
 	bool use_regex = false;
 	bool withcount = false;
 
@@ -219,7 +219,7 @@ public:
 	uint64_t getTotalFilter();
 	uint64_t getNbSecurePasswords();
 	std::unordered_map<int, uint64_t> getStatsLength();
-	std::unordered_map<std::wstring, uint64_t> getStatsCharsets();
+	std::unordered_map<std::string, uint64_t> getStatsCharsets();
 
 
 
@@ -232,7 +232,7 @@ private:
 
 	int hiderare = 0; 				// Hide low statistics
 	int top = 10;					// Show only a top of statistics
-	std::wregex current_regex;		// Regex for the interesting passwords
+	std::regex current_regex;		// Regex for the interesting passwords
 	bool use_regex = false;			// Know if we use a regex or not
 	bool withcount = false;			// Know if the database is at the format withcount or not
 	int limitSimplemask = 12;		// Limit the size of Simple Mask
@@ -246,9 +246,9 @@ private:
 	// Dictionary
 
 	std::unordered_map<int, uint64_t> stats_length;					// Passwords' length linked to their occurrence
-	std::unordered_map<std::wstring, uint64_t> stats_simplemasks;	// Passwords' simple mask linked to their occurrence
-	std::unordered_map<std::wstring, uint64_t> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
-	std::unordered_map<std::wstring, uint64_t> stats_charactersets;	// Passwords' characterset linked to their occurrence
+	std::unordered_map<std::string, uint64_t> stats_simplemasks;	// Passwords' simple mask linked to their occurrence
+	std::unordered_map<std::string, uint64_t> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
+	std::unordered_map<std::string, uint64_t> stats_charactersets;	// Passwords' characterset linked to their occurrence
 
 
 	// Counters
@@ -281,14 +281,14 @@ private:
  * @param sizeAdvancedMask: size of the current advanced mask
  * @param sizeSimpleMask: size of the current simple mask
  */
-void analyse_letter(const char & letter, char & last_simplemask, std::wstring & simplemask_string, std::wstring & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
+void analyse_letter(const char & letter, char & last_simplemask, std::string & simplemask_string, std::string & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
 
 /**
  * @brief Analyse the characterset of the current password
  * @param charset: characterset of the current password
  * @param policy: current number of digit, lower, upper and special for the current password
  */
-void analyse_charset(std::wstring & charset, const Policy & policy);
+void analyse_charset(std::string & charset, const Policy & policy);
 
 /**
  * @brief Analyse a password
@@ -298,7 +298,7 @@ void analyse_charset(std::wstring & charset, const Policy & policy);
  * @param limitAdvancedmask: define the limit for the size of advanced masks
  * @param limitSimplemask: define the limit for the size of simple masks
  */
-void analyze_password(const std::wstring & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
+void analyze_password(const std::string & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
 
 /**
  * @brief Update minima and maxima of all general data from analysed passwords
