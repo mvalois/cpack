@@ -1,7 +1,7 @@
 # Analyse statistique d'une liste de mots de passe
 
 ```shell
-git clone https://gitlab.ecole.ensicaen.fr/jorand/Statistiques.git
+git clone https://git.unicaen.fr/passwords/cpack
 ```
 
 ## Requiert
@@ -21,8 +21,8 @@ Pour analyser une liste de mot de passe, effectuez les commandes suivantes :
 
 ```shell
 cd Statsgen
-make
-./stats liste.txt
+make cpack
+./cpack liste.txt
 ```
 
 Plusieurs options sont disponibles :
@@ -47,13 +47,19 @@ Par défaut, les règles de sécurité sont les suivantes :
 
 ## Interface graphique
 
-Dans le dossier GUI, une interface en QT est disponible pour une version simplifiée et visuelle des statistiques.
+Une interface en QT est disponible pour une version simplifiée et visuelle des statistiques.
 
 	--> Requiert la version de QT comprenant QtCharts (version 5 minimum)
 	--> Programme développé en version 5.9.4
 
+```shell
+cd Statsgen
+make cpack-gui
+./cpack-gui
+```
 
-## Fonctions utilitaies
+
+## Fonctions utilitaires
 
 Dans le dossier Utils, trois programmes ont été créées
  * convert.cpp : permet de créer une liste de mots de passe à partir d'une liste au format withcount

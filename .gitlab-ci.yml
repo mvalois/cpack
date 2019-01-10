@@ -4,10 +4,10 @@ build-cli:
   before_script:
     - apt-get -qq update
     - apt-get -qq -y install build-essential > /dev/null
-  script: make -C Statsgen -j$(nproc) cstatsgen
+  script: make -C Statsgen -j$(nproc) cpack
   artifacts:
     paths:
-      - Statsgen/cstatsgen
+      - Statsgen/cpack
 
 # build-gui:
 #   before_script:
@@ -17,7 +17,7 @@ build-cli:
 #                             libqt5charts5-dev \
 #                             supervisor \
 #                             openssh-server > /dev/null
-#   script: make -C Statsgen -j$(nproc) cstatsgen-gui
+#   script: make -C Statsgen -j$(nproc) cpack-gui
 #   artifacts:
 #     paths:
-#       - Statsgen/cstatsgen-gui
+#       - Statsgen/cpack-gui

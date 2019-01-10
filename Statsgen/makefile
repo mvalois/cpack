@@ -3,8 +3,8 @@ CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -Iinclude -O3
 LDFLAGS  = -lpthread
 SRC	 = src
 INC	 = include
-BIN  = cstatsgen
-BINGUI = cstatsgen-gui
+BIN  = cpack
+BINGUI = $(BIN)-gui
 
 .PHONY = clean
 

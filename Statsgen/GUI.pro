@@ -2,7 +2,7 @@ QT += core gui
 QT += widgets
 QT += charts
 
-TARGET  = cstatsgen-gui
+TARGET  = cpack-gui
 TEMPLATE = app
 
 INCLUDEPATH += include
