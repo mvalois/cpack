@@ -1,20 +1,23 @@
 image: localhost:5000/stretch
 
-before_script:
-  - apt-get -qq update
-  - apt-get -qq -y install build-essential > /dev/null
-
 build-cli:
-  script: make -C Statsgen -j$(nproc)
+  before_script:
+    - apt-get -qq update
+    - apt-get -qq -y install build-essential > /dev/null
+  script: make -C Statsgen -j$(nproc) cstatsgen
   artifacts:
     paths:
       - Statsgen/cstatsgen
 
-build-gui:
-  script:
-    - cd GUI
-    - qmake
-    - make -j$(nproc)
-  artifacts:
-    paths:
-      - GUI/GUI
+# build-gui:
+#   before_script:
+#     - apt-get -qq update
+#     - apt-get -qq -y install build-essential \
+#                             qt5-default \
+#                             libqt5charts5-dev \
+#                             supervisor \
+#                             openssh-server > /dev/null
+#   script: make -C Statsgen -j$(nproc) cstatsgen-gui
+#   artifacts:
+#     paths:
+#       - Statsgen/cstatsgen-gui
