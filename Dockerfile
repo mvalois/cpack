@@ -14,8 +14,6 @@ RUN apt-get -qq -y install \
 	openssh-server \
 	>/dev/null
 
-RUN apt-get -qq -y install gdb
-
 # Install SSH access
 RUN mkdir /var/run/sshd && \
 	echo "root:$SSH_PASSWORD" | chpasswd && \
