@@ -3,6 +3,7 @@ CXXFLAGS = -pedantic -Wall -std=c++11 -Wextra -Iinclude -O3
 LDFLAGS  = -lpthread
 SRC	 = src
 INC	 = include
+OBJ = obj
 BIN  = cpack
 BINGUI = $(BIN)-gui
 
@@ -10,18 +11,18 @@ BINGUI = $(BIN)-gui
 
 all: $(BIN) $(BINGUI)
 
-$(BIN): main.o statsgen.o
+$(BIN): $(OBJ)/main.o $(OBJ)/statsgen.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
-main.o: $(SRC)/cli/main.cpp $(INC)/statsgen.h
+$(OBJ)/main.o: $(SRC)/cli/main.cpp $(INC)/statsgen.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-statsgen.o: $(SRC)/core/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
+$(OBJ)/statsgen.o: $(SRC)/core/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean:
-	-rm -f *.o stats
+	-rm -rf $(OBJ)
 
-$(BINGUI): statsgen.o
+$(BINGUI):
 	qmake -o qmakefile
 	make -f qmakefile

@@ -6,6 +6,8 @@ TARGET  = cpack-gui
 TEMPLATE = app
 
 INCLUDEPATH += include
+OBJECTS_DIR=obj/gui/
+MOC_DIR=obj/gui/
 
 
 SOURCES += src/gui/maingui.cpp\
