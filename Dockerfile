@@ -1,6 +1,6 @@
-# docker build . -t gui-statsgen
-# docker run -d --name gsg -p 5022:22 gui-statsgen
-# ssh -X -p 5022 root@127.0.0.1 /opt/Statsgen/cstatsgen-gui
+# docker build . -t cppack
+# docker run -d --name gsg -p 5022:22 cppack
+# ssh -X -p 5022 root@127.0.0.1 /opt/cppack/cppack-gui
 FROM ubuntu:bionic
 
 ENV SSH_PASSWORD "rootpass"
@@ -28,9 +28,9 @@ RUN mkdir -p /var/log/supervisor && \
 	echo "[program:sshd]" >> /etc/supervisor/conf.d/supervisord.conf && \
 	echo "command=/usr/sbin/sshd -D" >> /etc/supervisor/conf.d/supervisord.conf
 
-COPY Statsgen /opt/Statsgen
+COPY . /opt/cppack
 
-WORKDIR /opt/Statsgen
+WORKDIR /opt/cppack
 RUN make -s
 
 CMD [ "/usr/bin/supervisord", "-c",  "/etc/supervisor/conf.d/supervisord.conf" ]

@@ -1,23 +1,23 @@
-image: localhost:5000/stretch
+image: ubuntu:bionic
 
 build-cli:
   before_script:
     - apt-get -qq update
-    - apt-get -qq -y install build-essential > /dev/null
-  script: make -C Statsgen -j$(nproc) cpack
+    - apt-get -qq -y install build-essential
+  script: make -j$(nproc) cppack
   artifacts:
     paths:
-      - Statsgen/cpack
+      - cppack
 
-# build-gui:
-#   before_script:
-#     - apt-get -qq update
-#     - apt-get -qq -y install build-essential \
-#                             qt5-default \
-#                             libqt5charts5-dev \
-#                             supervisor \
-#                             openssh-server > /dev/null
-#   script: make -C Statsgen -j$(nproc) cpack-gui
-#   artifacts:
-#     paths:
-#       - Statsgen/cpack-gui
+build-gui:
+  before_script:
+    - apt-get -qq update
+    - apt-get -qq -y install build-essential 
+                             qt5-default 
+                             libqt5charts5-dev 
+                             supervisor 
+                             openssh-server
+  script: make -j$(nproc) cppack-gui
+  artifacts:
+    paths:
+      - cppack-gui
