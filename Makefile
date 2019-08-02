@@ -4,7 +4,7 @@ LDFLAGS  = -lpthread
 SRC	 = src
 INC	 = include
 OBJ = obj
-BIN  = cpack
+BIN  = cppack
 BINGUI = $(BIN)-gui
 
 .PHONY = clean
@@ -21,8 +21,8 @@ $(OBJ)/statsgen.o: $(SRC)/core/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean:
-	-rm -rf $(OBJ)
+	-rm -rf $(OBJ)/*
 
 $(BINGUI):
 	qmake -o qmakefile
-	make -f qmakefile
+	$(MAKE) -f qmakefile
