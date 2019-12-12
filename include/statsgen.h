@@ -124,7 +124,7 @@ public:
 	 * @brief Initialise the name of the database
 	 * @param name: name of the file
 	 */
-	void setFilename(std::string name);
+	void setFilename(const std::string& name);
 
 
 	/**
@@ -145,7 +145,7 @@ public:
 	 * some interesting passwords
 	 * @param reg: regular expression
 	 */
-	void setRegex(std::string reg);
+	void setRegex(const std::string& reg);
 
 	/**
 	 * @brief Useful to know if the database uses the format withcount
@@ -184,7 +184,7 @@ public:
 	 * @brief Where to write masks
 	 * @param outfile: the file where to write masks
 	 */
-	void setOutfile(std::string outfile);
+	void setOutfile(const std::string& outfile);
 
 	/**
 	 * @brief enable debugging

@@ -25,7 +25,7 @@
 using namespace std;
 
 
-void Statsgen::setFilename(std::string name) {
+void Statsgen::setFilename(const std::string& name) {
 	if (name == "-"){
 		is_stdin = true;
 		warn("reading from stdin enabled, loading the whole list in memory");
@@ -46,7 +46,7 @@ void Statsgen::setTop(int val) {
 }
 
 
-void Statsgen::setRegex(string expr) {
+void Statsgen::setRegex(const string& expr) {
 	string tmp(expr.length(),' ');
 	copy(expr.begin(), expr.end(), tmp.begin());
 
@@ -80,7 +80,7 @@ void Statsgen::setNbThread(int nb) {
 	}
 }
 
-void Statsgen::setOutfile(string outfile){
+void Statsgen::setOutfile(const string& outfile){
 	outfile_name = outfile;
 }
 
