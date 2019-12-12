@@ -23,7 +23,8 @@
 
 #define MAX_THREADS 32
 
-
+typedef std::unordered_map<std::string, uint64_t> StringOccurrence;
+typedef std::unordered_map<int, uint64_t> IntOccurrence;
 
 /**
  * @brief Simplify number of arguments for functions
@@ -88,10 +89,10 @@ struct thread_data {
 	uint64_t total_counter = 0;
 	uint64_t total_filter = 0;
 
-	std::unordered_map<int, uint64_t> length;
-	std::unordered_map<std::string, uint64_t> simplemasks;
-	std::unordered_map<std::string, uint64_t> advancedmasks;
-	std::unordered_map<std::string, uint64_t> charactersets;
+	IntOccurrence length;
+	StringOccurrence simplemasks;
+	StringOccurrence advancedmasks;
+	StringOccurrence charactersets;
 	std::queue<std::string> password_queue;
 
 	minMax minMaxValue;
@@ -113,19 +114,12 @@ struct thread_data {
  */
 class Statsgen {
 public:
-	Statsgen() {};
+	Statsgen(const std::string& name);
 
 	/**
 	 * @brief show all options for the command
 	 */
 	void showHelp();
-
-	/**
-	 * @brief Initialise the name of the database
-	 * @param name: name of the file
-	 */
-	void setFilename(const std::string& name);
-
 
 	/**
 	 * @brief useful to hide statistics below 1%
@@ -218,8 +212,8 @@ public:
 	uint64_t getTotalCounter();
 	uint64_t getTotalFilter();
 	uint64_t getNbSecurePasswords();
-	std::unordered_map<int, uint64_t> getStatsLength();
-	std::unordered_map<std::string, uint64_t> getStatsCharsets();
+	IntOccurrence getStatsLength();
+	StringOccurrence getStatsCharsets();
 
 
 
@@ -245,10 +239,10 @@ private:
 
 	// Dictionary
 
-	std::unordered_map<int, uint64_t> stats_length;					// Passwords' length linked to their occurrence
-	std::unordered_map<std::string, uint64_t> stats_simplemasks;	// Passwords' simple mask linked to their occurrence
-	std::unordered_map<std::string, uint64_t> stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
-	std::unordered_map<std::string, uint64_t> stats_charactersets;	// Passwords' characterset linked to their occurrence
+	IntOccurrence stats_length;					// Passwords' length linked to their occurrence
+	StringOccurrence stats_simplemasks;	// Passwords' simple mask linked to their occurrence
+	StringOccurrence stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
+	StringOccurrence stats_charactersets;	// Passwords' characterset linked to their occurrence
 
 
 	// Counters
@@ -298,7 +292,7 @@ void analyse_charset(std::string & charset, const Policy & policy);
  * @param limitAdvancedmask: define the limit for the size of advanced masks
  * @param limitSimplemask: define the limit for the size of simple masks
  */
-void analyze_password(const std::string & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
+Container analyze_password(const std::string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
 
 /**
  * @brief Update minima and maxima of all general data from analysed passwords

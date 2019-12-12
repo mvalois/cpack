@@ -25,7 +25,7 @@
 using namespace std;
 
 
-void Statsgen::setFilename(const std::string& name) {
+Statsgen::Statsgen(const std::string& name) {
 	if (name == "-"){
 		is_stdin = true;
 		warn("reading from stdin enabled, loading the whole list in memory");
@@ -47,12 +47,7 @@ void Statsgen::setTop(int val) {
 
 
 void Statsgen::setRegex(const string& expr) {
-	string tmp(expr.length(),' ');
-	copy(expr.begin(), expr.end(), tmp.begin());
-
-	regex tmp_reg(tmp);
-	current_regex = tmp_reg;
-
+	current_regex = string(expr);
 	use_regex = true;
 }
 
@@ -408,7 +403,8 @@ void analyse_letter(const char & letter, char & last_simplemask, string & simple
 }
 
 
-void analyse_charset(string & charset, const Policy & policy) {
+string analyse_charset(const Policy & policy) {
+	string charset;
 	if (policy.digit && !policy.lower && !policy.upper && !policy.special) {
 		charset = "numeric";
 	}
@@ -456,10 +452,12 @@ void analyse_charset(string & charset, const Policy & policy) {
 	else {
 		charset = "all";
 	}
+	return charset;
 }
 
 
-void analyze_password(const string & password, Container & c, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
+Container analyze_password(const string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
+	Container c;
 	c.pass_length = password.size();
 
 	char last_simplemask = 'a';
@@ -472,7 +470,7 @@ void analyze_password(const string & password, Container & c, SecurityRules & sr
 		analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAdvancedMask, sizeSimpleMask);
 	}
 
-	analyse_charset(c.characterset, c.pol);
+	c.characterset = analyse_charset(c.pol);
 
 	if ( (c.pass_length >= sr.minLength) &&
 		 (c.pol.digit >= sr.minDigit) &&
@@ -489,6 +487,8 @@ void analyze_password(const string & password, Container & c, SecurityRules & sr
 	if (sizeSimpleMask > limitSimplemask) {
 		c.simplemask_string = "othermasks";
 	}
+
+	return c;
 }
 
 
@@ -543,7 +543,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 
 		my_data->total_counter++;
 		if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
-			analyze_password(line, c, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
+			c = analyze_password(line, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
 
 			my_data->total_filter++;
 
@@ -602,7 +602,7 @@ void * generate_stats_thread(void * threadarg) {
 
 			if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
 				my_data->total_filter += nbPasswords;
-				analyze_password(password, c, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
+				c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
 
 				my_data->length[ c.pass_length ] += nbPasswords;
 				my_data->charactersets[ c.characterset ] += nbPasswords;
@@ -613,7 +613,7 @@ void * generate_stats_thread(void * threadarg) {
 		else {
 			my_data->total_counter++;
 			if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
-				analyze_password(line, c, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
+				c = analyze_password(line, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
 
 				my_data->total_filter++;
 
@@ -643,11 +643,11 @@ uint64_t Statsgen::getNbSecurePasswords() {
 	return nbSecurePassword;
 }
 
-std::unordered_map<int, uint64_t> Statsgen::getStatsLength(){
+IntOccurrence Statsgen::getStatsLength(){
 	return stats_length;
 }
 
-std::unordered_map<std::string, uint64_t> Statsgen::getStatsCharsets(){
+StringOccurrence Statsgen::getStatsCharsets(){
 	return stats_charactersets;
 }
 

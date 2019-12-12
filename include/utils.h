@@ -19,17 +19,12 @@
 #include <unordered_map>
 #include <iomanip>
 
-using namespace std;
-
-
+template<typename K, typename V>
+using UnorderedMapIterator = typename std::unordered_map<K, V>::const_iterator;
 
 
 template<typename K, typename V>
-using UnorderedMapIterator = typename unordered_map<K, V>::const_iterator;
-
-
-template<typename K, typename V>
-using MapIterator = typename map<K, V>::const_iterator;
+using MapIterator = typename std::map<K, V>::const_iterator;
 
 
 
@@ -39,8 +34,8 @@ using MapIterator = typename map<K, V>::const_iterator;
  * @return ordered map
  */
 template<typename A>
-multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
-	multimap<uint64_t, A> dst;
+std::multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
+	std::multimap<uint64_t, A> dst;
 
 	for(UnorderedMapIterator<A, uint64_t> it = src.begin(); it != src.end(); ++it)
 		dst.insert(std::pair<uint64_t, A>(it->second, it->first));
@@ -59,7 +54,7 @@ multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
  * @param hiderare: flag to hide statistics under 1%
  */
 template<typename Type>
-void readResult(uint64_t res, Type carac, int & count, const uint64_t & total_counter, const int & hiderare) {
+void readResult(const uint64_t & res, const Type& carac, int & count, const uint64_t & total_counter, const int & hiderare) {
 	float percentage;
 	std::ostringstream ss;
 	percentage = (float) (100*res) / total_counter;
@@ -69,9 +64,9 @@ void readResult(uint64_t res, Type carac, int & count, const uint64_t & total_co
 		std::string value(ss.str());
 		value = value.substr(0,5);
 
-		cout << setw(40) << right << carac << ":  "
-			<< setw(5) << right << value << "%"
-			<< setw(5) << right << "(" << res << ")" << endl;
+		std::cout << std::setw(40) << std::right << carac << ":  "
+			<< std::setw(5) << std::right << value << "%"
+			<< std::setw(5) << std::right << "(" << res << ")" << std::endl;
 
 		count++;
 	}
@@ -87,9 +82,9 @@ void readResult(uint64_t res, Type carac, int & count, const uint64_t & total_co
  * @param count: number of shown results
  */
 template<typename Type>
-void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const uint64_t & total_counter, const int & hiderare, int & count) {
+void showMap(const std::unordered_map<Type, uint64_t> & stats, const int & top, const uint64_t & total_counter, const int & hiderare, int & count) {
 	count = 0;
-	multimap<uint64_t, Type> reverse = flip_map<Type>(stats);
+	std::multimap<uint64_t, Type> reverse = flip_map<Type>(stats);
 
 	MapIterator<uint64_t, Type> it;
 	for(it = reverse.end(); it != reverse.begin(); it--) {
@@ -112,5 +107,5 @@ void showMap(const unordered_map<Type, uint64_t> & stats, const int & top, const
  * @param filename: name of the file
  * @return number of line
  */
-uint64_t nbline_file(const string & filename);
+uint64_t nbline_file(const std::string & filename);
 #endif

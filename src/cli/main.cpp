@@ -70,8 +70,16 @@ void showHelp() {
 
 int main(int argc,char* argv[]) {
 	locale::global(locale(""));
-	Statsgen statsgen;
+	
 	string filename;
+	if(argc > 1){
+		filename = argv[optind];
+	}
+	else {
+		showHelp();
+	}
+
+	Statsgen statsgen(filename);
 
 	int opt;
 	while ((opt = getopt_long(argc, argv, "hwHt:r:o:dA:S:p:s", long_options, NULL)) != -1){
@@ -103,11 +111,7 @@ int main(int argc,char* argv[]) {
 		}
 
 	}
-
-	if(argc > 1) filename = argv[optind];
-	else showHelp();
-
-	statsgen.setFilename(filename);
+	
 	if (statsgen.generate_stats()) {
 		statsgen.print_stats();
 	}

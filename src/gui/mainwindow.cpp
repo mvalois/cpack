@@ -18,6 +18,8 @@
 #include <iostream>
 #include <QtCharts>
 
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -48,8 +50,7 @@ void MainWindow::findFile() {
 
 
 void MainWindow::startGame() {
-    stats = new Statsgen();
-    stats->setFilename((ui->fileLine->text()).toUtf8().constData());
+    stats = new Statsgen((ui->fileLine->text()).toUtf8().constData());
 
     if(ui->withcountButton->isChecked())
     {
@@ -60,13 +61,13 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setNbThread(std::stoi(ui->ThreadlineEdit->text().toStdString()));
+            stats->setNbThread(stoi(ui->ThreadlineEdit->text().toStdString()));
         }
-        catch(std::invalid_argument)
+        catch(invalid_argument)
         {
             stats->setNbThread(1);
         }
-        catch(std::out_of_range)
+        catch(out_of_range)
         {
             stats->setNbThread(1);
         }
@@ -82,13 +83,13 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setLimitSimplemask(std::stoi(ui->SimplelineEdit->text().toStdString()));
+            stats->setLimitSimplemask(stoi(ui->SimplelineEdit->text().toStdString()));
         }
-        catch(std::invalid_argument)
+        catch(invalid_argument)
         {
             stats->setLimitSimplemask(100);
         }
-        catch(std::out_of_range)
+        catch(out_of_range)
         {
             stats->setLimitSimplemask(100);
         }
@@ -99,13 +100,13 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setLimitAdvancedmask(std::stoi(ui->AdvancedlineEdit->text().toStdString()));
+            stats->setLimitAdvancedmask(stoi(ui->AdvancedlineEdit->text().toStdString()));
         }
-        catch(std::invalid_argument)
+        catch(invalid_argument)
         {
             stats->setLimitAdvancedmask(100);
         }
-        catch(std::out_of_range)
+        catch(out_of_range)
         {
             stats->setLimitAdvancedmask(100);
         }
@@ -116,13 +117,13 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setTop(std::stoi(ui->topLineEdit->text().toStdString()));
+            stats->setTop(stoi(ui->topLineEdit->text().toStdString()));
         }
-        catch(std::invalid_argument)
+        catch(invalid_argument)
         {
             stats->setTop(10);
         }
-        catch(std::out_of_range)
+        catch(out_of_range)
         {
             stats->setTop(10);
         }
@@ -131,19 +132,19 @@ void MainWindow::startGame() {
 
     try
     {
-        int length=std::stoi(ui->lengthLineEdit->text().toStdString());
-        int special=std::stoi(ui->specialLineEdit->text().toStdString());
-        int digit=std::stoi(ui->digitLineEdit->text().toStdString());
-        int upper=std::stoi(ui->upperLineEdit->text().toStdString());
-        int lower=std::stoi(ui->lowerLineEdit->text().toStdString());
+        int length=stoi(ui->lengthLineEdit->text().toStdString());
+        int special=stoi(ui->specialLineEdit->text().toStdString());
+        int digit=stoi(ui->digitLineEdit->text().toStdString());
+        int upper=stoi(ui->upperLineEdit->text().toStdString());
+        int lower=stoi(ui->lowerLineEdit->text().toStdString());
 
         stats->setSecurityRules(length,special,digit,upper,lower);
     }
-    catch(std::invalid_argument)
+    catch(invalid_argument)
     {
         stats->setSecurityRules(8,0,1,1,1);
     }
-    catch(std::out_of_range)
+    catch(out_of_range)
     {
         stats->setSecurityRules(8,0,1,1,1);
     }
@@ -196,7 +197,7 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
     percentageSecurity = (double) 100 * (stats->getNbSecurePasswords() / total);
 
     /* LENGTH HISTOGRAM */
-    std::multimap<uint64_t, int> reverseL = flip_map<int>(stats->getStatsLength());
+    multimap<uint64_t, int> reverseL = flip_map<int>(stats->getStatsLength());
     double percentageL;
     uint64_t nbHideL = 0;
 
@@ -220,7 +221,7 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
 
 
     /* CHARSET PIECHART */
-    std::multimap<uint64_t, string> reverseC = flip_map<string>(stats->getStatsCharsets());
+    multimap<uint64_t, string> reverseC = flip_map<string>(stats->getStatsCharsets());
     int top = 0;
     uint64_t nbHideC = 0;
 

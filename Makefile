@@ -21,7 +21,7 @@ $(OBJ)/statsgen.o: $(SRC)/core/statsgen.cpp $(INC)/statsgen.h $(INC)/utils.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean:
-	-rm -rf $(OBJ)/*
+	-rm -rf $(OBJ)/* $(BIN) $(BINGUI)
 
 $(BINGUI):
 	qmake -o qmakefile
