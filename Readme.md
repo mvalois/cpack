@@ -13,7 +13,8 @@ iconv -f ISO-8859-1 -t UTF-8 input.txt -o output.txt
 ```shell
 git clone https://git.unicaen.fr/passwords/cppack
 cd cppack
-make cppack
+cmake .
+make
 ```
 
 ## Usage
@@ -21,7 +22,7 @@ make cppack
 To analyze a password list, use:
 
 ```shell
-Usage: ./cppack FILENAME [OPTIONS]
+Usage: bin/cppack FILENAME [OPTIONS]
 To be sure the database's format can be read, please use this command before:
 	iconv -f ISO-8859-1 -t UTF-8 databaseInput.txt -o databaseOutput.txt
 Use '-' for FILENAME to read from stdin
@@ -51,8 +52,9 @@ A QT GUI is available to have visual feedback of statistics.
 To compile, it requires QtCharts version > 5 (available in Ubuntu repo since 18.04). This GUI has been developed using Qt 5.9.4.
 Then run:
 ```shell
+cmake .
 make cppack-gui
-./cppack-gui
+bin/cppack-gui
 ```
 
 ## License
