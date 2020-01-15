@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void setFilename(const std::string& filename);
 
 
 
@@ -45,12 +46,12 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    Statsgen * stats;
+    Statsgen stats;
     QMessageBox waitBox;
     QVBoxLayout * layoutCharset;
     QVBoxLayout * layoutLength;
     int firstTime=1;
-    void initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity, double & total, double & filter);
+    void initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity);
 };
 
 
@@ -60,18 +61,15 @@ class WorkerThread : public QThread
     Q_OBJECT
     void run() {
 
-        _s->generate_stats();
+        _s.generate_stats();
         emit resultReady();
     }
 public:
-    WorkerThread(Statsgen *s)
-    {
-        _s=s;
-    }
+    WorkerThread(Statsgen &s):_s(s){}
 signals:
     void resultReady();
 private:
-    Statsgen *_s;
+    Statsgen &_s;
 };
 
 #endif // MAINWINDOW_H

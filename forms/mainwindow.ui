@@ -94,7 +94,7 @@
             <x>20</x>
             <y>30</y>
             <width>260</width>
-            <height>91</height>
+            <height>103</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
@@ -105,16 +105,6 @@
             <widget class="QRadioButton" name="withcountButton">
              <property name="text">
               <string>Withcount</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="ThreadlineEdit"/>
-           </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="threadsCheckBox">
-             <property name="text">
-              <string>Number of threads</string>
              </property>
             </widget>
            </item>
@@ -132,6 +122,23 @@
              </property>
              <property name="checked">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="threadNumberSpin">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label">
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>Number of threads</string>
              </property>
             </widget>
            </item>
@@ -182,45 +189,41 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="lengthLineEdit">
-             <property name="text">
-              <string>8</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="specialLineEdit">
-             <property name="text">
-              <string>0</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="digitLineEdit">
-             <property name="text">
-              <string>1</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="upperLineEdit">
-             <property name="text">
-              <string>1</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="lowerLineEdit">
-             <property name="text">
-              <string>1</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="lengthLabel">
              <property name="text">
               <string>Min Length</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="MinLenSpin">
+             <property name="value">
+              <number>8</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="MinOccSpecialSpin"/>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="MinOccDigitsSpin">
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="MinOccUpperSpin">
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QSpinBox" name="MinOccLowerSpin">
+             <property name="value">
+              <number>1</number>
              </property>
             </widget>
            </item>
@@ -239,7 +242,7 @@
             <x>20</x>
             <y>20</y>
             <width>301</width>
-            <height>101</height>
+            <height>107</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
@@ -257,9 +260,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="AdvancedlineEdit"/>
-           </item>
            <item row="0" column="0">
             <widget class="QCheckBox" name="maxSimpleCheckBox">
              <property name="text">
@@ -268,10 +268,13 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="SimplelineEdit"/>
+            <widget class="QSpinBox" name="MaxSimpleMaxSpin"/>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="MaxAdvMaskSpin"/>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="topLineEdit"/>
+            <widget class="QSpinBox" name="TopXAnswerSpin"/>
            </item>
           </layout>
          </widget>
@@ -376,7 +379,7 @@
      <x>0</x>
      <y>0</y>
      <width>1350</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

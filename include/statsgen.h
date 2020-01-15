@@ -114,6 +114,7 @@ struct thread_data {
  */
 class Statsgen {
 public:
+	Statsgen(){}
 	Statsgen(const std::string& name);
 
 	/**

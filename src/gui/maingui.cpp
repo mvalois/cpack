@@ -17,6 +17,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-
+    // set file if given on cmd line
+    if(argc >= 2){
+    	w.setFilename(argv[1]);
+    }
     return a.exec();
 }

@@ -32,6 +32,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->classicButton,SIGNAL(clicked()),this,SLOT(disableWithCount()));
 }
 
+void MainWindow::setFilename(const string& filename){
+    ui->fileLine->setText(QString::fromStdString(filename));
+}
+
 
 MainWindow::~MainWindow()
 {
@@ -50,48 +54,44 @@ void MainWindow::findFile() {
 
 
 void MainWindow::startGame() {
-    stats = new Statsgen((ui->fileLine->text()).toUtf8().constData());
+    stats = Statsgen((ui->fileLine->text()).toUtf8().constData());
 
     if(ui->withcountButton->isChecked())
     {
-        stats->setWithcount(true);
+        stats.setWithcount(true);
     }
 
-    if(ui->threadsCheckBox->isChecked())
+    try
     {
-        try
-        {
-            stats->setNbThread(stoi(ui->ThreadlineEdit->text().toStdString()));
-        }
-        catch(invalid_argument)
-        {
-            stats->setNbThread(1);
-        }
-        catch(out_of_range)
-        {
-            stats->setNbThread(1);
-        }
-
+        stats.setNbThread(stoi(ui->threadNumberSpin->text().toStdString()));
+    }
+    catch(invalid_argument)
+    {
+        stats.setNbThread(1);
+    }
+    catch(out_of_range)
+    {
+        stats.setNbThread(1);
     }
 
     if(ui->regexCheckBox->isChecked())
     {
-        stats->setRegex(ui->RegexlineEdit->text().toStdString());
+        stats.setRegex(ui->RegexlineEdit->text().toStdString());
     }
 
     if(ui->maxSimpleCheckBox->isChecked())
     {
         try
         {
-            stats->setLimitSimplemask(stoi(ui->SimplelineEdit->text().toStdString()));
+            stats.setLimitSimplemask(stoi(ui->MaxSimpleMaxSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
-            stats->setLimitSimplemask(100);
+            stats.setLimitSimplemask(100);
         }
         catch(out_of_range)
         {
-            stats->setLimitSimplemask(100);
+            stats.setLimitSimplemask(100);
         }
 
     }
@@ -100,15 +100,15 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setLimitAdvancedmask(stoi(ui->AdvancedlineEdit->text().toStdString()));
+            stats.setLimitAdvancedmask(stoi(ui->MaxAdvMaskSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
-            stats->setLimitAdvancedmask(100);
+            stats.setLimitAdvancedmask(100);
         }
         catch(out_of_range)
         {
-            stats->setLimitAdvancedmask(100);
+            stats.setLimitAdvancedmask(100);
         }
 
     }
@@ -117,58 +117,54 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setTop(stoi(ui->topLineEdit->text().toStdString()));
+            stats.setTop(stoi(ui->TopXAnswerSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
-            stats->setTop(10);
+            stats.setTop(10);
         }
         catch(out_of_range)
         {
-            stats->setTop(10);
+            stats.setTop(10);
         }
 
     }
 
     try
     {
-        int length=stoi(ui->lengthLineEdit->text().toStdString());
-        int special=stoi(ui->specialLineEdit->text().toStdString());
-        int digit=stoi(ui->digitLineEdit->text().toStdString());
-        int upper=stoi(ui->upperLineEdit->text().toStdString());
-        int lower=stoi(ui->lowerLineEdit->text().toStdString());
+        int length=stoi(ui->MinLenSpin->text().toStdString());
+        int special=stoi(ui->MinOccSpecialSpin->text().toStdString());
+        int digit=stoi(ui->MinOccDigitsSpin->text().toStdString());
+        int upper=stoi(ui->MinOccUpperSpin->text().toStdString());
+        int lower=stoi(ui->MinOccLowerSpin->text().toStdString());
 
-        stats->setSecurityRules(length,special,digit,upper,lower);
+        stats.setSecurityRules(length,special,digit,upper,lower);
     }
     catch(invalid_argument)
     {
-        stats->setSecurityRules(8,0,1,1,1);
+        stats.setSecurityRules(8,0,1,1,1);
     }
     catch(out_of_range)
     {
-        stats->setSecurityRules(8,0,1,1,1);
+        stats.setSecurityRules(8,0,1,1,1);
     }
 
-    ui->ThreadlineEdit->setDisabled(true);
-    ui->topLineEdit->setDisabled(true);
-    ui->SimplelineEdit->setDisabled(true);
-    ui->AdvancedlineEdit->setDisabled(true);
+    ui->threadNumberSpin->setDisabled(true);
+    ui->TopXAnswerSpin->setDisabled(true);
+    ui->MaxSimpleMaxSpin->setDisabled(true);
+    ui->MaxAdvMaskSpin->setDisabled(true);
     ui->RegexlineEdit->setDisabled(true);
-    ui->lengthLineEdit->setDisabled(true);
-    ui->lowerLineEdit->setDisabled(true);
-    ui->upperLineEdit->setDisabled(true);
-    ui->specialLineEdit->setDisabled(true);
-    ui->digitLineEdit->setDisabled(true);
+    ui->MinLenSpin->setDisabled(true);
+    ui->MinOccLowerSpin->setDisabled(true);
+    ui->MinOccUpperSpin->setDisabled(true);
+    ui->MinOccSpecialSpin->setDisabled(true);
+    ui->MinOccDigitsSpin->setDisabled(true);
     ui->startButton->setDisabled(true);
-    ui->threadsCheckBox->setDisabled(true);
     ui->topCheckBox->setDisabled(true);
     ui->regexCheckBox->setDisabled(true);
     ui->maxAdvancedCheckBox->setDisabled(true);
     ui->maxSimpleCheckBox->setDisabled(true);
 
-
-    // delete layoutCharset;
-    delete layoutLength;
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
@@ -190,14 +186,14 @@ void MainWindow::disableWithCount()
     ui->withcountButton->setChecked(false);
 }
 
-void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity, double & total, double & filter) {
-    total = stats->getTotalCounter();
-    filter = stats->getTotalFilter();
+void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity) {
+    double total = stats.getTotalCounter();
+    double filter = stats.getTotalFilter();
     percentageTotal = (double) 100 * (filter / total);
-    percentageSecurity = (double) 100 * (stats->getNbSecurePasswords() / total);
+    percentageSecurity = (double) 100 * (stats.getNbSecurePasswords() / total);
 
     /* LENGTH HISTOGRAM */
-    multimap<uint64_t, int> reverseL = flip_map<int>(stats->getStatsLength());
+    multimap<uint64_t, int> reverseL = flip_map<int>(stats.getStatsLength());
     double percentageL;
     uint64_t nbHideL = 0;
 
@@ -221,7 +217,7 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
 
 
     /* CHARSET PIECHART */
-    multimap<uint64_t, string> reverseC = flip_map<string>(stats->getStatsCharsets());
+    multimap<uint64_t, string> reverseC = flip_map<string>(stats.getStatsCharsets());
     int top = 0;
     uint64_t nbHideC = 0;
 
@@ -244,18 +240,17 @@ void MainWindow::handleResults()
     waitBox.close();
     ui->charsetWidget->setHidden(false);
     ui->lengthWidget->show();
-    ui->ThreadlineEdit->setDisabled(false);
-    ui->topLineEdit->setDisabled(false);
-    ui->SimplelineEdit->setDisabled(false);
-    ui->AdvancedlineEdit->setDisabled(false);
+    ui->threadNumberSpin->setDisabled(false);
+    ui->TopXAnswerSpin->setDisabled(false);
+    ui->MaxSimpleMaxSpin->setDisabled(false);
+    ui->MaxAdvMaskSpin->setDisabled(false);
     ui->RegexlineEdit->setDisabled(false);
-    ui->lengthLineEdit->setDisabled(false);
-    ui->lowerLineEdit->setDisabled(false);
-    ui->upperLineEdit->setDisabled(false);
-    ui->specialLineEdit->setDisabled(false);
-    ui->digitLineEdit->setDisabled(false);
+    ui->MinLenSpin->setDisabled(false);
+    ui->MinOccLowerSpin->setDisabled(false);
+    ui->MinOccUpperSpin->setDisabled(false);
+    ui->MinOccSpecialSpin->setDisabled(false);
+    ui->MinOccDigitsSpin->setDisabled(false);
     ui->startButton->setDisabled(false);
-    ui->threadsCheckBox->setDisabled(false);
     ui->topCheckBox->setDisabled(false);
     ui->regexCheckBox->setDisabled(false);
     ui->maxAdvancedCheckBox->setDisabled(false);
@@ -264,9 +259,9 @@ void MainWindow::handleResults()
 
     QBarSeries * barLength = new QBarSeries();
     QPieSeries * pieCharset = new QPieSeries();
-    double percentageTotal, percentageSecurity, total_counter, total_filter;
+    double percentageTotal, percentageSecurity;
 
-    initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity, total_counter, total_filter);
+    initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity);
 
 
 
@@ -308,16 +303,16 @@ void MainWindow::handleResults()
     /* LABELS */
 
     ui->AnalyzedLabel->setText("Number of analyzed passwords: "
-                               + QString::number(total_filter)
+                               + QString::number(stats.getTotalFilter(), 'g', 2)
                                + " on a total of "
-                               + QString::number(total_counter)
-                               + " passwords (" + QString::number(percentageTotal, 'f', 2) + "%)");
+                               + QString::number(stats.getTotalFilter(), 'g', 2)
+                               + " passwords (" + QString::number(percentageTotal, 'g', 1) + "%)");
 
 
-    ui->securityLabel->setText("--> " + QString::number(percentageSecurity, 'f', 2)
+    ui->securityLabel->setText("--> " + QString::number(percentageSecurity, 'g', 2)
                                + "% of the passwords respects the security rules");
 
-    stats->print_stats();
+    stats.print_stats();
 
     ui->resultLabel->setText("For more detailed statistics, check the file \"result.txt\"");
 }
