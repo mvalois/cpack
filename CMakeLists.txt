@@ -1,22 +1,42 @@
 # Version de cmake demandée.
-CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
+cmake_minimum_required(VERSION 2.8)
 
-FIND_PACKAGE (Threads)
+find_package(Threads)
  
 # Chemin des répertoires contenant les fichiers entêtes.
-INCLUDE_DIRECTORIES( include )
+include_directories(include)
 
 # Chemin du répertoire contenant les binaires.
-SET ( EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE} )
+set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 
 # Option du compilateur pour supporter C 2011.
-SET( CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra -O3")
-SET( CMAKE_LD_FLAGS "-lpthread")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra -O3")
+set(CMAKE_LD_FLAGS "-lpthread")
 
 ADD_EXECUTABLE(cppack src/core/statsgen.cpp src/cli/main.cpp)
-target_link_libraries (cppack ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
 # Création des exécutables.
 
 # Faire parler le make.
-SET( CMAKE_VERBOSE_MAKEFILE off )
+set(CMAKE_VERBOSE_MAKEFILE off)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Charts REQUIRED)
+
+add_executable(cppack-gui
+	include/mainwindow.h
+	include/statsgen.h
+	include/utils.h
+    src/gui/mainwindow.cpp
+    src/gui/maingui.cpp
+    src/core/statsgen.cpp
+)
+
+target_link_libraries(cppack-gui Qt5::Core Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
