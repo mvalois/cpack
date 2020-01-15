@@ -57,21 +57,17 @@ void MainWindow::startGame() {
         stats->setWithcount(true);
     }
 
-    if(ui->threadsCheckBox->isChecked())
+    try
     {
-        try
-        {
-            stats->setNbThread(stoi(ui->threadNumberSpin->text().toStdString()));
-        }
-        catch(invalid_argument)
-        {
-            stats->setNbThread(1);
-        }
-        catch(out_of_range)
-        {
-            stats->setNbThread(1);
-        }
-
+        stats->setNbThread(stoi(ui->threadNumberSpin->text().toStdString()));
+    }
+    catch(invalid_argument)
+    {
+        stats->setNbThread(1);
+    }
+    catch(out_of_range)
+    {
+        stats->setNbThread(1);
     }
 
     if(ui->regexCheckBox->isChecked())
@@ -160,7 +156,6 @@ void MainWindow::startGame() {
     ui->MinOccSpecialSpin->setDisabled(true);
     ui->MinOccDigitsSpin->setDisabled(true);
     ui->startButton->setDisabled(true);
-    ui->threadsCheckBox->setDisabled(true);
     ui->topCheckBox->setDisabled(true);
     ui->regexCheckBox->setDisabled(true);
     ui->maxAdvancedCheckBox->setDisabled(true);
@@ -255,7 +250,6 @@ void MainWindow::handleResults()
     ui->MinOccSpecialSpin->setDisabled(false);
     ui->MinOccDigitsSpin->setDisabled(false);
     ui->startButton->setDisabled(false);
-    ui->threadsCheckBox->setDisabled(false);
     ui->topCheckBox->setDisabled(false);
     ui->regexCheckBox->setDisabled(false);
     ui->maxAdvancedCheckBox->setDisabled(false);
