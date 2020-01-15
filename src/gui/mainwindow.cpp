@@ -32,6 +32,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->classicButton,SIGNAL(clicked()),this,SLOT(disableWithCount()));
 }
 
+void MainWindow::setFilename(const string& filename){
+    ui->fileLine->setText(QString::fromStdString(filename));
+}
+
 
 MainWindow::~MainWindow()
 {
