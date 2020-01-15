@@ -22,3 +22,6 @@ FORMS    += forms/mainwindow.ui
 
 
 QMAKE_CXXFLAGS += -std=c++11 -lpthread
+QMAKE_CXXFLAGS_RELEASE -= -O1
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE *= -O3
