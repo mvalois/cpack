@@ -61,7 +61,7 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setNbThread(stoi(ui->ThreadlineEdit->text().toStdString()));
+            stats->setNbThread(stoi(ui->threadNumberSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
@@ -83,7 +83,7 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setLimitSimplemask(stoi(ui->SimplelineEdit->text().toStdString()));
+            stats->setLimitSimplemask(stoi(ui->MaxSimpleMaxSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
@@ -100,7 +100,7 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setLimitAdvancedmask(stoi(ui->AdvancedlineEdit->text().toStdString()));
+            stats->setLimitAdvancedmask(stoi(ui->MaxAdvMaskSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
@@ -117,7 +117,7 @@ void MainWindow::startGame() {
     {
         try
         {
-            stats->setTop(stoi(ui->topLineEdit->text().toStdString()));
+            stats->setTop(stoi(ui->TopXAnswerSpin->text().toStdString()));
         }
         catch(invalid_argument)
         {
@@ -132,11 +132,11 @@ void MainWindow::startGame() {
 
     try
     {
-        int length=stoi(ui->lengthLineEdit->text().toStdString());
-        int special=stoi(ui->specialLineEdit->text().toStdString());
-        int digit=stoi(ui->digitLineEdit->text().toStdString());
-        int upper=stoi(ui->upperLineEdit->text().toStdString());
-        int lower=stoi(ui->lowerLineEdit->text().toStdString());
+        int length=stoi(ui->MinLenSpin->text().toStdString());
+        int special=stoi(ui->MinOccSpecialSpin->text().toStdString());
+        int digit=stoi(ui->MinOccDigitsSpin->text().toStdString());
+        int upper=stoi(ui->MinOccUpperSpin->text().toStdString());
+        int lower=stoi(ui->MinOccLowerSpin->text().toStdString());
 
         stats->setSecurityRules(length,special,digit,upper,lower);
     }
@@ -149,16 +149,16 @@ void MainWindow::startGame() {
         stats->setSecurityRules(8,0,1,1,1);
     }
 
-    ui->ThreadlineEdit->setDisabled(true);
-    ui->topLineEdit->setDisabled(true);
-    ui->SimplelineEdit->setDisabled(true);
-    ui->AdvancedlineEdit->setDisabled(true);
+    ui->threadNumberSpin->setDisabled(true);
+    ui->TopXAnswerSpin->setDisabled(true);
+    ui->MaxSimpleMaxSpin->setDisabled(true);
+    ui->MaxAdvMaskSpin->setDisabled(true);
     ui->RegexlineEdit->setDisabled(true);
-    ui->lengthLineEdit->setDisabled(true);
-    ui->lowerLineEdit->setDisabled(true);
-    ui->upperLineEdit->setDisabled(true);
-    ui->specialLineEdit->setDisabled(true);
-    ui->digitLineEdit->setDisabled(true);
+    ui->MinLenSpin->setDisabled(true);
+    ui->MinOccLowerSpin->setDisabled(true);
+    ui->MinOccUpperSpin->setDisabled(true);
+    ui->MinOccSpecialSpin->setDisabled(true);
+    ui->MinOccDigitsSpin->setDisabled(true);
     ui->startButton->setDisabled(true);
     ui->threadsCheckBox->setDisabled(true);
     ui->topCheckBox->setDisabled(true);
@@ -244,16 +244,16 @@ void MainWindow::handleResults()
     waitBox.close();
     ui->charsetWidget->setHidden(false);
     ui->lengthWidget->show();
-    ui->ThreadlineEdit->setDisabled(false);
-    ui->topLineEdit->setDisabled(false);
-    ui->SimplelineEdit->setDisabled(false);
-    ui->AdvancedlineEdit->setDisabled(false);
+    ui->threadNumberSpin->setDisabled(false);
+    ui->TopXAnswerSpin->setDisabled(false);
+    ui->MaxSimpleMaxSpin->setDisabled(false);
+    ui->MaxAdvMaskSpin->setDisabled(false);
     ui->RegexlineEdit->setDisabled(false);
-    ui->lengthLineEdit->setDisabled(false);
-    ui->lowerLineEdit->setDisabled(false);
-    ui->upperLineEdit->setDisabled(false);
-    ui->specialLineEdit->setDisabled(false);
-    ui->digitLineEdit->setDisabled(false);
+    ui->MinLenSpin->setDisabled(false);
+    ui->MinOccLowerSpin->setDisabled(false);
+    ui->MinOccUpperSpin->setDisabled(false);
+    ui->MinOccSpecialSpin->setDisabled(false);
+    ui->MinOccDigitsSpin->setDisabled(false);
     ui->startButton->setDisabled(false);
     ui->threadsCheckBox->setDisabled(false);
     ui->topCheckBox->setDisabled(false);
