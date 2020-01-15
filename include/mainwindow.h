@@ -45,7 +45,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    Statsgen * stats;
+    Statsgen stats;
     QMessageBox waitBox;
     QVBoxLayout * layoutCharset;
     QVBoxLayout * layoutLength;
@@ -60,18 +60,15 @@ class WorkerThread : public QThread
     Q_OBJECT
     void run() {
 
-        _s->generate_stats();
+        _s.generate_stats();
         emit resultReady();
     }
 public:
-    WorkerThread(Statsgen *s)
-    {
-        _s=s;
-    }
+    WorkerThread(Statsgen &s):_s(s){}
 signals:
     void resultReady();
 private:
-    Statsgen *_s;
+    Statsgen &_s;
 };
 
 #endif // MAINWINDOW_H
