@@ -1,7 +1,7 @@
 # Version de cmake demandée.
 cmake_minimum_required(VERSION 2.8)
 
-find_package(Threads)
+find_package(Threads REQUIRED)
  
 # Chemin des répertoires contenant les fichiers entêtes.
 include_directories(include)
@@ -25,18 +25,22 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Charts REQUIRED)
+find_package(Qt5Core)
+if(Qt5Core_FOUND)
+	find_package(Qt5Gui REQUIRED)
+	find_package(Qt5Widgets REQUIRED)
+	find_package(Qt5Charts REQUIRED)
 
-add_executable(cppack-gui
-	include/mainwindow.h
-	include/statsgen.h
-	include/utils.h
-    src/gui/mainwindow.cpp
-    src/gui/maingui.cpp
-    src/core/statsgen.cpp
-)
+	add_executable(cppack-gui
+		include/mainwindow.h
+		include/statsgen.h
+		include/utils.h
+	    src/gui/mainwindow.cpp
+	    src/gui/maingui.cpp
+	    src/core/statsgen.cpp
+	)
 
-target_link_libraries(cppack-gui Qt5::Core Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(cppack-gui Qt5::Core Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
+else()
+	message(STATUS "Qt5 not found. Not building GUI.")
+endif()

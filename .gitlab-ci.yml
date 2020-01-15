@@ -3,21 +3,21 @@ image: ubuntu:bionic
 build-cli:
   before_script:
     - apt-get -qq update
-    - apt-get -qq -y install build-essential
-  script: make -j$(nproc) cppack
+    - apt-get -qq -y install build-essential cmake
+  script:
+    - cmake .
+    - make -j$(nproc) cppack
   artifacts:
     paths:
-      - cppack
+      - bin/cppack
 
 build-gui:
   before_script:
     - apt-get -qq update
-    - apt-get -qq -y install build-essential 
-                             qt5-default 
-                             libqt5charts5-dev 
-                             supervisor 
-                             openssh-server
-  script: make -j$(nproc) cppack-gui
+    - apt-get -qq -y install build-essential qt5-default libqt5charts5-dev cmake
+  script:
+    - cmake .
+    - make -j$(nproc) cppack-gui
   artifacts:
     paths:
-      - cppack-gui
+      - bin/cppack-gui
