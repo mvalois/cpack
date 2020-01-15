@@ -185,9 +185,9 @@ void MainWindow::disableWithCount()
     ui->withcountButton->setChecked(false);
 }
 
-void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity, double & total, double & filter) {
-    total = stats->getTotalCounter();
-    filter = stats->getTotalFilter();
+void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity) {
+    double total = stats->getTotalCounter();
+    double filter = stats->getTotalFilter();
     percentageTotal = (double) 100 * (filter / total);
     percentageSecurity = (double) 100 * (stats->getNbSecurePasswords() / total);
 
@@ -258,9 +258,9 @@ void MainWindow::handleResults()
 
     QBarSeries * barLength = new QBarSeries();
     QPieSeries * pieCharset = new QPieSeries();
-    double percentageTotal, percentageSecurity, total_counter, total_filter;
+    double percentageTotal, percentageSecurity;
 
-    initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity, total_counter, total_filter);
+    initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity);
 
 
 
@@ -302,9 +302,9 @@ void MainWindow::handleResults()
     /* LABELS */
 
     ui->AnalyzedLabel->setText("Number of analyzed passwords: "
-                               + QString::number(total_filter)
+                               + QString::number(stats->getTotalFilter())
                                + " on a total of "
-                               + QString::number(total_counter)
+                               + QString::number(stats->getTotalFilter())
                                + " passwords (" + QString::number(percentageTotal, 'f', 2) + "%)");
 
 
