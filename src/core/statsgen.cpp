@@ -28,39 +28,11 @@ using namespace std;
 Statsgen::Statsgen(const std::string& name) {
 	if (name == "-"){
 		is_stdin = true;
-		warn("reading from stdin enabled, loading the whole list in memory");
+		cerr << "[WARNING]" << " reading from stdin enabled, loading the whole list in memory" << endl;
 	}
 	else {
 		filename = name;
 	}
-}
-
-void Statsgen::message(const char* messages...){
-	va_list args;
-	va_start(args, messages);
-	while (*messages != '\0'){
-		cerr << " ";
-		if (*messages == 'd') {
-			cerr << va_arg(args, int);
-		}
-		else{
-			cerr << va_arg(args, char*);
-		}
-		messages++;
-	}
-	va_end(args);
-}
-
-void Statsgen::warn(const char* messages...){
-	cerr << "[Warning]";
-	message(messages);
-	cerr << endl;
-}
-
-void Statsgen::debug(const char* messages...){
-	cerr << "[Debug]";
-	message(messages);
-	cerr << endl;
 }
 
 
@@ -146,7 +118,8 @@ int Statsgen::generate_stats() {
 		td[i].sr.minLower = minLower;
 		td[i].sr.minUpper = minUpper;
 
-		debug("Thread", td[i].thread_id, "analyse :", td[i].lineBegin, " -->", td[i].lineEnd);
+		if(debug_enabled)
+			cerr << "[DEBUG]" << "Thread" << td[i].thread_id << "analyse :" << td[i].lineBegin << " -->" << td[i].lineEnd << endl;
 		// We use std::queue if input is from stdin
 		if (is_stdin) {
 			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );
