@@ -197,20 +197,6 @@ public:
 	 */
 	inline void enableDebug() { debug_enabled = true; }
 
-
-	void message(const char* messages...) const;
-	/**
-	 * @brief print the warning message
-	 * @param message: the warning message
-	 */
-	void warn(const char* messages...) const ;
-
-	/**
-	 * @brief print the debug message if debug enabled
-	 * @param message: the debug message
-	 * */
-	void debug(const char* messages...) const;
-
 	/**
 	 * @brief Calculate all statistics for a database
 	 * @return 0 if error, 1 if success
