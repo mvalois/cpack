@@ -105,7 +105,7 @@ int main(int argc,char* argv[]) {
 			case 'p':
 				statsgen.setNbThread(atoi(optarg)); break;
 			case 's':
-				statsgen.setSecurityRules(); break;
+				statsgen.askSecurityRules(); break;
 			default:
 				showHelp(); break;
 		}
