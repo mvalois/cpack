@@ -305,5 +305,4 @@ void * generate_stats_thread(void * threadarg);
  */
 void * generate_stats_thread_queue(void * threadarg);
 
-
 #endif

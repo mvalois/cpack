@@ -193,7 +193,7 @@ int Statsgen::generate_stats() {
 
 
 	if (!total_counter) {
-		wcerr << "Empty file or not existing file" << endl;
+		wcerr << "[ERROR] Empty file or not existing file" << endl;
 		return 0;
 	}
 
@@ -555,7 +555,7 @@ uint64_t nbline_file(const string & filename) {
 	}
 	// we have not read the whole file
 	if (readfile.fail() && !readfile.eof()){
-		cerr << "There was an error reading the file at line " << nb << endl;
+		cerr << "[ERROR]" << " There was an error reading the file at line " << nb << endl;
 		return 0;
 	}
 

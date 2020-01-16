@@ -13,7 +13,9 @@ set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra")
 set(CMAKE_LD_FLAGS "-lpthread")
 
-add_executable(cppack src/core/statsgen.cpp src/cli/main.cpp)
+add_executable(cppack
+				src/core/statsgen.cpp
+				src/cli/main.cpp)
 target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
 # Création des exécutables.
