@@ -1,6 +1,6 @@
 # docker build . -t cppack
 # docker run -d --name gsg -p 5022:22 cppack
-# ssh -X -p 5022 root@127.0.0.1 /opt/cppack/cppack-gui
+# ssh -X -p 5022 root@127.0.0.1 /opt/cppack/bin/cppack-gui
 FROM ubuntu:bionic
 
 ENV SSH_PASSWORD "rootpass"
@@ -8,6 +8,7 @@ ENV SSH_PASSWORD "rootpass"
 RUN apt-get -qq update
 RUN apt-get -qq -y install \
 	build-essential \
+	cmake \
 	qt5-default \
 	libqt5charts5-dev \
 	supervisor \
@@ -31,7 +32,7 @@ RUN mkdir -p /var/log/supervisor && \
 COPY . /opt/cppack
 
 WORKDIR /opt/cppack
-RUN make -s
+RUN cmake . && make -s
 
 CMD [ "/usr/bin/supervisord", "-c",  "/etc/supervisor/conf.d/supervisord.conf" ]
 
