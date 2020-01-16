@@ -14,15 +14,14 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
-#include <vector>
 #include <thread>
-#include <pthread.h>
-#include <cstdarg>
 
 
 #include "statsgen.h"
 #include "utils.h"
 using namespace std;
+
+static const map<int, string> charset_names = Statsgen::charsetNames();
 
 
 Statsgen::Statsgen(const std::string& name) {
@@ -30,9 +29,7 @@ Statsgen::Statsgen(const std::string& name) {
 		is_stdin = true;
 		cerr << "[WARNING]" << " reading from stdin enabled, loading the whole list in memory" << endl;
 	}
-	else {
-		filename = name;
-	}
+	filename = name;
 }
 
 
@@ -130,7 +127,7 @@ int Statsgen::generate_stats() {
 		}
 
 		if (rc) {
-			cout << "Error:unable to create thread," << rc << endl;
+			cerr << "[ERROR] unable to create thread," << rc << endl;
 			exit(-1);
 		}
 	}
@@ -139,7 +136,7 @@ int Statsgen::generate_stats() {
 	for( i = 0; i < nbThread; i++ ) {
 		rc = pthread_join(threads[i], &status);
 		if (rc) {
-			cout << "Error:unable to join," << rc << endl;
+			cerr << "[ERROR] unable to join," << rc << endl;
 			exit(-1);
 		}
 	}
@@ -317,56 +314,15 @@ void analyse_letter(const char & letter, char & last_simplemask, string & simple
 }
 
 
-const string analyse_charset(const Policy & policy) {
-	string charset;
-	if (policy.digit && !policy.lower && !policy.upper && !policy.special) {
-		charset = "numeric";
-	}
-	else if (!policy.digit && policy.lower && !policy.upper && !policy.special) {
-		charset = "loweralpha";
-	}
-	else if (!policy.digit && !policy.lower && policy.upper && !policy.special) {
-		charset = "upperalpha";
-	}
-	else if (!policy.digit && !policy.lower && !policy.upper && policy.special) {
-		charset = "special";
-	}
-	else if (!policy.digit && policy.lower && policy.upper && !policy.special) {
-		charset = "mixedalpha";
-	}
-	else if (policy.digit && policy.lower && !policy.upper && !policy.special) {
-		charset = "loweralphanum";
-	}
-	else if (policy.digit && !policy.lower && policy.upper && !policy.special) {
-		charset = "upperalphanum";
-	}
-	else if (!policy.digit && policy.lower && !policy.upper && policy.special) {
-		charset = "loweralphaspecial";
-	}
-	else if (!policy.digit && !policy.lower && policy.upper && policy.special) {
-		charset = "upperalphaspecial";
-	}
-	else if (policy.digit && !policy.lower && !policy.upper && policy.special) {
-		charset = "specialnum";
-	}
+const string Statsgen::getCharset(const Policy& p) {
+	int charset = 0;
+	charset ^= (bool) p.digit << 0;
+	charset ^= (bool) p.lower << 1;
+	charset ^= (bool) p.upper << 2;
+	charset ^= (bool) p.special << 3;
 
-	else if (!policy.digit && policy.lower && policy.upper && policy.special) {
-		charset = "mixedalphaspecial";
-	}
-	else if (policy.digit && !policy.lower && policy.upper && policy.special) {
-		charset = "upperalphaspecialnum";
-	}
-	else if (policy.digit && policy.lower && !policy.upper && policy.special) {
-		charset = "loweralphaspecialnum";
-	}
-	else if (policy.digit && policy.lower && policy.upper && !policy.special) {
-		charset = "mixedalphanum";
-	}
-
-	else {
-		charset = "all";
-	}
-	return charset;
+	map<int, string>::const_iterator it = charset_names.find(charset);
+	return it->second;
 }
 
 
@@ -382,7 +338,7 @@ Container analyze_password(const string & password, SecurityRules & sr, const in
 		analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAdvancedMask, sizeSimpleMask);
 	}
 
-	c.characterset = analyse_charset(c.pol);
+	c.characterset = Statsgen::getCharset(c.pol);
 
 	if ( (c.pass_length >= sr.minLength) &&
 		 (c.pol.digit >= sr.minDigit) &&
