@@ -13,7 +13,7 @@ set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra -O3")
 set(CMAKE_LD_FLAGS "-lpthread")
 
-ADD_EXECUTABLE(cppack src/core/statsgen.cpp src/cli/main.cpp)
+add_executable(cppack src/core/statsgen.cpp src/cli/main.cpp)
 target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
 # Création des exécutables.
@@ -40,7 +40,7 @@ if(Qt5Core_FOUND)
 	    src/core/statsgen.cpp
 	)
 
-	target_link_libraries(cppack-gui Qt5::Core Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(cppack-gui Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
 else()
 	message(STATUS "Qt5 not found. Not building GUI.")
 endif()
