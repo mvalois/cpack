@@ -35,93 +35,36 @@ Statsgen::Statsgen(const std::string& name) {
 	}
 }
 
-void Statsgen::setHiderare(int val) {
-	hiderare = val;
-}
-
-
-
-void Statsgen::setTop(int val) {
-	top = val;
-}
-
-
-void Statsgen::setRegex(const string& expr) {
-	current_regex = string(expr);
-	use_regex = true;
-}
-
-
-void Statsgen::setWithcount(bool val) {
-	withcount = val;
-}
-
-
-void Statsgen::setLimitSimplemask(int val) {
-	limitSimplemask = val;
-}
-
-void Statsgen::setLimitAdvancedmask(int val) {
-	limitAdvancedmask = val;
-}
-
-
-void Statsgen::setNbThread(int nb) {
-	int max = thread::hardware_concurrency();
-	if (nb > max) {
-		nbThread = max;
-	} else {
-		nbThread = nb;
+void Statsgen::message(const char* messages...){
+	va_list args;
+	va_start(args, messages);
+	while (*messages != '\0'){
+		cerr << " ";
+		if (*messages == 'd') {
+			cerr << va_arg(args, int);
+		}
+		else{
+			cerr << va_arg(args, char*);
+		}
+		messages++;
 	}
-}
-
-void Statsgen::setOutfile(const string& outfile){
-	outfile_name = outfile;
-}
-
-void Statsgen::enableDebug(){
-	debug_enabled = true;
+	va_end(args);
 }
 
 void Statsgen::warn(const char* messages...){
-	va_list args;
-	va_start(args, messages);
 	cerr << "[Warning]";
-	while (*messages != '\0'){
-			cerr << " ";
-			if (*messages == 'd') {
-				cerr << va_arg(args, int);
-			}
-			else{
-				cerr << va_arg(args, char*);
-			}
-			messages++;
-	}
+	message(messages);
 	cerr << endl;
-	va_end(args);
 }
 
 void Statsgen::debug(const char* messages...){
-	if (!debug_enabled) return;
-	va_list args;
-	va_start(args, messages);
 	cerr << "[Debug]";
-	while (*messages != '\0'){
-			cerr << " ";
-			if (*messages == 'd') {
-				cerr << va_arg(args, int);
-			}
-			else{
-				cerr << va_arg(args, char*);
-			}
-			messages++;
-	}
+	message(messages);
 	cerr << endl;
-	va_end(args);
 }
 
 
-void Statsgen::setSecurityRules() {
+void Statsgen::askSecurityRules() {
 	wcout << "\nMinimal length of a password:" << endl;
 	cin >> minLength;
 
@@ -138,12 +81,12 @@ void Statsgen::setSecurityRules() {
 	cin >> minUpper;
 }
 
-void Statsgen::setSecurityRules(int length,int special,int digit,int upper,int lower) {
-    minLength=length;
-    minSpecial=special;
-    minDigit=digit;
-    minUpper=upper;
-    minLower=lower;
+void Statsgen::setSecurityRules(const int& length, const int& special, const int& digit, const int& upper, const int& lower) {
+    minLength = length;
+    minSpecial = special;
+    minDigit = digit;
+    minUpper = upper;
+    minLower = lower;
 }
 
 
@@ -401,7 +344,7 @@ void analyse_letter(const char & letter, char & last_simplemask, string & simple
 }
 
 
-string analyse_charset(const Policy & policy) {
+const string analyse_charset(const Policy & policy) {
 	string charset;
 	if (policy.digit && !policy.lower && !policy.upper && !policy.special) {
 		charset = "numeric";
@@ -489,33 +432,33 @@ Container analyze_password(const string & password, SecurityRules & sr, const in
 
 
 
-void updateMinMax(minMax & minMaxValue, const Policy & pol) {
-	if (minMaxValue.mindigit == -1 || minMaxValue.mindigit > pol.digit) {
-		minMaxValue.mindigit = pol.digit;
+void updateMinMax(minMax & m, const Policy & pol) {
+	if (m.mindigit == -1 || m.mindigit > pol.digit) {
+		m.mindigit = pol.digit;
 	}
-	if (minMaxValue.maxdigit == -1 || minMaxValue.maxdigit < pol.digit) {
-		minMaxValue.maxdigit = pol.digit;
-	}
-
-	if (minMaxValue.minlower == -1 || minMaxValue.minlower > pol.lower) {
-		minMaxValue.minlower = pol.lower;
-	}
-	if (minMaxValue.maxlower == -1 || minMaxValue.maxlower < pol.lower) {
-		minMaxValue.maxlower = pol.lower;
+	if (m.maxdigit == -1 || m.maxdigit < pol.digit) {
+		m.maxdigit = pol.digit;
 	}
 
-	if (minMaxValue.minupper == -1 || minMaxValue.minupper > pol.upper) {
-		minMaxValue.minupper = pol.upper;
+	if (m.minlower == -1 || m.minlower > pol.lower) {
+		m.minlower = pol.lower;
 	}
-	if (minMaxValue.maxupper == -1 || minMaxValue.maxupper < pol.upper) {
-		minMaxValue.maxupper = pol.upper;
+	if (m.maxlower == -1 || m.maxlower < pol.lower) {
+		m.maxlower = pol.lower;
 	}
 
-	if (minMaxValue.minspecial == -1 || minMaxValue.minspecial > pol.special) {
-		minMaxValue.minspecial = pol.special;
+	if (m.minupper == -1 || m.minupper > pol.upper) {
+		m.minupper = pol.upper;
 	}
-	if (minMaxValue.maxspecial == -1 || minMaxValue.maxspecial < pol.special) {
-		minMaxValue.maxspecial = pol.special;
+	if (m.maxupper == -1 || m.maxupper < pol.upper) {
+		m.maxupper = pol.upper;
+	}
+
+	if (m.minspecial == -1 || m.minspecial > pol.special) {
+		m.minspecial = pol.special;
+	}
+	if (m.maxspecial == -1 || m.maxspecial < pol.special) {
+		m.maxspecial = pol.special;
 	}
 }
 
@@ -625,26 +568,6 @@ void * generate_stats_thread(void * threadarg) {
 	readfile.close();
 
 	pthread_exit(NULL);
-}
-
-uint64_t Statsgen::getTotalCounter() {
-	return total_counter;
-}
-
-uint64_t Statsgen::getTotalFilter() {
-	return total_filter;
-}
-
-uint64_t Statsgen::getNbSecurePasswords() {
-	return nbSecurePassword;
-}
-
-IntOccurrence Statsgen::getStatsLength(){
-	return stats_length;
-}
-
-StringOccurrence Statsgen::getStatsCharsets(){
-	return stats_charactersets;
 }
 
 
