@@ -34,19 +34,19 @@ Statsgen::Statsgen(const std::string& name) {
 
 
 void Statsgen::askSecurityRules() {
-	cout << "\nMinimal length of a password:" << endl;
+	cout << "Minimal length of a password:" << endl;
 	cin >> minLength;
 
-	cout << "\nMinimum of special characters in a password:" << endl;
+	cout << "Minimum of special characters in a password:" << endl;
 	cin >> minSpecial;
 
-	cout << "\nMinimum of digits in a password:" << endl;
+	cout << "Minimum of digits in a password:" << endl;
 	cin >> minDigit;
 
-	cout << "\nMinimum of lower characters in a password:" << endl;
+	cout << "Minimum of lower characters in a password:" << endl;
 	cin >> minLower;
 
-	cout << "\nMinimum of upper characters in a password:" << endl;
+	cout << "Minimum of upper characters in a password:" << endl;
 	cin >> minUpper;
 }
 
@@ -69,8 +69,6 @@ int Statsgen::generate_stats() {
 		}
 	}
 
-	int rc;
-	int i;
 	pthread_t threads[MAX_THREADS];
 	struct thread_data td[MAX_THREADS];
 
@@ -90,7 +88,7 @@ int Statsgen::generate_stats() {
 		}
 	}
 
-	for( i = 0; i < nbThread; i++ ) {
+	for(int i = 0; i < nbThread; i++ ) {
 		td[i].filename = filename;
 		td[i].thread_id = i + 1;
 		td[i].current_regex = current_regex;
@@ -115,8 +113,11 @@ int Statsgen::generate_stats() {
 		td[i].sr.minLower = minLower;
 		td[i].sr.minUpper = minUpper;
 
-		if(debug_enabled)
+		if(debug_enabled){
 			cerr << "[DEBUG]" << "Thread" << td[i].thread_id << "analyse :" << td[i].lineBegin << " -->" << td[i].lineEnd << endl;
+		}
+
+		int rc;
 		// We use std::queue if input is from stdin
 		if (is_stdin) {
 			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );
@@ -133,8 +134,8 @@ int Statsgen::generate_stats() {
 	}
 
 	pthread_attr_destroy(&attr);
-	for( i = 0; i < nbThread; i++ ) {
-		rc = pthread_join(threads[i], &status);
+	for(int i = 0; i < nbThread; i++ ) {
+		int rc = pthread_join(threads[i], &status);
 		if (rc) {
 			cerr << "[ERROR] unable to join," << rc << endl;
 			exit(-1);
@@ -145,7 +146,7 @@ int Statsgen::generate_stats() {
 	Policy policyMin;
 	Policy policyMax;
 
-	for(i=0;i<nbThread;i++)	{
+	for(int i=0; i < nbThread; i++)	{
 		total_counter+=td[i].total_counter;
 		total_filter+=td[i].total_filter;
 
@@ -165,24 +166,27 @@ int Statsgen::generate_stats() {
 		updateMinMax(minMaxValue, policyMax);
 
 
-		for(auto it=td[i].length.begin();it!=td[i].length.end();it++)
+		for(pair<int, uint64_t> occ: td[i].length)
 		{
-			stats_length[it->first]+=it->second;
+			stats_length[occ.first] += occ.second;
 		}
 		td[i].length.clear();
-		for(auto it=td[i].charactersets.begin();it!=td[i].charactersets.end();it++)
+
+		for(pair<string, int> occ : td[i].charactersets)
 		{
-			stats_charactersets[it->first]+=it->second;
+			stats_charactersets[occ.first] += occ.second;
 		}
 		td[i].charactersets.clear();
-		for(auto it=td[i].simplemasks.begin();it!=td[i].simplemasks.end();it++)
+
+		for(pair<string, int> occ: td[i].simplemasks)
 		{
-			stats_simplemasks[it->first]+=it->second;
+			stats_simplemasks[occ.first] += occ.second;
 		}
 		td[i].simplemasks.clear();
-		for(auto it=td[i].advancedmasks.begin();it!=td[i].advancedmasks.end();it++)
+
+		for(pair<string, int> occ: td[i].advancedmasks)
 		{
-			stats_advancedmasks[it->first]+=it->second;
+			stats_advancedmasks[occ.first] += occ.second;
 		}
 		td[i].advancedmasks.clear();
 	}
@@ -190,7 +194,7 @@ int Statsgen::generate_stats() {
 
 
 	if (!total_counter) {
-		wcerr << "[ERROR] Empty file or not existing file" << endl;
+		cerr << "[ERROR] Empty file or not existing file" << endl;
 		return 0;
 	}
 
