@@ -34,19 +34,19 @@ Statsgen::Statsgen(const std::string& name) {
 
 
 void Statsgen::askSecurityRules() {
-	wcout << "\nMinimal length of a password:" << endl;
+	cout << "\nMinimal length of a password:" << endl;
 	cin >> minLength;
 
-	wcout << "\nMinimum of special characters in a password:" << endl;
+	cout << "\nMinimum of special characters in a password:" << endl;
 	cin >> minSpecial;
 
-	wcout << "\nMinimum of digits in a password:" << endl;
+	cout << "\nMinimum of digits in a password:" << endl;
 	cin >> minDigit;
 
-	wcout << "\nMinimum of lower characters in a password:" << endl;
+	cout << "\nMinimum of lower characters in a password:" << endl;
 	cin >> minLower;
 
-	wcout << "\nMinimum of upper characters in a password:" << endl;
+	cout << "\nMinimum of upper characters in a password:" << endl;
 	cin >> minUpper;
 }
 
@@ -202,50 +202,50 @@ void Statsgen::print_stats() {
 	int count;
 	float perc = (float) 100 * (total_filter / total_counter);
 
-	wcout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
+	cout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
 		<< perc << " %)" << endl;
 
 
-	wcout << "\nSecurity rules : " << endl;
-	wcout << "\tMinimal length of a password: " << minLength << endl;
-	wcout << "\tMinimum of special characters in a password: " << minSpecial << endl;
-	wcout << "\tMinimum of digits in a password: " << minDigit << endl;
-	wcout << "\tMinimum of lower characters in a password: " << minLower << endl;
-	wcout << "\tMinimum of upper characters in a password: " << minUpper << endl;
+	cout << "\nSecurity rules : " << endl;
+	cout << "\tMinimal length of a password: " << minLength << endl;
+	cout << "\tMinimum of special characters in a password: " << minSpecial << endl;
+	cout << "\tMinimum of digits in a password: " << minDigit << endl;
+	cout << "\tMinimum of lower characters in a password: " << minLower << endl;
+	cout << "\tMinimum of upper characters in a password: " << minUpper << endl;
 
 	float perce = (float) 100 * (nbSecurePassword / total_counter);
-	wcout << "\n\t\t--> " << nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
+	cout << "\n\t\t--> " << nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
-	wcout << "\nmin - max\n" << endl;
-	wcout << setw(43) << right << "digit:  "
+	cout << "\nmin - max\n" << endl;
+	cout << setw(43) << right << "digit:  "
 			<< setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
-	wcout << setw(43) << right << "lower:  "
+	cout << setw(43) << right << "lower:  "
 			<< setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
-	wcout << setw(43) << right << "upper:  "
+	cout << setw(43) << right << "upper:  "
 			<< setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
-	wcout << setw(43) << right << "special:  "
+	cout << setw(43) << right << "special:  "
 			<< setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;
 
 
 
-	wcout << "\nStatistics relative to length: \n" << endl;
+	cout << "\nStatistics relative to length: \n" << endl;
 	showMap(stats_length, top, total_counter, hiderare, count);
 
-	wcout << "\nStatistics relative to charsets: \n" << endl;
+	cout << "\nStatistics relative to charsets: \n" << endl;
 	showMap(stats_charactersets, -1, total_counter, hiderare, count);
 
 
-	wcout << "\nStatistics relative to simplemasks: \n" << endl;
+	cout << "\nStatistics relative to simplemasks: \n" << endl;
 	showMap(stats_simplemasks, top, total_counter, hiderare, count);
 
 	if (limitSimplemask > 0) {
-		wcout << endl;
+		cout << endl;
 		readResult(stats_simplemasks["othermasks"], "othermasks", count, total_counter, hiderare);
 	}
 
 
-	wcout << "\nStatistics relative to advancedmask: \n" << endl;
+	cout << "\nStatistics relative to advancedmask: \n" << endl;
 	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
 
 	if (outfile_name != ""){
@@ -261,7 +261,7 @@ void Statsgen::print_stats() {
 	}
 
 	if (limitAdvancedmask > 0) {
-		wcout << endl;
+		cout << endl;
 		readResult(stats_advancedmasks["othermasks"], "othermasks", count, total_counter, hiderare);
 	}
 }
