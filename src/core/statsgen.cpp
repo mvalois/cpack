@@ -631,26 +631,6 @@ void * generate_stats_thread(void * threadarg) {
 	pthread_exit(NULL);
 }
 
-uint64_t Statsgen::getTotalCounter() {
-	return total_counter;
-}
-
-uint64_t Statsgen::getTotalFilter() {
-	return total_filter;
-}
-
-uint64_t Statsgen::getNbSecurePasswords() {
-	return nbSecurePassword;
-}
-
-IntOccurrence Statsgen::getStatsLength(){
-	return stats_length;
-}
-
-StringOccurrence Statsgen::getStatsCharsets(){
-	return stats_charactersets;
-}
-
 
 uint64_t nbline_file(const string & filename) {
 	ifstream readfile(filename);
