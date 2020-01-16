@@ -35,10 +35,9 @@ Statsgen::Statsgen(const std::string& name) {
 	}
 }
 
-void Statsgen::warn(const char* messages...){
+void Statsgen::message(const char* messages...) const {
 	va_list args;
 	va_start(args, messages);
-	cerr << "[Warning]";
 	while (*messages != '\0'){
 			cerr << " ";
 			if (*messages == 'd') {
@@ -49,27 +48,20 @@ void Statsgen::warn(const char* messages...){
 			}
 			messages++;
 	}
-	cerr << endl;
 	va_end(args);
 }
 
-void Statsgen::debug(const char* messages...){
-	if (!debug_enabled) return;
-	va_list args;
-	va_start(args, messages);
-	cerr << "[Debug]";
-	while (*messages != '\0'){
-			cerr << " ";
-			if (*messages == 'd') {
-				cerr << va_arg(args, int);
-			}
-			else{
-				cerr << va_arg(args, char*);
-			}
-			messages++;
-	}
+void Statsgen::warn(const char* messages...) const{
+	cerr << "[Warning]";
+	message(messages);
 	cerr << endl;
-	va_end(args);
+}
+
+void Statsgen::debug(const char* messages...) const {
+	if (!debug_enabled) return;
+	cerr << "[Debug]";
+	message(messages);
+	cerr << endl;
 }
 
 
