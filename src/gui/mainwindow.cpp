@@ -9,14 +9,14 @@
  * Please see the attached LICENSE file for additional licensing information.
  */
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "utils.h"
-
 #include <QFileDialog>
 #include <QTextStream>
 #include <iostream>
 #include <QtCharts>
+
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "utils.h"
 
 using namespace std;
 

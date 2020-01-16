@@ -20,6 +20,7 @@
 #include <iostream>
 #include <regex>
 #include <queue>
+#include <thread>
 
 #define MAX_THREADS 32
 
@@ -126,65 +127,75 @@ public:
 	 * @brief useful to hide statistics below 1%
 	 * @param hr: 1 to hide, else 0
 	 */
-	void setHiderare(int hr);
+	inline void setHiderare(const int& hr) { hiderare = hr; }
 
 	/**
 	 * @brief Defining the number of best results the user wants to see,
 	 * and so the result should be clearer
 	 * @param t: number of interesting results
 	 */
-	void setTop(int t);
+	inline void setTop(const int& t) { top = t; }
 
 	/**
 	 * @brief Defining a regular expression to analyse only
 	 * some interesting passwords
 	 * @param reg: regular expression
 	 */
-	void setRegex(const std::string& reg);
+	inline void setRegex(const std::string& reg) {
+		current_regex = reg;
+		use_regex = true;
+	}
 
 	/**
 	 * @brief Useful to know if the database uses the format withcount
 	 * @param var: true if database uses the format withcount, else false
 	 */
-	void setWithcount(bool var);
+	inline void setWithcount(const bool& wc) { withcount = wc; }
 
 	/**
 	 * @brief Filter for the size of the simple masks, can be
 	 * used as an optimisation option
 	 * @param limit: number that limit the size of the simple masks
 	 */
-	void setLimitSimplemask(int limit);
+	inline void setLimitSimplemask(const int& limit) { limitSimplemask = limit; }
 
 	/**
 	 * @brief Filter for the size of the advanced masks, can be
 	 * used as an optimisation option
 	 * @param limit: number that limit the size of the advanced masks
 	 */
-	void setLimitAdvancedmask(int limit);
+	inline void setLimitAdvancedmask(const int& limit) { limitAdvancedmask = limit; }
 
 	/**
 	 * @brief Number of threads the user wants to use
 	 * @param nb: number of usable threads
 	 */
-	void setNbThread(int nb);
+	inline void setNbThread(const int& nb) {
+		int max = std::thread::hardware_concurrency();
+		if (nb > max) {
+			nbThread = max;
+		} else {
+			nbThread = nb;
+		}
+	}
 
 
 	/**
 	 * @brief Defining all security rules
 	 */
-	void setSecurityRules();
-	void setSecurityRules(int length,int special,int digit,int upper,int lower);
+	void askSecurityRules();
+	void setSecurityRules(const int& length, const int& special, const int& digit, const int& upper, const int& lower);
 
 	/**
 	 * @brief Where to write masks
 	 * @param outfile: the file where to write masks
 	 */
-	void setOutfile(const std::string& outfile);
+	inline void setOutfile(const std::string& outfile) { outfile_name = outfile; }
 
 	/**
 	 * @brief enable debugging
 	 */
-	void enableDebug();
+	inline void enableDebug() { debug_enabled = true; }
 
 	/**
 	 * @brief print the warning message
@@ -210,14 +221,11 @@ public:
 	 */
 	void print_stats();
 
-	uint64_t getTotalCounter();
-	uint64_t getTotalFilter();
-	uint64_t getNbSecurePasswords();
-	IntOccurrence getStatsLength();
-	StringOccurrence getStatsCharsets();
-
-
-
+	inline uint64_t getTotalCounter() const { return total_counter; }
+	inline uint64_t getTotalFilter() const { return total_filter; }
+	inline uint64_t getNbSecurePasswords() const { return nbSecurePassword; }
+	inline const IntOccurrence& getStatsLength() const { return stats_length; }
+	inline const StringOccurrence& getStatsCharsets() const { return stats_charactersets; }
 
 private:
 	std::string filename;
@@ -293,7 +301,7 @@ void analyse_charset(std::string & charset, const Policy & policy);
  * @param limitAdvancedmask: define the limit for the size of advanced masks
  * @param limitSimplemask: define the limit for the size of simple masks
  */
-Container analyze_password(const std::string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
+// Container analyze_password(const std::string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
 
 /**
  * @brief Update minima and maxima of all general data from analysed passwords
