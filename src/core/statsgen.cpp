@@ -281,8 +281,6 @@ int Statsgen::generate_stats() {
 		return 0;
 	}
 
-	cout << "total counter " << total_counter << endl;
-
 	return 1;
 }
 
@@ -463,10 +461,8 @@ Container analyze_password(const string & password, SecurityRules & sr, const in
 	char last_simplemask = 'a';
 	int sizeAdvancedMask = 0;
 	int sizeSimpleMask = 0;
-	wchar_t letter;
 
-	for (int i=0; i < c.pass_length; i++) {
-		letter = password[i];
+	for(wchar_t letter: password){
 		analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAdvancedMask, sizeSimpleMask);
 	}
 

@@ -9,8 +9,10 @@
  * Please see the attached LICENSE file for additional licensing information.
  */
 
-#include "mainwindow.h"
 #include <QApplication>
+#include <thread>
+
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,5 +23,6 @@ int main(int argc, char *argv[])
     if(argc >= 2){
     	w.setFilename(argv[1]);
     }
+    w.setThreads(std::thread::hardware_concurrency());
     return a.exec();
 }

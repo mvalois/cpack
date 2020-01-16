@@ -36,6 +36,10 @@ void MainWindow::setFilename(const string& filename){
     ui->fileLine->setText(QString::fromStdString(filename));
 }
 
+void MainWindow::setThreads(const int& nb_threads){
+    ui->threadNumberSpin->setValue(nb_threads);
+}
+
 
 MainWindow::~MainWindow()
 {
@@ -306,10 +310,10 @@ void MainWindow::handleResults()
                                + QString::number(stats.getTotalFilter(), 'g', 2)
                                + " on a total of "
                                + QString::number(stats.getTotalFilter(), 'g', 2)
-                               + " passwords (" + QString::number(percentageTotal, 'g', 1) + "%)");
+                               + " passwords (" + QString::number(percentageTotal) + "%)");
 
 
-    ui->securityLabel->setText("--> " + QString::number(percentageSecurity, 'g', 2)
+    ui->securityLabel->setText("--> " + QString::number(percentageSecurity)
                                + "% of the passwords respects the security rules");
 
     stats.print_stats();
