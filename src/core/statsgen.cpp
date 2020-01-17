@@ -34,28 +34,26 @@ Statsgen::Statsgen(const std::string& name) {
 
 
 void Statsgen::askSecurityRules() {
+	int length, special, digit, upper, lower;
 	cout << "Minimal length of a password:" << endl;
-	cin >> minLength;
+	cin >> length;
 
 	cout << "Minimum of special characters in a password:" << endl;
-	cin >> minSpecial;
+	cin >> special;
 
 	cout << "Minimum of digits in a password:" << endl;
-	cin >> minDigit;
+	cin >> digit;
 
 	cout << "Minimum of lower characters in a password:" << endl;
-	cin >> minLower;
+	cin >> lower;
 
 	cout << "Minimum of upper characters in a password:" << endl;
-	cin >> minUpper;
+	cin >> upper;
+	setSecurityRules(length, special, digit, upper, lower);
 }
 
 void Statsgen::setSecurityRules(const int& length, const int& special, const int& digit, const int& upper, const int& lower) {
-    minLength = length;
-    minSpecial = special;
-    minDigit = digit;
-    minUpper = upper;
-    minLower = lower;
+	_sr = { _sr.nbSecurePassword, length, special, digit, upper, lower };
 }
 
 
@@ -211,14 +209,14 @@ void Statsgen::print_stats() {
 
 
 	cout << "\nSecurity rules : " << endl;
-	cout << "\tMinimal length of a password: " << minLength << endl;
-	cout << "\tMinimum of special characters in a password: " << minSpecial << endl;
-	cout << "\tMinimum of digits in a password: " << minDigit << endl;
-	cout << "\tMinimum of lower characters in a password: " << minLower << endl;
-	cout << "\tMinimum of upper characters in a password: " << minUpper << endl;
+	cout << "\tMinimal length of a password: " << _sr.minLength << endl;
+	cout << "\tMinimum of special characters in a password: " << _sr.minSpecial << endl;
+	cout << "\tMinimum of digits in a password: " << _sr.minDigit << endl;
+	cout << "\tMinimum of lower characters in a password: " << _sr.minLower << endl;
+	cout << "\tMinimum of upper characters in a password: " << _sr.minUpper << endl;
 
-	float perce = (float) 100 * (nbSecurePassword / total_counter);
-	cout << "\n\t\t--> " << nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
+	float perce = (float) 100 * (_sr.nbSecurePassword / total_counter);
+	cout << "\n\t\t--> " << _sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
 	cout << "\nmin - max\n" << endl;

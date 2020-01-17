@@ -212,7 +212,7 @@ public:
 
 	inline uint64_t getTotalCounter() const { return total_counter; }
 	inline uint64_t getTotalFilter() const { return total_filter; }
-	inline uint64_t getNbSecurePasswords() const { return nbSecurePassword; }
+	inline uint64_t getNbSecurePasswords() const { return _sr.nbSecurePassword; }
 	inline const IntOccurrence& getStatsLength() const { return stats_length; }
 	inline const StringOccurrence& getStatsCharsets() const { return stats_charactersets; }
 	static const std::string getCharset(const Policy& policy);
@@ -272,13 +272,7 @@ private:
 
 
 	// Security policy
-
-	uint64_t nbSecurePassword = 0;	// all passwords that respect the security rules
-	int minLength = 8;
-	int minSpecial = 0;
-	int minDigit = 1;
-	int minLower = 1;
-	int minUpper = 1;
+	SecurityRules _sr = { 0, 8, 0, 1, 1, 1	};
 };
 
 
