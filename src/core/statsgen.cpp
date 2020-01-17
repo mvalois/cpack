@@ -253,7 +253,7 @@ void Statsgen::print_stats() {
 }
 
 
-void analyse_letter(const char & letter, char & last_simplemask, PasswordStats& c, int & sizeAdvancedMask, int & sizeSimpleMask) {
+void analyse_letter(const char & letter, PasswordStats& c, char & last_simplemask, int & sizeAdvancedMask, int & sizeSimpleMask) {
 	sizeAdvancedMask++;
 
 	if (letter >= '0' && letter <= '9') {
@@ -304,7 +304,7 @@ PasswordStats analyze_password(const string & password, SecurityRules & sr, cons
 	int sizeSimpleMask = 0;
 
 	for(wchar_t letter: password){
-		analyse_letter(letter, last_simplemask, c, sizeAdvancedMask, sizeSimpleMask);
+		analyse_letter(letter, c, last_simplemask, sizeAdvancedMask, sizeSimpleMask);
 	}
 
 	if(c.pol.satisfies(sr, password.size())){
