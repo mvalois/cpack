@@ -109,6 +109,7 @@ int Statsgen::generate_stats() {
 	if (!is_stdin){
 		nbline = nbline_file(filename);
 		if (!nbline){ // error reading the file
+			cerr << "[ERROR] Empty file or not existing file" << endl;
 			return 0;
 		}
 	}
