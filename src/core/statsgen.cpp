@@ -56,6 +56,16 @@ void Statsgen::setSecurityRules(const int& length, const int& special, const int
 	_sr = { _sr.nbSecurePassword, length, special, digit, upper, lower };
 }
 
+void Statsgen::configureThread(thread_data& td) const {
+	td.filename = filename;
+	td.current_regex = current_regex;
+	td.use_regex = use_regex;
+	td.withcount = withcount;
+	td.limitSimplemask = limitSimplemask;
+	td.limitAdvancedmask = limitAdvancedmask;
+	td.sr = { 0, _sr.minLength, _sr.minSpecial, _sr.minDigit, _sr.minLower, _sr.minUpper };
+}
+
 
 
 int Statsgen::generate_stats() {
@@ -87,13 +97,8 @@ int Statsgen::generate_stats() {
 	}
 
 	for(int i = 0; i < nbThread; i++ ) {
-		td[i].filename = filename;
 		td[i].thread_id = i + 1;
-		td[i].current_regex = current_regex;
-		td[i].use_regex = use_regex;
-		td[i].withcount = withcount;
-		td[i].limitSimplemask = limitSimplemask;
-		td[i].limitAdvancedmask = limitAdvancedmask;
+		configureThread(td[i]);
 
 		td[i].lineBegin = i*(nbline/nbThread) + 1;
 		td[i].lineEnd = (i+1)*nbline/nbThread;
@@ -102,14 +107,6 @@ int Statsgen::generate_stats() {
 				td[i].lineBegin++;
 			}
 		}
-
-
-		td[i].sr.nbSecurePassword = 0;
-		td[i].sr.minLength = minLength;
-		td[i].sr.minSpecial = minSpecial;
-		td[i].sr.minDigit = minDigit;
-		td[i].sr.minLower = minLower;
-		td[i].sr.minUpper = minUpper;
 
 		if(debug_enabled){
 			cerr << "[DEBUG]" << "Thread" << td[i].thread_id << "analyse :" << td[i].lineBegin << " -->" << td[i].lineEnd << endl;

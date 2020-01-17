@@ -179,6 +179,8 @@ public:
 		}
 	}
 
+	void configureThread(thread_data& td) const;
+
 
 	/**
 	 * @brief Defining all security rules
