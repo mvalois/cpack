@@ -19,14 +19,16 @@
 #include <unordered_map>
 #include <iomanip>
 
+inline float percentage(const float& num, const float& den){
+	return 100 * num / den;
+}
+
 template<typename K, typename V>
 using UnorderedMapIterator = typename std::unordered_map<K, V>::const_iterator;
 
 
 template<typename K, typename V>
 using MapIterator = typename std::map<K, V>::const_iterator;
-
-
 
 /**
  * @brief Order an unoredered map whatever the key's type
@@ -43,8 +45,6 @@ std::multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src)
 	return dst;
 }
 
-
-
 /**
  * @brief Print a line of statistics
  * @param res: value of this statistic
@@ -55,12 +55,11 @@ std::multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src)
  */
 template<typename Type>
 void readResult(const uint64_t & res, const Type& carac, int & count, const uint64_t & total_counter, const int & hiderare) {
-	float percentage;
 	std::ostringstream ss;
-	percentage = (float) (100*res) / total_counter;
+	float perc = percentage(res, total_counter);
 
-	if (percentage >= hiderare) {
-		ss << percentage;
+	if (perc >= hiderare) {
+		ss << perc;
 		std::string value(ss.str());
 		value = value.substr(0,5);
 
@@ -71,7 +70,6 @@ void readResult(const uint64_t & res, const Type& carac, int & count, const uint
 		count++;
 	}
 }
-
 
 /**
  * @brief Print an unordered map
@@ -99,13 +97,11 @@ void showMap(const std::unordered_map<Type, uint64_t> & stats, const int & top, 
 	}
 }
 
-
-
-
 /**
  * @brief Calculate the number of line in a file
  * @param filename: name of the file
  * @return number of line
  */
 uint64_t nbline_file(const std::string & filename);
+
 #endif

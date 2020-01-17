@@ -189,7 +189,7 @@ int Statsgen::generate_stats() {
 
 void Statsgen::print_stats() {
 	int count;
-	float perc = (float) 100 * (total_filter / total_counter);
+	float perc = percentage(total_filter, total_counter);
 
 	cout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
 		<< perc << " %)" << endl;
@@ -202,7 +202,7 @@ void Statsgen::print_stats() {
 	cout << "\tMinimum of lower characters in a password: " << _sr.minLower << endl;
 	cout << "\tMinimum of upper characters in a password: " << _sr.minUpper << endl;
 
-	float perce = (float) 100 * (_sr.nbSecurePassword / total_counter);
+	float perce = percentage(_sr.nbSecurePassword, total_counter);
 	cout << "\n\t\t--> " << _sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
