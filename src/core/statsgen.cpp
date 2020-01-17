@@ -21,9 +21,6 @@
 #include "utils.h"
 using namespace std;
 
-static const map<int, string> charset_names = Statsgen::charsetNames();
-
-
 Statsgen::Statsgen(const std::string& name) {
 	if (name == "-"){
 		is_stdin = true;
@@ -256,10 +253,6 @@ void Statsgen::print_stats() {
 }
 
 
-
-
-
-
 void analyse_letter(const char & letter, char & last_simplemask, string & simplemask_string, string & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask) {
 	sizeAdvancedMask++;
 
@@ -302,19 +295,6 @@ void analyse_letter(const char & letter, char & last_simplemask, string & simple
 	}
 }
 
-
-const string Statsgen::getCharset(const Policy& p) {
-	int charset = 0;
-	charset ^= (bool) p.digit << 0;
-	charset ^= (bool) p.lower << 1;
-	charset ^= (bool) p.upper << 2;
-	charset ^= (bool) p.special << 3;
-
-	map<int, string>::const_iterator it = charset_names.find(charset);
-	return it->second;
-}
-
-
 Container analyze_password(const string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
 	Container c;
 	c.pass_length = password.size();
@@ -327,13 +307,9 @@ Container analyze_password(const string & password, SecurityRules & sr, const in
 		analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAdvancedMask, sizeSimpleMask);
 	}
 
-	c.characterset = Statsgen::getCharset(c.pol);
+	c.characterset = c.pol;
 
-	if ( (c.pass_length >= sr.minLength) &&
-		 (c.pol.digit >= sr.minDigit) &&
-		 (c.pol.lower >= sr.minLower) &&
-		 (c.pol.upper >= sr.minUpper) &&
-		 (c.pol.special >= sr.minSpecial) ) {
+	if(c.pol.satisfies(sr, password.size())){
 		sr.nbSecurePassword++;
 	}
 

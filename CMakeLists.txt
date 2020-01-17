@@ -15,6 +15,7 @@ set(CMAKE_LD_FLAGS "-lpthread")
 
 add_executable(cppack
 				src/core/statsgen.cpp
+				src/core/Policy.cpp
 				src/cli/main.cpp)
 target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
@@ -40,6 +41,7 @@ if(Qt5Core_FOUND)
 	    src/gui/mainwindow.cpp
 	    src/gui/maingui.cpp
 	    src/core/statsgen.cpp
+	    src/core/Policy.cpp
 	)
 
 	target_link_libraries(cppack-gui Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
