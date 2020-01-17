@@ -30,12 +30,9 @@
 typedef std::unordered_map<std::string, uint64_t> StringOccurrence;
 typedef std::unordered_map<int, uint64_t> IntOccurrence;
 
-/**
- * @brief Simplify number of arguments for functions
- */
-struct Container {
+
+struct PasswordStats {
 	int pass_length = 0;
-	std::string characterset = "";
 	std::string advancedmask_string = "";
 	std::string simplemask_string = "";
 	Policy pol;

@@ -253,50 +253,50 @@ void Statsgen::print_stats() {
 }
 
 
-void analyse_letter(const char & letter, char & last_simplemask, string & simplemask_string, string & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask) {
+void analyse_letter(const char & letter, char & last_simplemask, PasswordStats& c, int & sizeAdvancedMask, int & sizeSimpleMask) {
 	sizeAdvancedMask++;
 
 	if (letter >= '0' && letter <= '9') {
-		policy.digit++;
-		advancedmask_string += "?d";
+		c.pol.digit++;
+		c.advancedmask_string += "?d";
 		if (last_simplemask != 'd') {
 			sizeSimpleMask++;
-			simplemask_string += "digit";
+			c.simplemask_string += "digit";
 			last_simplemask = 'd';
 		}
 	}
 	else if(letter >= 'a' && letter <= 'z') {
-		policy.lower++;
-		advancedmask_string += "?l";
+		c.pol.lower++;
+		c.advancedmask_string += "?l";
 		if (last_simplemask != 'l') {
 			sizeSimpleMask++;
-			simplemask_string += "lower";
+			c.simplemask_string += "lower";
 			last_simplemask = 'l';
 		}
 	}
 	else if(letter >= 'A' && letter <= 'Z') {
-		policy.upper++;
-		advancedmask_string += "?u";
+		c.pol.upper++;
+		c.advancedmask_string += "?u";
 		if (last_simplemask != 'u') {
 			sizeSimpleMask++;
-			simplemask_string += "upper";
+			c.simplemask_string += "upper";
 			last_simplemask = 'u';
 		}
 	}
 	else {
-		policy.special++;
-		advancedmask_string += "?s";
+		c.pol.special++;
+		c.advancedmask_string += "?s";
 
 		if (last_simplemask != 's') {
 			sizeSimpleMask++;
-			simplemask_string += "special";
+			c.simplemask_string += "special";
 			last_simplemask = 's';
 		}
 	}
 }
 
-Container analyze_password(const string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
-	Container c;
+PasswordStats analyze_password(const string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
+	PasswordStats c;
 	c.pass_length = password.size();
 
 	char last_simplemask = 'a';
@@ -304,10 +304,8 @@ Container analyze_password(const string & password, SecurityRules & sr, const in
 	int sizeSimpleMask = 0;
 
 	for(wchar_t letter: password){
-		analyse_letter(letter, last_simplemask, c.simplemask_string, c.advancedmask_string, c.pol, sizeAdvancedMask, sizeSimpleMask);
+		analyse_letter(letter, last_simplemask, c, sizeAdvancedMask, sizeSimpleMask);
 	}
-
-	c.characterset = c.pol;
 
 	if(c.pol.satisfies(sr, password.size())){
 		sr.nbSecurePassword++;
@@ -372,7 +370,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 			continue;
 		}
 
-		Container c;
+		PasswordStats c;
 
 		my_data->total_counter++;
 		if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
@@ -381,7 +379,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 			my_data->total_filter++;
 
 			my_data->length[ c.pass_length ] += 1;
-			my_data->charactersets[ c.characterset ] += 1;
+			my_data->charactersets[ c.pol ] += 1;
 			my_data->simplemasks[ c.simplemask_string ] += 1;
 			my_data->advancedmasks[ c.advancedmask_string ] += 1;
 		}
@@ -415,7 +413,7 @@ void * generate_stats_thread(void * threadarg) {
 			continue;
 		}
 
-		Container c;
+		PasswordStats c;
 
 		if (my_data->withcount) {
 			uint64_t i = 0;
@@ -438,7 +436,7 @@ void * generate_stats_thread(void * threadarg) {
 				c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
 
 				my_data->length[ c.pass_length ] += nbPasswords;
-				my_data->charactersets[ c.characterset ] += nbPasswords;
+				my_data->charactersets[ c.pol ] += nbPasswords;
 				my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
 				my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
 			}
@@ -451,7 +449,7 @@ void * generate_stats_thread(void * threadarg) {
 				my_data->total_filter++;
 
 				my_data->length[ c.pass_length ] += 1;
-				my_data->charactersets[ c.characterset ] += 1;
+				my_data->charactersets[ c.pol ] += 1;
 				my_data->simplemasks[ c.simplemask_string ] += 1;
 				my_data->advancedmasks[ c.advancedmask_string ] += 1;
 			}
