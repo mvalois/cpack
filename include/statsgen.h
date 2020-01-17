@@ -180,6 +180,7 @@ public:
 	}
 
 	void configureThread(thread_data& td) const;
+	void mergeThread(const thread_data& td);
 
 
 	/**

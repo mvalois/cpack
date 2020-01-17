@@ -66,7 +66,43 @@ void Statsgen::configureThread(thread_data& td) const {
 	td.sr = { 0, _sr.minLength, _sr.minSpecial, _sr.minDigit, _sr.minLower, _sr.minUpper };
 }
 
+void Statsgen::mergeThread(const thread_data& td){
+	total_counter += td.total_counter;
+	total_filter += td.total_filter;
 
+	Policy min, max;
+	min.digit = td.minMaxValue.mindigit;
+	min.lower = td.minMaxValue.minlower;
+	min.upper = td.minMaxValue.minupper;
+	min.special = td.minMaxValue.minspecial;
+
+	max.digit = td.minMaxValue.maxdigit;
+	max.lower = td.minMaxValue.maxlower;
+	max.upper = td.minMaxValue.maxupper;
+	max.special = td.minMaxValue.maxspecial;
+
+	_sr.nbSecurePassword += td.sr.nbSecurePassword;
+
+	updateMinMax(minMaxValue, min);
+	updateMinMax(minMaxValue, max);
+
+
+	for(pair<int, uint64_t> occ: td.length){
+		stats_length[occ.first] += occ.second;
+	}
+
+	for(pair<string, int> occ : td.charactersets){
+		stats_charactersets[occ.first] += occ.second;
+	}
+
+	for(pair<string, int> occ: td.simplemasks){
+		stats_simplemasks[occ.first] += occ.second;
+	}
+
+	for(pair<string, int> occ: td.advancedmasks){
+		stats_advancedmasks[occ.first] += occ.second;
+	}
+}
 
 int Statsgen::generate_stats() {
 	uint64_t nbline = 0;
@@ -81,7 +117,6 @@ int Statsgen::generate_stats() {
 	struct thread_data td[MAX_THREADS];
 
 	pthread_attr_t attr;
-	void *status;
 
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -128,6 +163,7 @@ int Statsgen::generate_stats() {
 		}
 	}
 
+	void *status;
 	pthread_attr_destroy(&attr);
 	for(int i = 0; i < nbThread; i++ ) {
 		int rc = pthread_join(threads[i], &status);
@@ -137,56 +173,9 @@ int Statsgen::generate_stats() {
 		}
 	}
 
-
-	Policy policyMin;
-	Policy policyMax;
-
 	for(int i=0; i < nbThread; i++)	{
-		total_counter+=td[i].total_counter;
-		total_filter+=td[i].total_filter;
-
-		policyMin.digit = td[i].minMaxValue.mindigit;
-		policyMin.lower = td[i].minMaxValue.minlower;
-		policyMin.upper = td[i].minMaxValue.minupper;
-		policyMin.special = td[i].minMaxValue.minspecial;
-
-		policyMax.digit = td[i].minMaxValue.maxdigit;
-		policyMax.lower = td[i].minMaxValue.maxlower;
-		policyMax.upper = td[i].minMaxValue.maxupper;
-		policyMax.special = td[i].minMaxValue.maxspecial;
-
-		nbSecurePassword += td[i].sr.nbSecurePassword;
-
-		updateMinMax(minMaxValue, policyMin);
-		updateMinMax(minMaxValue, policyMax);
-
-
-		for(pair<int, uint64_t> occ: td[i].length)
-		{
-			stats_length[occ.first] += occ.second;
-		}
-		td[i].length.clear();
-
-		for(pair<string, int> occ : td[i].charactersets)
-		{
-			stats_charactersets[occ.first] += occ.second;
-		}
-		td[i].charactersets.clear();
-
-		for(pair<string, int> occ: td[i].simplemasks)
-		{
-			stats_simplemasks[occ.first] += occ.second;
-		}
-		td[i].simplemasks.clear();
-
-		for(pair<string, int> occ: td[i].advancedmasks)
-		{
-			stats_advancedmasks[occ.first] += occ.second;
-		}
-		td[i].advancedmasks.clear();
+		mergeThread(td[i]);
 	}
-
-
 
 	if (!total_counter) {
 		cerr << "[ERROR] Empty file or not existing file" << endl;
