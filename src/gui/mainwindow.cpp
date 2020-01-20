@@ -193,8 +193,8 @@ void MainWindow::disableWithCount()
 void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity) {
     double total = stats.getTotalCounter();
     double filter = stats.getTotalFilter();
-    percentageTotal = (double) 100 * (filter / total);
-    percentageSecurity = (double) 100 * (stats.getNbSecurePasswords() / total);
+    percentageTotal = percentage(filter, total);
+    percentageSecurity = percentage(stats.getNbSecurePasswords(), total);
 
     /* LENGTH HISTOGRAM */
     multimap<uint64_t, int> reverseL = flip_map<int>(stats.getStatsLength());

@@ -21,12 +21,11 @@
 #include "utils.h"
 using namespace std;
 
-Statsgen::Statsgen(const std::string& name) {
+Statsgen::Statsgen(const std::string& name):filename(name){
 	if (name == "-"){
 		is_stdin = true;
 		cerr << "[WARNING]" << " reading from stdin enabled, loading the whole list in memory" << endl;
 	}
-	filename = name;
 }
 
 
