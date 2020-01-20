@@ -14,9 +14,9 @@ set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra")
 set(CMAKE_LD_FLAGS "-lpthread")
 
 add_executable(cppack
-				src/core/statsgen.cpp
+				src/core/Statsgen.cpp
 				src/core/Policy.cpp
-				src/cli/main.cpp)
+				src/cli/Main.cpp)
 target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
 # Création des exécutables.
@@ -35,12 +35,12 @@ if(Qt5Core_FOUND)
 	find_package(Qt5Charts REQUIRED)
 
 	add_executable(cppack-gui
-		include/mainwindow.h
-		include/statsgen.h
-		include/utils.h
-	    src/gui/mainwindow.cpp
-	    src/gui/maingui.cpp
-	    src/core/statsgen.cpp
+		include/MainWindow.h
+		include/Statsgen.h
+		include/Utils.h
+	    src/gui/MainWindow.cpp
+	    src/gui/MainGui.cpp
+	    src/core/Statsgen.cpp
 	    src/core/Policy.cpp
 	)
 

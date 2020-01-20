@@ -13,7 +13,7 @@
 #include <fstream>
 #include <unistd.h>
 #include <getopt.h>
-#include "statsgen.h"
+#include "Statsgen.h"
 
 using namespace std;
 

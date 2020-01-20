@@ -17,8 +17,8 @@
 #include <thread>
 
 
-#include "statsgen.h"
-#include "utils.h"
+#include "Statsgen.h"
+#include "Utils.h"
 using namespace std;
 
 Statsgen::Statsgen(const std::string& name):filename(name){

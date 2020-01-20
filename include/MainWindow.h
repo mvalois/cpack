@@ -12,7 +12,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "statsgen.h"
+#include "Statsgen.h"
 
 #include <QMainWindow>
 #include <QThread>

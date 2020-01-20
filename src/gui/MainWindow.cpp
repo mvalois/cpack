@@ -14,9 +14,9 @@
 #include <iostream>
 #include <QtCharts>
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "utils.h"
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
+#include "Utils.h"
 
 using namespace std;
 
