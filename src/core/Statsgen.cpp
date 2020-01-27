@@ -14,7 +14,9 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#if Threads
 #include <thread>
+#endif //Threads
 
 
 #include "Statsgen.h"
@@ -51,206 +53,6 @@ void Statsgen::askSecurityRules() {
 void Statsgen::setSecurityRules(const int& length, const int& special, const int& digit, const int& upper, const int& lower) {
 	_sr = { _sr.nbSecurePassword, length, special, digit, upper, lower };
 }
-
-void Statsgen::configureThread(thread_data& td) const {
-	td.filename = filename;
-	td.current_regex = current_regex;
-	td.use_regex = use_regex;
-	td.withcount = withcount;
-	td.limitSimplemask = limitSimplemask;
-	td.limitAdvancedmask = limitAdvancedmask;
-	td.sr = { 0, _sr.minLength, _sr.minSpecial, _sr.minDigit, _sr.minLower, _sr.minUpper };
-}
-
-void Statsgen::mergeThread(const thread_data& td){
-	total_counter += td.total_counter;
-	total_filter += td.total_filter;
-
-	Policy min, max;
-	min.digit = td.minMaxValue.mindigit;
-	min.lower = td.minMaxValue.minlower;
-	min.upper = td.minMaxValue.minupper;
-	min.special = td.minMaxValue.minspecial;
-
-	max.digit = td.minMaxValue.maxdigit;
-	max.lower = td.minMaxValue.maxlower;
-	max.upper = td.minMaxValue.maxupper;
-	max.special = td.minMaxValue.maxspecial;
-
-	_sr.nbSecurePassword += td.sr.nbSecurePassword;
-
-	updateMinMax(minMaxValue, min);
-	updateMinMax(minMaxValue, max);
-
-
-	for(pair<int, uint64_t> occ: td.length){
-		stats_length[occ.first] += occ.second;
-	}
-
-	for(pair<string, int> occ : td.charactersets){
-		stats_charactersets[occ.first] += occ.second;
-	}
-
-	for(pair<string, int> occ: td.simplemasks){
-		stats_simplemasks[occ.first] += occ.second;
-	}
-
-	for(pair<string, int> occ: td.advancedmasks){
-		stats_advancedmasks[occ.first] += occ.second;
-	}
-}
-
-int Statsgen::generate_stats() {
-	uint64_t nbline = 0;
-	if (!is_stdin){
-		nbline = nbline_file(filename);
-		if (!nbline){ // error reading the file
-			cerr << "[ERROR] Empty file or not existing file" << endl;
-			return 0;
-		}
-	}
-
-	pthread_t threads[MAX_THREADS];
-	struct thread_data td[MAX_THREADS];
-
-	pthread_attr_t attr;
-
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-	// split stdin into nbThread files on disk
-	if (is_stdin){
-		string line;
-		nbline = 0;
-		while(getline(cin, line)){
-			td[nbline%nbThread].password_queue.push(line);
-			nbline++;
-		}
-	}
-
-	for(int i = 0; i < nbThread; i++ ) {
-		td[i].thread_id = i + 1;
-		configureThread(td[i]);
-
-		td[i].lineBegin = i*(nbline/nbThread) + 1;
-		td[i].lineEnd = (i+1)*nbline/nbThread;
-		if (i > 0) {
-			while (td[i].lineBegin <= td[i-1].lineEnd) {
-				td[i].lineBegin++;
-			}
-		}
-
-		if(debug_enabled){
-			cerr << "[DEBUG]" << "Thread" << td[i].thread_id << "analyse :" << td[i].lineBegin << " -->" << td[i].lineEnd << endl;
-		}
-
-		int rc;
-		// We use std::queue if input is from stdin
-		if (is_stdin) {
-			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );
-		}
-		// Else we split the file in nbThread threads
-		else {
-			rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
-		}
-
-		if (rc) {
-			cerr << "[ERROR] unable to create thread," << rc << endl;
-			exit(-1);
-		}
-	}
-
-	void *status;
-	pthread_attr_destroy(&attr);
-	for(int i = 0; i < nbThread; i++ ) {
-		int rc = pthread_join(threads[i], &status);
-		if (rc) {
-			cerr << "[ERROR] unable to join," << rc << endl;
-			exit(-1);
-		}
-	}
-
-	for(int i=0; i < nbThread; i++)	{
-		mergeThread(td[i]);
-	}
-
-	if (!total_counter) {
-		cerr << "[ERROR] Empty file or not existing file" << endl;
-		return 0;
-	}
-
-	return 1;
-}
-
-
-void Statsgen::print_stats() {
-	int count;
-	float perc = percentage(total_filter, total_counter);
-
-	cout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
-		<< perc << " %)" << endl;
-
-
-	cout << "\nSecurity rules : " << endl;
-	cout << "\tMinimal length of a password: " << _sr.minLength << endl;
-	cout << "\tMinimum of special characters in a password: " << _sr.minSpecial << endl;
-	cout << "\tMinimum of digits in a password: " << _sr.minDigit << endl;
-	cout << "\tMinimum of lower characters in a password: " << _sr.minLower << endl;
-	cout << "\tMinimum of upper characters in a password: " << _sr.minUpper << endl;
-
-	float perce = percentage(_sr.nbSecurePassword, total_counter);
-	cout << "\n\t\t--> " << _sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
-
-
-	cout << "\nmin - max\n" << endl;
-	cout << setw(43) << right << "digit:  "
-			<< setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
-	cout << setw(43) << right << "lower:  "
-			<< setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
-	cout << setw(43) << right << "upper:  "
-			<< setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
-	cout << setw(43) << right << "special:  "
-			<< setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;
-
-
-
-	cout << "\nStatistics relative to length: \n" << endl;
-	showMap(stats_length, top, total_counter, hiderare, count);
-
-	cout << "\nStatistics relative to charsets: \n" << endl;
-	showMap(stats_charactersets, -1, total_counter, hiderare, count);
-
-
-	cout << "\nStatistics relative to simplemasks: \n" << endl;
-	showMap(stats_simplemasks, top, total_counter, hiderare, count);
-
-	if (limitSimplemask > 0) {
-		cout << endl;
-		readResult(stats_simplemasks["othermasks"], "othermasks", count, total_counter, hiderare);
-	}
-
-
-	cout << "\nStatistics relative to advancedmask: \n" << endl;
-	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
-
-	if (outfile_name != ""){
-		locale::global(locale("C"));
-		ofstream outfile_stream(outfile_name);
-		multimap<uint64_t, string> reverse = flip_map<string>(stats_advancedmasks);
-		for(auto it=reverse.end();it!=reverse.begin();it--){
-			if (it == reverse.end()) continue;
-			if(it->second == "othermasks") continue;
-			outfile_stream << it->second << "," << it->first << endl;
-		}
-		outfile_stream.close();
-	}
-
-	if (limitAdvancedmask > 0) {
-		cout << endl;
-		readResult(stats_advancedmasks["othermasks"], "othermasks", count, total_counter, hiderare);
-	}
-}
-
 
 void analyse_letter(const char & letter, PasswordStats& c, char & last_simplemask, int & sizeAdvancedMask, int & sizeSimpleMask) {
 	sizeAdvancedMask++;
@@ -353,7 +155,34 @@ void updateMinMax(minMax & m, const Policy & pol) {
 	}
 }
 
+uint64_t nbline_file(const string & filename) {
+	ifstream readfile(filename);
+	string line;
+	uint64_t nb = 0;
 
+	while(readfile.good()) {
+		getline(readfile, line);
+		++nb;
+	}
+	// we have not read the whole file
+	if (readfile.fail() && !readfile.eof()){
+		cerr << "[ERROR]" << " There was an error reading the file at line " << nb << endl;
+		return 0;
+	}
+
+	return nb;
+}
+void Statsgen::configureThread(thread_data& td) const {
+	td.filename = filename;
+	td.current_regex = current_regex;
+	td.use_regex = use_regex;
+	td.withcount = withcount;
+	td.limitSimplemask = limitSimplemask;
+	td.limitAdvancedmask = limitAdvancedmask;
+	td.sr = { 0, _sr.minLength, _sr.minSpecial, _sr.minDigit, _sr.minLower, _sr.minUpper };
+}
+
+#if Threads
 void * generate_stats_thread_queue(void * threadarg) {
 	struct thread_data *my_data;
 	my_data = (struct thread_data *) threadarg;
@@ -387,6 +216,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 
 	pthread_exit(NULL);
 }
+#endif //Threads
 
 
 void * generate_stats_thread(void * threadarg) {
@@ -396,7 +226,6 @@ void * generate_stats_thread(void * threadarg) {
 	ifstream readfile(my_data->filename);
 	string line;
 	uint64_t nbline = 0;
-
 	while(readfile.good()) {
 		++nbline;
 		getline(readfile, line);
@@ -457,25 +286,208 @@ void * generate_stats_thread(void * threadarg) {
 	}
 
 	readfile.close();
-
+#if Threads
 	pthread_exit(NULL);
+#else
+	return my_data;
+#endif //Threads
+}
+
+void Statsgen::mergeThread(const thread_data& td){
+	total_counter += td.total_counter;
+	total_filter += td.total_filter;
+
+	Policy min, max;
+	min.digit = td.minMaxValue.mindigit;
+	min.lower = td.minMaxValue.minlower;
+	min.upper = td.minMaxValue.minupper;
+	min.special = td.minMaxValue.minspecial;
+
+	max.digit = td.minMaxValue.maxdigit;
+	max.lower = td.minMaxValue.maxlower;
+	max.upper = td.minMaxValue.maxupper;
+	max.special = td.minMaxValue.maxspecial;
+
+	_sr.nbSecurePassword += td.sr.nbSecurePassword;
+
+	updateMinMax(minMaxValue, min);
+	updateMinMax(minMaxValue, max);
+
+
+	for(pair<int, uint64_t> occ: td.length){
+		stats_length[occ.first] += occ.second;
+	}
+
+	for(pair<string, int> occ : td.charactersets){
+		stats_charactersets[occ.first] += occ.second;
+	}
+
+	for(pair<string, int> occ: td.simplemasks){
+		stats_simplemasks[occ.first] += occ.second;
+	}
+
+	for(pair<string, int> occ: td.advancedmasks){
+		stats_advancedmasks[occ.first] += occ.second;
+	}
 }
 
 
-uint64_t nbline_file(const string & filename) {
-	ifstream readfile(filename);
-	string line;
-	uint64_t nb = 0;
-
-	while(readfile.good()) {
-		getline(readfile, line);
-		++nb;
+int Statsgen::generate_stats() {
+	uint64_t nbline = 0;
+	if (!is_stdin){
+		nbline = nbline_file(filename);
+		if (!nbline){ // error reading the file
+			cerr << "[ERROR] Empty file or not existing file" << endl;
+			return 0;
+		}
 	}
-	// we have not read the whole file
-	if (readfile.fail() && !readfile.eof()){
-		cerr << "[ERROR]" << " There was an error reading the file at line " << nb << endl;
+
+#if Threads
+	pthread_t threads[MAX_THREADS];
+	struct thread_data td[MAX_THREADS];
+
+	pthread_attr_t attr;
+
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+	// split stdin into nbThread files on disk
+	if (is_stdin){
+		string line;
+		nbline = 0;
+		while(getline(cin, line)){
+			td[nbline%nbThread].password_queue.push(line);
+			nbline++;
+		}
+	}
+
+	for(int i = 0; i < nbThread; i++ ) {
+		td[i].thread_id = i + 1;
+		configureThread(td[i]);
+
+		td[i].lineBegin = i*(nbline/nbThread) + 1;
+		td[i].lineEnd = (i+1)*nbline/nbThread;
+		if (i > 0) {
+			while (td[i].lineBegin <= td[i-1].lineEnd) {
+				td[i].lineBegin++;
+			}
+		}
+
+		if(debug_enabled){
+			cerr << "[DEBUG]" << "Thread" << td[i].thread_id << "analyse :" << td[i].lineBegin << " -->" << td[i].lineEnd << endl;
+		}
+
+		int rc;
+		// We use std::queue if input is from stdin
+		if (is_stdin) {
+			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );
+		}
+		// Else we split the file in nbThread threads
+		else {
+			rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
+		}
+
+		if (rc) {
+			cerr << "[ERROR] unable to create thread," << rc << endl;
+			exit(-1);
+		}
+	}
+
+	void *status;
+	pthread_attr_destroy(&attr);
+	for(int i = 0; i < nbThread; i++ ) {
+		int rc = pthread_join(threads[i], &status);
+		if (rc) {
+			cerr << "[ERROR] unable to join," << rc << endl;
+			exit(-1);
+		}
+	}
+
+	for(int i=0; i < nbThread; i++)	{
+		mergeThread(td[i]);
+	}
+#else
+	thread_data td;
+	configureThread(td);
+	td.lineBegin = 0;
+	td.lineEnd = nbline;
+	generate_stats_thread(&td);
+	mergeThread(td);
+#endif // Threads
+
+	if (!total_counter) {
+		cerr << "[ERROR] Empty file or not existing file" << endl;
 		return 0;
 	}
 
-	return nb;
+	return 1;
+}
+
+
+void Statsgen::print_stats() {
+	int count;
+	float perc = percentage(total_filter, total_counter);
+
+	cout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
+		<< perc << " %)" << endl;
+
+
+	cout << "\nSecurity rules : " << endl;
+	cout << "\tMinimal length of a password: " << _sr.minLength << endl;
+	cout << "\tMinimum of special characters in a password: " << _sr.minSpecial << endl;
+	cout << "\tMinimum of digits in a password: " << _sr.minDigit << endl;
+	cout << "\tMinimum of lower characters in a password: " << _sr.minLower << endl;
+	cout << "\tMinimum of upper characters in a password: " << _sr.minUpper << endl;
+
+	float perce = percentage(_sr.nbSecurePassword, total_counter);
+	cout << "\n\t\t--> " << _sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
+
+
+	cout << "\nmin - max\n" << endl;
+	cout << setw(43) << right << "digit:  "
+			<< setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
+	cout << setw(43) << right << "lower:  "
+			<< setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
+	cout << setw(43) << right << "upper:  "
+			<< setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
+	cout << setw(43) << right << "special:  "
+			<< setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;
+
+
+
+	cout << "\nStatistics relative to length: \n" << endl;
+	showMap(stats_length, top, total_counter, hiderare, count);
+
+	cout << "\nStatistics relative to charsets: \n" << endl;
+	showMap(stats_charactersets, -1, total_counter, hiderare, count);
+
+
+	cout << "\nStatistics relative to simplemasks: \n" << endl;
+	showMap(stats_simplemasks, top, total_counter, hiderare, count);
+
+	if (limitSimplemask > 0) {
+		cout << endl;
+		readResult(stats_simplemasks["othermasks"], "othermasks", count, total_counter, hiderare);
+	}
+
+
+	cout << "\nStatistics relative to advancedmask: \n" << endl;
+	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
+
+	if (outfile_name != ""){
+		locale::global(locale("C"));
+		ofstream outfile_stream(outfile_name);
+		multimap<uint64_t, string> reverse = flip_map<string>(stats_advancedmasks);
+		for(auto it=reverse.end();it!=reverse.begin();it--){
+			if (it == reverse.end()) continue;
+			if(it->second == "othermasks") continue;
+			outfile_stream << it->second << "," << it->first << endl;
+		}
+		outfile_stream.close();
+	}
+
+	if (limitAdvancedmask > 0) {
+		cout << endl;
+		readResult(stats_advancedmasks["othermasks"], "othermasks", count, total_counter, hiderare);
+	}
 }

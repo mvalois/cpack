@@ -30,15 +30,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked(bool)), this, SLOT(startGame()));
     connect(ui->withcountButton,SIGNAL(clicked()),this,SLOT(enableWithCount()));
     connect(ui->classicButton,SIGNAL(clicked()),this,SLOT(disableWithCount()));
+#if not Threads
+    ui->threadNumberSpin->setDisabled(true);
+#endif
 }
 
 void MainWindow::setFilename(const string& filename){
     ui->fileLine->setText(QString::fromStdString(filename));
 }
 
+#if Threads
 void MainWindow::setThreads(const int& nb_threads){
     ui->threadNumberSpin->setValue(nb_threads);
 }
+#endif //Threads
 
 
 MainWindow::~MainWindow()
@@ -64,7 +69,7 @@ void MainWindow::startGame() {
     {
         stats.setWithcount(true);
     }
-
+#if Threads
     try
     {
         stats.setNbThread(stoi(ui->threadNumberSpin->text().toStdString()));
@@ -77,6 +82,7 @@ void MainWindow::startGame() {
     {
         stats.setNbThread(1);
     }
+#endif //Threads
 
     if(ui->regexCheckBox->isChecked())
     {
@@ -244,7 +250,9 @@ void MainWindow::handleResults()
     waitBox.close();
     ui->charsetWidget->setHidden(false);
     ui->lengthWidget->show();
+#if Threads
     ui->threadNumberSpin->setDisabled(false);
+#endif //Threads
     ui->TopXAnswerSpin->setDisabled(false);
     ui->MaxSimpleMaxSpin->setDisabled(false);
     ui->MaxAdvMaskSpin->setDisabled(false);

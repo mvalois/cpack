@@ -32,7 +32,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setFilename(const std::string& filename);
+#if Threads
     void setThreads(const int& nb_threads);
+#endif //Threads
 
 
 public slots:

@@ -10,7 +10,9 @@
  */
 
 #include <QApplication>
+#if Threads
 #include <thread>
+#endif //Threads
 
 #include "MainWindow.h"
 
@@ -23,6 +25,8 @@ int main(int argc, char *argv[])
     if(argc >= 2){
     	w.setFilename(argv[1]);
     }
+#if Threads
     w.setThreads(std::thread::hardware_concurrency());
+#endif //Threads
     return a.exec();
 }

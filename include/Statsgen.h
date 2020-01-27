@@ -20,12 +20,16 @@
 #include <iostream>
 #include <regex>
 #include <queue>
+#if Threads
 #include <thread>
+#endif //Threads
 
 #include "Policy.h"
 #include "SecurityRules.h"
 
+#if Threads
 #define MAX_THREADS 32
+#endif //Threads
 
 typedef std::unordered_map<std::string, uint64_t> StringOccurrence;
 typedef std::unordered_map<int, uint64_t> IntOccurrence;
@@ -141,6 +145,7 @@ public:
 	 */
 	inline void setLimitAdvancedmask(const int& limit) { limitAdvancedmask = limit; }
 
+#if Threads
 	/**
 	 * @brief Number of threads the user wants to use
 	 * @param nb: number of usable threads
@@ -153,6 +158,7 @@ public:
 			nbThread = nb;
 		}
 	}
+#endif //Threads
 
 	void configureThread(thread_data& td) const;
 	void mergeThread(const thread_data& td);
@@ -271,10 +277,12 @@ void updateMinMax(minMax & minMaxValue, const Policy & pol);
 */
 void * generate_stats_thread(void * threadarg);
 
+#if Threads
 /**
  * @brief Compute statistics by consumming password from a queue
  * @param threadarg : arguments required by the thread
  */
 void * generate_stats_thread_queue(void * threadarg);
+#endif //Threads
 
 #endif

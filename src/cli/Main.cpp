@@ -29,7 +29,9 @@ static struct option long_options[] = {
 	{"debug", no_argument, NULL, 'd'},
 	{"limit-advanced-masks", required_argument, NULL, 'A'},
 	{"limit-simple-masks", required_argument, NULL, 'S'},
+#if Threads
 	{"parallel", required_argument, NULL, 'p'},
+#endif //Threads
 	{"security", no_argument, NULL, 's'},
 	{NULL, 0, NULL, 0}
 };
@@ -53,7 +55,9 @@ void showHelp() {
 		"Optimisation options to reduce the execution time : ",
 		"	--limit-advanced-masks, -A [value]  Limit the size of the advanced masks at [value], if size>[value]: othermasks",
 		"	--limit-simple-masks, -S [value]    Limit the size of the simple masks at [value], if size>[value]: othermasks",
+#if Threads
 		"	--parallel, -p [value]              Number of usable threads",
+#endif //Threads
 		"",
 		"",
 		"Security rules: ",
@@ -82,7 +86,11 @@ int main(int argc,char* argv[]) {
 	Statsgen statsgen(filename);
 
 	int opt;
+#if Threads
 	while ((opt = getopt_long(argc, argv, "hwHt:r:o:dA:S:p:s", long_options, NULL)) != -1){
+#else
+	while ((opt = getopt_long(argc, argv, "hwHt:r:o:dA:S:s", long_options, NULL)) != -1){
+#endif //Threads
 		switch(opt){
 			case 'h':
 				showHelp(); break;
@@ -102,8 +110,10 @@ int main(int argc,char* argv[]) {
 				statsgen.setLimitAdvancedmask(atoi(optarg)); break;
 			case 'S':
 				statsgen.setLimitSimplemask(atoi(optarg)); break;
+#if Threads
 			case 'p':
 				statsgen.setNbThread(atoi(optarg)); break;
+#endif //Threads
 			case 's':
 				statsgen.askSecurityRules(); break;
 			default:

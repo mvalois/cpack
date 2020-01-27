@@ -1,8 +1,20 @@
 # Version de cmake demandée.
 cmake_minimum_required(VERSION 2.8)
 
-find_package(Threads REQUIRED)
- 
+if(DISABLE_THREADS)
+	message(STATUS "Threads disabled. Disabling multi-threading")
+	set (Threads 0)
+else()
+	find_package(Threads)
+	if(NOT Threads_FOUND)
+		message(WARNING "Posix threads not found. Disabling multi-threading.")
+		set(Threads 0)
+	else()
+		set(CMAKE_LD_FLAGS "-lpthread")
+		set(Threads 1)
+	 endif()
+endif()
+
 # Chemin des répertoires contenant les fichiers entêtes.
 include_directories(include)
 
@@ -10,8 +22,7 @@ include_directories(include)
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 
 # Option du compilateur pour supporter C 2011.
-set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra")
-set(CMAKE_LD_FLAGS "-lpthread")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra -DThreads=${Threads}")
 
 add_executable(cppack
 				src/core/Statsgen.cpp
