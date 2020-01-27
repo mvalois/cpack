@@ -169,6 +169,8 @@ void MainWindow::startGame() {
     ui->maxAdvancedCheckBox->setDisabled(true);
     ui->maxSimpleCheckBox->setDisabled(true);
 
+    delete layoutLength;
+    delete layoutCharset;
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));

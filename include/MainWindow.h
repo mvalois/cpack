@@ -48,8 +48,8 @@ private:
     Ui::MainWindow *ui;
     Statsgen stats;
     QMessageBox waitBox;
-    QVBoxLayout * layoutCharset;
-    QVBoxLayout * layoutLength;
+    QVBoxLayout * layoutCharset = nullptr;
+    QVBoxLayout * layoutLength = nullptr;
     int firstTime=1;
     void initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity);
 };
