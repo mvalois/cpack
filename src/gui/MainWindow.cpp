@@ -192,7 +192,7 @@ void MainWindow::disableWithCount()
     ui->withcountButton->setChecked(false);
 }
 
-void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity) {
+double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity) {
     double total = stats.getTotalCounter();
     double filter = stats.getTotalFilter();
     percentageTotal = percentage(filter, total);
@@ -201,16 +201,18 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
     /* LENGTH HISTOGRAM */
     multimap<uint64_t, int> reverseL = flip_map<int>(stats.getStatsLength());
     double percentageL;
+    double maxPercLength = 0;
     uint64_t nbHideL = 0;
 
     MapIterator<uint64_t, int> itL;
     for(itL = reverseL.end(); itL != reverseL.begin(); itL--) {
         if (itL == reverseL.end()) continue;
 
-        percentageL = (double) (100*itL->first) / total;
+        percentageL = percentage(itL->first,  total);
+        maxPercLength = percentageL > maxPercLength ? percentageL : maxPercLength;
         if (percentageL >= 2) {
             QBarSet *set = new QBarSet(QString::number(itL->second));
-            *set << itL->first;
+            *set << percentageL;
             barLength->append(set);
         } else {
             nbHideL += itL->first;
@@ -218,7 +220,7 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
     }
 
     QBarSet *set = new QBarSet("Other lengths");
-    *set << nbHideL;
+    *set << percentage(nbHideL, total);
     barLength->append(set);
 
 
@@ -238,6 +240,7 @@ void MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieChar
         }
     }
     pieCharset->append("Other charsets", nbHideC);
+    return maxPercLength;
 }
 
 void MainWindow::handleResults()
@@ -265,11 +268,9 @@ void MainWindow::handleResults()
 
     QBarSeries * barLength = new QBarSeries();
     QPieSeries * pieCharset = new QPieSeries();
-    double percentageTotal, percentageSecurity;
+    double percentageTotal, percentageSecurity, maxPercLength;
 
-    initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity);
-
-
+    maxPercLength = initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity);
 
     /* HISTOGRAM FOR LENGTH */
     QChart *chartL = new QChart();
@@ -282,6 +283,12 @@ void MainWindow::handleResults()
     layoutLength = new QVBoxLayout();
     layoutLength->addWidget(chartViewL);
     ui->lengthWidget->setLayout(layoutLength);
+
+    QValueAxis *axisY = new QValueAxis();
+    chartL->addAxis(axisY, Qt::AlignLeft);
+    barLength->attachAxis(axisY);
+    axisY->setRange(0, (int) (maxPercLength + (5 - (int) maxPercLength % 5)));
+    axisY->setTickCount((int) (maxPercLength / 5) + 2);
 
 
     /* PIECHART FOR CHARSET */

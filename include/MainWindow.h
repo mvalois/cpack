@@ -51,7 +51,7 @@ private:
     QVBoxLayout * layoutCharset = nullptr;
     QVBoxLayout * layoutLength = nullptr;
     int firstTime=1;
-    void initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity);
+    double initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity);
 };
 
 
