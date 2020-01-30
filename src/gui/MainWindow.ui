@@ -28,7 +28,7 @@
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
       <item>
        <layout class="QGridLayout" name="settingsLayout">
-        <item row="3" column="0" colspan="3">
+        <item row="6" column="0" colspan="3">
          <widget class="QGroupBox" name="securityPolicy">
           <property name="title">
            <string>Security rules</string>
@@ -113,14 +113,7 @@
           </widget>
          </widget>
         </item>
-        <item row="4" column="0" colspan="3">
-         <widget class="QPushButton" name="startButton">
-          <property name="text">
-           <string>Start</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="3">
+        <item row="5" column="0" colspan="3">
          <widget class="QGroupBox" name="advancedOptions">
           <property name="title">
            <string>Advanced options (only shown in &quot;result.txt&quot;)</string>
@@ -169,6 +162,13 @@
           </widget>
          </widget>
         </item>
+        <item row="1" column="0" colspan="3">
+         <widget class="QPushButton" name="startButton">
+          <property name="text">
+           <string>Start</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
          <widget class="QLineEdit" name="fileLine">
           <property name="sizePolicy">
@@ -205,7 +205,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="3">
+        <item row="4" column="0" colspan="3">
          <widget class="QGroupBox" name="globalOptions">
           <property name="title">
            <string>Options</string>
@@ -266,6 +266,25 @@
             </item>
            </layout>
           </widget>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QProgressBar" name="progressBar">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="textVisible">
+           <bool>true</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="format">
+           <string>Progression : %p%</string>
+          </property>
          </widget>
         </item>
        </layout>

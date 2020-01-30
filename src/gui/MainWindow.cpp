@@ -153,6 +153,8 @@ void MainWindow::startGame() {
         stats.setSecurityRules(8,0,1,1,1);
     }
 
+    ui->fileLine->setDisabled(true);
+    ui->Browser->setDisabled(true);
     ui->threadNumberSpin->setDisabled(true);
     ui->TopXAnswerSpin->setDisabled(true);
     ui->MaxSimpleMaxSpin->setDisabled(true);
@@ -168,6 +170,7 @@ void MainWindow::startGame() {
     ui->regexCheckBox->setDisabled(true);
     ui->maxAdvancedCheckBox->setDisabled(true);
     ui->maxSimpleCheckBox->setDisabled(true);
+    ui->progressBar->setValue(0);
 
     delete layoutLength;
     delete layoutCharset;
@@ -176,8 +179,11 @@ void MainWindow::startGame() {
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
     workerThread->start();
-    waitBox.setText("Analysis in progress");
-    waitBox.exec();
+    ui->progressBar->setEnabled(true);
+
+    delete progressThread;
+    progressThread = new ProgressThread(stats, *ui->progressBar);
+    progressThread->start();
 }
 
 
@@ -246,7 +252,11 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 void MainWindow::handleResults()
 {
 
-    waitBox.close();
+    progressThread->terminate();
+    progressThread->wait();
+    ui->progressBar->setValue(100);
+    ui->fileLine->setDisabled(false);
+    ui->Browser->setDisabled(false);
     ui->charsetWidget->setHidden(false);
     ui->lengthWidget->show();
     ui->threadNumberSpin->setDisabled(false);
