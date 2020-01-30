@@ -13,19 +13,7 @@
     <height>800</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="minimumSize">
-   <size>
-    <width>1350</width>
-    <height>800</height>
-   </size>
-  </property>
-  <property name="maximumSize">
    <size>
     <width>1350</width>
     <height>800</height>
@@ -37,110 +25,11 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
       <item>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="fileLine">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>300</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>1000000</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="fileLabel">
-          <property name="text">
-           <string>File:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="Browser">
-          <property name="text">
-           <string>Browse</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Options</string>
-          </property>
-          <widget class="QWidget" name="gridLayoutWidget_2">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>30</y>
-             <width>260</width>
-             <height>103</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="RegexlineEdit"/>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="withcountButton">
-              <property name="text">
-               <string>Withcount</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="regexCheckBox">
-              <property name="text">
-               <string>Regular expression</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QRadioButton" name="classicButton">
-              <property name="text">
-               <string>Classic</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="threadNumberSpin">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label">
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>Number of threads</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
+       <layout class="QGridLayout" name="settingsLayout">
         <item row="3" column="0" colspan="3">
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="securityPolicy">
           <property name="title">
            <string>Security rules</string>
           </property>
@@ -224,8 +113,15 @@
           </widget>
          </widget>
         </item>
+        <item row="4" column="0" colspan="3">
+         <widget class="QPushButton" name="startButton">
+          <property name="text">
+           <string>Start</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0" colspan="3">
-         <widget class="QGroupBox" name="groupBox_3">
+         <widget class="QGroupBox" name="advancedOptions">
           <property name="title">
            <string>Advanced options (only shown in &quot;result.txt&quot;)</string>
           </property>
@@ -273,11 +169,103 @@
           </widget>
          </widget>
         </item>
-        <item row="4" column="0" colspan="3">
-         <widget class="QPushButton" name="startButton">
-          <property name="text">
-           <string>Start</string>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="fileLine">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>1000000</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="Browser">
+          <property name="text">
+           <string>Browse</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="fileLabel">
+          <property name="text">
+           <string>File:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="3">
+         <widget class="QGroupBox" name="globalOptions">
+          <property name="title">
+           <string>Options</string>
+          </property>
+          <widget class="QWidget" name="gridLayoutWidget_2">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>30</y>
+             <width>260</width>
+             <height>103</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="RegexlineEdit"/>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="withcountButton">
+              <property name="text">
+               <string>Withcount</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QCheckBox" name="regexCheckBox">
+              <property name="text">
+               <string>Regular expression</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="classicButton">
+              <property name="text">
+               <string>Classic</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="threadNumberSpin">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="text">
+               <string>Number of threads</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -296,71 +284,42 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QLabel" name="AnalyzedLabel">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>10</y>
-           <width>791</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-        <widget class="QLabel" name="securityLabel">
-         <property name="geometry">
-          <rect>
-           <x>270</x>
-           <y>30</y>
-           <width>541</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-        <widget class="QLabel" name="resultLabel">
-         <property name="geometry">
-          <rect>
-           <x>370</x>
-           <y>700</y>
-           <width>451</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-        <widget class="QWidget" name="lengthWidget" native="true">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>60</y>
-           <width>830</width>
-           <height>271</height>
-          </rect>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>800</width>
-           <height>0</height>
-          </size>
-         </property>
-        </widget>
-        <widget class="QWidget" name="charsetWidget" native="true">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>340</y>
-           <width>830</width>
-           <height>321</height>
-          </rect>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1,1,0">
+         <item>
+          <widget class="QLabel" name="AnalyzedLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="securityLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="lengthWidget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>800</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="charsetWidget" native="true"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="resultLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
