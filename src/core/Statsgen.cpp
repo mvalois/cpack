@@ -111,7 +111,6 @@ int Statsgen::generate_stats() {
 	}
 
 	pthread_t threads[MAX_THREADS];
-	struct thread_data td[MAX_THREADS];
 
 	pthread_attr_t attr;
 
@@ -171,6 +170,7 @@ int Statsgen::generate_stats() {
 	}
 
 	for(int i=0; i < nbThread; i++)	{
+		td[i].finished = true;
 		mergeThread(td[i]);
 	}
 

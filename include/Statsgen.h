@@ -59,8 +59,8 @@ struct minMax {
 struct thread_data {
 	int thread_id;
 	std::string filename;
-	uint64_t lineBegin;
-	uint64_t lineEnd;
+	uint64_t lineBegin = 0;
+	uint64_t lineEnd = 0;
 
 	uint64_t total_counter = 0;
 	uint64_t total_filter = 0;
@@ -81,6 +81,8 @@ struct thread_data {
 	int limitAdvancedmask;
 
 	SecurityRules sr;
+
+	bool finished = false;
 };
 
 
@@ -191,12 +193,14 @@ public:
 	inline uint64_t getTotalCounter() const { return total_counter; }
 	inline uint64_t getTotalFilter() const { return total_filter; }
 	inline uint64_t getNbSecurePasswords() const { return _sr.nbSecurePassword; }
+	inline int getNbThreads() const { return nbThread; }
 	inline const IntOccurrence& getStatsLength() const { return stats_length; }
 	inline const StringOccurrence& getStatsCharsets() const { return stats_charactersets; }
+	inline const thread_data* getThreadsData() const { return td; }
 
 private:
 	std::string filename;
-
+	struct thread_data td[MAX_THREADS];
 
 	// Filters
 
