@@ -24,5 +24,6 @@ int main(int argc, char *argv[])
     	w.setFilename(argv[1]);
     }
     w.setThreads(std::thread::hardware_concurrency());
+    w.setWindowState(Qt::WindowMaximized);
     return a.exec();
 }
