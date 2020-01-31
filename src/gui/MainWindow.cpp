@@ -263,7 +263,24 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
             nbHideS += itS->first;
         }
     }
-    pieSimple->append("Other charsets", nbHideS);
+    pieSimple->append("Other Masks", nbHideS);
+
+    /* ADVANCED PIECHART */
+    multimap<uint64_t, string> reverseA = flip_map<string>(stats.getStatsAdvanced());
+    int top_advanced = 0;
+    uint64_t nbHideA = 0;
+
+    MapIterator<uint64_t, string> itA;
+    for(itA = reverseA.end(); itA != reverseA.begin(); itA--) {
+        if (itA == reverseA.end()) continue;
+        top_advanced++;
+        if (top_advanced <= 10) {
+            pieAdvanced->append(QString::fromStdString(itA->second), itA->first);
+        } else {
+            nbHideA += itA->first;
+        }
+    }
+    pieAdvanced->append("Other Masks", nbHideA);
     return maxPercLength;
 }
 
@@ -362,6 +379,27 @@ void MainWindow::handleResults()
     layoutSimple = new QVBoxLayout();
     layoutSimple->addWidget(chartViewS);
     ui->simpleMasksWidget->setLayout(layoutSimple);
+
+    /* PIECHART FOR ADVANCED */
+    pieAdvanced->setLabelsVisible();
+
+    QPieSlice *slice_advanced = pieAdvanced->slices().at(0);
+    slice_advanced->setExploded();
+    slice_advanced->setLabelVisible();
+    slice_advanced->setPen(QPen(Qt::darkGreen, 2));
+    slice_advanced->setBrush(Qt::green);
+
+    QChart *chartA = new QChart();
+    chartA->addSeries(pieAdvanced);
+    chartA->setTitle("Advanced masks");
+    chartA->legend()->hide();
+
+    QChartView *chartViewA = new QChartView(chartA);
+    chartViewA->setRenderHint(QPainter::Antialiasing);
+
+    layoutAdvanced = new QVBoxLayout();
+    layoutAdvanced->addWidget(chartViewA);
+    ui->advancedMasksWidget->setLayout(layoutAdvanced);
 
 
     /* LABELS */
