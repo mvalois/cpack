@@ -303,40 +303,46 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1,1,0">
-         <item>
-          <widget class="QLabel" name="AnalyzedLabel">
+        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,1,1,0">
+         <item row="2" column="0">
+          <widget class="QWidget" name="lengthWidget" native="true"/>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="resultLabel">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item>
+         <item row="1" column="0">
           <widget class="QLabel" name="securityLabel">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QWidget" name="lengthWidget" native="true">
+         <item row="0" column="0">
+          <widget class="QLabel" name="AnalyzedLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QWidget" name="advancedMasksWidget" native="true"/>
+         </item>
+         <item row="2" column="1">
+          <widget class="QWidget" name="charsetWidget" native="true">
            <property name="minimumSize">
             <size>
-             <width>800</width>
+             <width>500</width>
              <height>0</height>
             </size>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QWidget" name="charsetWidget" native="true"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="resultLabel">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
+         <item row="3" column="0">
+          <widget class="QWidget" name="simpleMasksWidget" native="true"/>
          </item>
         </layout>
        </widget>

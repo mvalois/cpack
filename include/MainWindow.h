@@ -87,9 +87,11 @@ private:
     QMessageBox waitBox;
     QVBoxLayout * layoutCharset = nullptr;
     QVBoxLayout * layoutLength = nullptr;
+    QVBoxLayout * layoutSimple = nullptr;
+    QVBoxLayout * layoutAdvanced = nullptr;
     ProgressThread* progressThread = nullptr;
     int firstTime=1;
-    double initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity);
+    double initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, QPieSeries* pieSimple, QPieSeries* pieAdvanced, double & percentageTotal, double & percentageSecurity);
 };
 
 
