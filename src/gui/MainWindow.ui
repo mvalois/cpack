@@ -354,7 +354,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>ressources/logoGREYC.png</pixmap>
+         <pixmap>:/logos/logoGREYC.png</pixmap>
         </property>
        </widget>
       </item>
@@ -364,7 +364,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>ressources/logoENSICAEN.png</pixmap>
+         <pixmap>:/logos/logoENSICAEN.png</pixmap>
         </property>
        </widget>
       </item>
@@ -374,7 +374,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>ressources/logoCNRS.png</pixmap>
+         <pixmap>:/logos/logoCNRS.png</pixmap>
         </property>
        </widget>
       </item>
@@ -384,7 +384,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>ressources/logoUNICAEN.png</pixmap>
+         <pixmap>:/logos/logoUNICAEN.png</pixmap>
         </property>
        </widget>
       </item>
