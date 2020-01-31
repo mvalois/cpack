@@ -372,7 +372,7 @@ void * generate_stats_thread_queue(void * threadarg) {
 		PasswordStats c;
 
 		my_data->total_counter++;
-		if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
+		if ( !my_data->use_regex || regex_match(line,my_data->current_regex)) {
 			c = analyze_password(line, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
 
 			my_data->total_filter++;
@@ -430,7 +430,7 @@ void * generate_stats_thread(void * threadarg) {
 
 			my_data->total_counter += nbPasswords;
 
-			if ( !my_data->use_regex || (my_data->use_regex && regex_match(password,my_data->current_regex)) ) {
+			if ( !my_data->use_regex || regex_match(password,my_data->current_regex)) {
 				my_data->total_filter += nbPasswords;
 				c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
 
@@ -442,7 +442,7 @@ void * generate_stats_thread(void * threadarg) {
 		}
 		else {
 			my_data->total_counter++;
-			if ( !my_data->use_regex || (my_data->use_regex && regex_match(line,my_data->current_regex)) ) {
+			if ( !my_data->use_regex || regex_match(line,my_data->current_regex)) {
 				c = analyze_password(line, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
 
 				my_data->total_filter++;
