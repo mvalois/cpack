@@ -174,6 +174,7 @@ void MainWindow::startGame() {
 
     delete layoutLength;
     delete layoutCharset;
+    delete layoutSimple;
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
@@ -198,7 +199,7 @@ void MainWindow::disableWithCount()
     ui->withcountButton->setChecked(false);
 }
 
-double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, double & percentageTotal, double & percentageSecurity) {
+double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, QPieSeries* pieSimple, QPieSeries* pieAdvanced, double & percentageTotal, double & percentageSecurity) {
     double total = stats.getTotalCounter();
     double filter = stats.getTotalFilter();
     percentageTotal = percentage(filter, total);
@@ -246,6 +247,23 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
         }
     }
     pieCharset->append("Other charsets", nbHideC);
+
+    /* SIMPLE PIECHART */
+    multimap<uint64_t, string> reverseS = flip_map<string>(stats.getStatsSimple());
+    int top_simple = 0;
+    uint64_t nbHideS = 0;
+
+    MapIterator<uint64_t, string> itS;
+    for(itS = reverseS.end(); itS != reverseS.begin(); itS--) {
+        if (itS == reverseS.end()) continue;
+        top_simple++;
+        if (top_simple <= 10) {
+            pieSimple->append(QString::fromStdString(itS->second), itS->first);
+        } else {
+            nbHideS += itS->first;
+        }
+    }
+    pieSimple->append("Other charsets", nbHideS);
     return maxPercLength;
 }
 
@@ -278,9 +296,11 @@ void MainWindow::handleResults()
 
     QBarSeries * barLength = new QBarSeries();
     QPieSeries * pieCharset = new QPieSeries();
+    QPieSeries * pieSimple = new QPieSeries();
+    QPieSeries * pieAdvanced = new QPieSeries();
     double percentageTotal, percentageSecurity, maxPercLength;
 
-    maxPercLength = initGraphicalStats(barLength, pieCharset, percentageTotal, percentageSecurity);
+    maxPercLength = initGraphicalStats(barLength, pieCharset, pieSimple, pieAdvanced, percentageTotal, percentageSecurity);
 
     /* HISTOGRAM FOR LENGTH */
     QChart *chartL = new QChart();
@@ -321,6 +341,27 @@ void MainWindow::handleResults()
     layoutCharset = new QVBoxLayout();
     layoutCharset->addWidget(chartViewC);
     ui->charsetWidget->setLayout(layoutCharset);
+
+    /* PIECHART FOR SIMPLE */
+    pieSimple->setLabelsVisible();
+
+    QPieSlice *slice_simple = pieSimple->slices().at(0);
+    slice_simple->setExploded();
+    slice_simple->setLabelVisible();
+    slice_simple->setPen(QPen(Qt::darkGreen, 2));
+    slice_simple->setBrush(Qt::green);
+
+    QChart *chartS = new QChart();
+    chartS->addSeries(pieSimple);
+    chartS->setTitle("Simple masks");
+    chartS->legend()->hide();
+
+    QChartView *chartViewS = new QChartView(chartS);
+    chartViewS->setRenderHint(QPainter::Antialiasing);
+
+    layoutSimple = new QVBoxLayout();
+    layoutSimple->addWidget(chartViewS);
+    ui->simpleMasksWidget->setLayout(layoutSimple);
 
 
     /* LABELS */

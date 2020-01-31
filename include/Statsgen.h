@@ -196,6 +196,8 @@ public:
 	inline int getNbThreads() const { return nbThread; }
 	inline const IntOccurrence& getStatsLength() const { return stats_length; }
 	inline const StringOccurrence& getStatsCharsets() const { return stats_charactersets; }
+	inline const StringOccurrence& getStatsSimple() const { return stats_simplemasks; }
+	inline const StringOccurrence& getStatsAdvanced() const { return stats_advancedmasks; }
 	inline const thread_data* getThreadsData() const { return td; }
 
 private:
