@@ -58,7 +58,16 @@ void MainWindow::findFile() {
 
 
 void MainWindow::startGame() {
-    stats = Statsgen((ui->fileLine->text()).toUtf8().constData());
+    QString filename = ui->fileLine->text();
+    if(filename.isEmpty()){
+        QMessageBox(QMessageBox::Critical, "File empty", "You have not provided a filename !").exec();
+        return;
+    }
+    if(! QFile::exists(filename)){
+        QMessageBox(QMessageBox::Critical, "No such file", "The file " + filename + " does not exist !").exec();
+        return;
+    }
+    stats = Statsgen(filename.toUtf8().constData());
 
     if(ui->withcountButton->isChecked())
     {
