@@ -92,6 +92,7 @@ private:
     ProgressThread* progressThread = nullptr;
     int firstTime=1;
     double initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, QPieSeries* pieSimple, QPieSeries* pieAdvanced, double & percentageTotal, double & percentageSecurity);
+    QVBoxLayout*  drawPieChart(QPieSeries* qps, QVBoxLayout* layout, const std::string& title);
 };
 
 

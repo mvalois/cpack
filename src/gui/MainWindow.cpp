@@ -210,6 +210,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     double percentageL;
     double maxPercLength = 0;
     uint64_t nbHideL = 0;
+    barLength->clear();
 
     MapIterator<uint64_t, int> itL;
     for(itL = reverseL.end(); itL != reverseL.begin(); itL--) {
@@ -235,6 +236,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     multimap<uint64_t, string> reverseC = flip_map<string>(stats.getStatsCharsets());
     int top = 0;
     uint64_t nbHideC = 0;
+    pieCharset->clear();
 
     MapIterator<uint64_t, string> itC;
     for(itC = reverseC.end(); itC != reverseC.begin(); itC--) {
@@ -252,6 +254,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     multimap<uint64_t, string> reverseS = flip_map<string>(stats.getStatsSimple());
     int top_simple = 0;
     uint64_t nbHideS = 0;
+    pieSimple->clear();
 
     MapIterator<uint64_t, string> itS;
     for(itS = reverseS.end(); itS != reverseS.begin(); itS--) {
@@ -269,6 +272,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     multimap<uint64_t, string> reverseA = flip_map<string>(stats.getStatsAdvanced());
     int top_advanced = 0;
     uint64_t nbHideA = 0;
+    pieAdvanced->clear();
 
     MapIterator<uint64_t, string> itA;
     for(itA = reverseA.end(); itA != reverseA.begin(); itA--) {
@@ -284,21 +288,21 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     return maxPercLength;
 }
 
-QVBoxLayout* drawPieChart(QPieSeries* qps, QVBoxLayout* layout, const string& title){
+QVBoxLayout* MainWindow::drawPieChart(QPieSeries* qps, QVBoxLayout* layout, const string& title){
     qps->setLabelsVisible();
 
-    QPieSlice *slice = qps->slices().at(0);
+    QPieSlice* slice = qps->slices().at(0);
     slice->setExploded();
     slice->setLabelVisible();
     slice->setPen(QPen(Qt::darkGreen, 2));
     slice->setBrush(Qt::green);
 
-    QChart *chart = new QChart();
+    QChart* chart = new QChart();
     chart->addSeries(qps);
     chart->setTitle(QString::fromStdString(title));
     chart->legend()->hide();
 
-    QChartView *chartView = new QChartView(chart);
+    QChartView* chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
 
     layout = new QVBoxLayout();
@@ -361,13 +365,16 @@ void MainWindow::handleResults()
 
 
     /* PIECHART FOR CHARSET */
-    ui->charsetWidget->setLayout(drawPieChart(pieCharset, layoutCharset, "Charset"));
+    layoutCharset = drawPieChart(pieCharset, layoutCharset, "Charset");
+    ui->charsetWidget->setLayout(layoutCharset);
 
     /* PIECHART FOR SIMPLE */
-    ui->simpleMasksWidget->setLayout(drawPieChart(pieSimple, layoutSimple, "Simple masks"));
+    layoutSimple = drawPieChart(pieSimple, layoutSimple, "Simple masks");
+    ui->simpleMasksWidget->setLayout(layoutSimple);
 
     /* PIECHART FOR ADVANCED */
-    ui->advancedMasksWidget->setLayout(drawPieChart(pieAdvanced, layoutAdvanced, "Advanced masks"));
+    layoutAdvanced = drawPieChart(pieAdvanced, layoutAdvanced, "Advanced masks");
+    ui->advancedMasksWidget->setLayout(layoutAdvanced);
 
     /* LABELS */
 
