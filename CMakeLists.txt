@@ -10,7 +10,7 @@ include_directories(include)
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 
 # Option du compilateur pour supporter C 2011.
-set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -std=c++11 -Wextra -O3")
 set(CMAKE_LD_FLAGS "-lpthread")
 
 add_executable(cppack
