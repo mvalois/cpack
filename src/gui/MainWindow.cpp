@@ -284,6 +284,28 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     return maxPercLength;
 }
 
+QVBoxLayout* drawPieChart(QPieSeries* qps, QVBoxLayout* layout, const string& title){
+    qps->setLabelsVisible();
+
+    QPieSlice *slice = qps->slices().at(0);
+    slice->setExploded();
+    slice->setLabelVisible();
+    slice->setPen(QPen(Qt::darkGreen, 2));
+    slice->setBrush(Qt::green);
+
+    QChart *chart = new QChart();
+    chart->addSeries(qps);
+    chart->setTitle(QString::fromStdString(title));
+    chart->legend()->hide();
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    layout = new QVBoxLayout();
+    layout->addWidget(chartView);
+    return layout;
+}
+
 void MainWindow::handleResults()
 {
 
@@ -339,68 +361,13 @@ void MainWindow::handleResults()
 
 
     /* PIECHART FOR CHARSET */
-    pieCharset->setLabelsVisible();
-
-    QPieSlice *slice = pieCharset->slices().at(0);
-    slice->setExploded();
-    slice->setLabelVisible();
-    slice->setPen(QPen(Qt::darkGreen, 2));
-    slice->setBrush(Qt::green);
-
-    QChart *chartC = new QChart();
-    chartC->addSeries(pieCharset);
-    chartC->setTitle("Charset");
-    chartC->legend()->hide();
-
-    QChartView *chartViewC = new QChartView(chartC);
-    chartViewC->setRenderHint(QPainter::Antialiasing);
-
-    layoutCharset = new QVBoxLayout();
-    layoutCharset->addWidget(chartViewC);
-    ui->charsetWidget->setLayout(layoutCharset);
+    ui->charsetWidget->setLayout(drawPieChart(pieCharset, layoutCharset, "Charset"));
 
     /* PIECHART FOR SIMPLE */
-    pieSimple->setLabelsVisible();
-
-    QPieSlice *slice_simple = pieSimple->slices().at(0);
-    slice_simple->setExploded();
-    slice_simple->setLabelVisible();
-    slice_simple->setPen(QPen(Qt::darkGreen, 2));
-    slice_simple->setBrush(Qt::green);
-
-    QChart *chartS = new QChart();
-    chartS->addSeries(pieSimple);
-    chartS->setTitle("Simple masks");
-    chartS->legend()->hide();
-
-    QChartView *chartViewS = new QChartView(chartS);
-    chartViewS->setRenderHint(QPainter::Antialiasing);
-
-    layoutSimple = new QVBoxLayout();
-    layoutSimple->addWidget(chartViewS);
-    ui->simpleMasksWidget->setLayout(layoutSimple);
+    ui->simpleMasksWidget->setLayout(drawPieChart(pieSimple, layoutSimple, "Simple masks"));
 
     /* PIECHART FOR ADVANCED */
-    pieAdvanced->setLabelsVisible();
-
-    QPieSlice *slice_advanced = pieAdvanced->slices().at(0);
-    slice_advanced->setExploded();
-    slice_advanced->setLabelVisible();
-    slice_advanced->setPen(QPen(Qt::darkGreen, 2));
-    slice_advanced->setBrush(Qt::green);
-
-    QChart *chartA = new QChart();
-    chartA->addSeries(pieAdvanced);
-    chartA->setTitle("Advanced masks");
-    chartA->legend()->hide();
-
-    QChartView *chartViewA = new QChartView(chartA);
-    chartViewA->setRenderHint(QPainter::Antialiasing);
-
-    layoutAdvanced = new QVBoxLayout();
-    layoutAdvanced->addWidget(chartViewA);
-    ui->advancedMasksWidget->setLayout(layoutAdvanced);
-
+    ui->advancedMasksWidget->setLayout(drawPieChart(pieAdvanced, layoutAdvanced, "Advanced masks"));
 
     /* LABELS */
 
