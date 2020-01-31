@@ -42,6 +42,7 @@ if(Qt5Core_FOUND)
 	    src/gui/MainGui.cpp
 	    src/core/Statsgen.cpp
 	    src/core/Policy.cpp
+	    ressources/logos.qrc
 	)
 
 	target_link_libraries(cppack-gui Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Charts ${CMAKE_THREAD_LIBS_INIT})
