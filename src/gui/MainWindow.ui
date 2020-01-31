@@ -23,271 +23,301 @@
    <string>GUI</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
       <item>
-       <layout class="QGridLayout" name="settingsLayout">
-        <item row="6" column="0" colspan="3">
-         <widget class="QGroupBox" name="securityPolicy">
-          <property name="title">
-           <string>Security rules</string>
-          </property>
-          <widget class="QWidget" name="gridLayoutWidget_3">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>20</y>
-             <width>321</width>
-             <height>131</height>
-            </rect>
+       <widget class="QWidget" name="settingsWidget" native="true">
+        <layout class="QGridLayout" name="settingsLayout">
+         <item row="7" column="0" colspan="3">
+          <widget class="QGroupBox" name="globalOptions">
+           <property name="title">
+            <string>Parsing options</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="3" column="0">
-             <widget class="QLabel" name="upperLabel">
-              <property name="text">
-               <string>Min Occurences of upper characters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="specialLabel">
-              <property name="text">
-               <string>Min Occurences of special characters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="lowerLabel">
-              <property name="text">
-               <string>Min Occurences of lower characters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="digitLabel">
-              <property name="text">
-               <string>Min Occurences of digit characters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="lengthLabel">
-              <property name="text">
-               <string>Min Length</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="MinLenSpin">
-              <property name="value">
-               <number>8</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="MinOccSpecialSpin"/>
-            </item>
-            <item row="2" column="1">
-             <widget class="QSpinBox" name="MinOccDigitsSpin">
-              <property name="value">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QSpinBox" name="MinOccUpperSpin">
-              <property name="value">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QSpinBox" name="MinOccLowerSpin">
-              <property name="value">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QWidget" name="gridLayoutWidget_2">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>30</y>
+              <width>260</width>
+              <height>103</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="RegexlineEdit"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="withcountButton">
+               <property name="text">
+                <string>Withcount</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="regexCheckBox">
+               <property name="text">
+                <string>Regular expression</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="classicButton">
+               <property name="text">
+                <string>Classic</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="threadNumberSpin">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label">
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="text">
+                <string>Number of threads</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </widget>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="3">
-         <widget class="QGroupBox" name="advancedOptions">
-          <property name="title">
-           <string>Advanced options (only shown in &quot;result.txt&quot;)</string>
-          </property>
-          <widget class="QWidget" name="gridLayoutWidget_4">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>20</y>
-             <width>301</width>
-             <height>107</height>
-            </rect>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="fileLabel">
+           <property name="text">
+            <string>File:</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="maxAdvancedCheckBox">
-              <property name="text">
-               <string>Maximum advanced mask size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="topCheckBox">
-              <property name="text">
-               <string>Top X answers to display</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="maxSimpleCheckBox">
-              <property name="text">
-               <string>Maximum simple mask size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="MaxSimpleMaxSpin"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="MaxAdvMaskSpin"/>
-            </item>
-            <item row="2" column="1">
-             <widget class="QSpinBox" name="TopXAnswerSpin"/>
-            </item>
-           </layout>
           </widget>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="QPushButton" name="startButton">
-          <property name="text">
-           <string>Start</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="fileLine">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>300</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>1000000</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="Browser">
-          <property name="text">
-           <string>Browse</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="fileLabel">
-          <property name="text">
-           <string>File:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="3">
-         <widget class="QGroupBox" name="globalOptions">
-          <property name="title">
-           <string>Options</string>
-          </property>
-          <widget class="QWidget" name="gridLayoutWidget_2">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>30</y>
-             <width>260</width>
-             <height>103</height>
-            </rect>
+         </item>
+         <item row="8" column="0" colspan="3">
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="RegexlineEdit"/>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="withcountButton">
-              <property name="text">
-               <string>Withcount</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="regexCheckBox">
-              <property name="text">
-               <string>Regular expression</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QRadioButton" name="classicButton">
-              <property name="text">
-               <string>Classic</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="threadNumberSpin">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label">
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>Number of threads</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QProgressBar" name="progressBar">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="textVisible">
-           <bool>true</bool>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="format">
-           <string>Progression : %p%</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+         </item>
+         <item row="9" column="0" colspan="3">
+          <widget class="QGroupBox" name="advancedOptions">
+           <property name="title">
+            <string>Display options</string>
+           </property>
+           <widget class="QWidget" name="gridLayoutWidget_4">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>20</y>
+              <width>316</width>
+              <height>116</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="3" column="1">
+              <widget class="QSpinBox" name="MaxAdvMaskSpin">
+               <property name="value">
+                <number>10</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>#Simple masks to display</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>#Advanced masks to display</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>#Charsets to display</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="MaxSimpleMaskSpin">
+               <property name="value">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Maximum % to be put in other</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="CharsetToDisplay">
+               <property name="value">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="OtherThreshold">
+               <property name="value">
+                <number>2</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="Browser">
+           <property name="text">
+            <string>Browse</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="QPushButton" name="startButton">
+           <property name="text">
+            <string>Start</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="3">
+          <widget class="QGroupBox" name="securityPolicy">
+           <property name="title">
+            <string>Security rules</string>
+           </property>
+           <widget class="QWidget" name="gridLayoutWidget_3">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>20</y>
+              <width>321</width>
+              <height>146</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="3" column="0">
+              <widget class="QLabel" name="upperLabel">
+               <property name="text">
+                <string>Min Occurences of upper characters</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="specialLabel">
+               <property name="text">
+                <string>Min Occurences of special characters</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="lowerLabel">
+               <property name="text">
+                <string>Min Occurences of lower characters</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="digitLabel">
+               <property name="text">
+                <string>Min Occurences of digit characters</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="lengthLabel">
+               <property name="text">
+                <string>Min Length</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="MinLenSpin">
+               <property name="value">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="MinOccSpecialSpin"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="MinOccDigitsSpin">
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QSpinBox" name="MinOccUpperSpin">
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QSpinBox" name="MinOccLowerSpin">
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+         <item row="10" column="0" colspan="3">
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="fileLine">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>1000000</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="3">
+          <widget class="Line" name="line_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
       <item>
        <widget class="QFrame" name="resultFrame">
@@ -303,35 +333,32 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,1,1,0">
-         <item row="2" column="0">
-          <widget class="QWidget" name="lengthWidget" native="true"/>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="resultLabel">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
+        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,1,1,0" columnstretch="0,0">
          <item row="1" column="0">
-          <widget class="QLabel" name="securityLabel">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
           <widget class="QLabel" name="AnalyzedLabel">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QWidget" name="advancedMasksWidget" native="true"/>
+         <item row="4" column="1">
+          <widget class="QWidget" name="advancedMasksWidget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
          </item>
-         <item row="2" column="1">
+         <item row="2" column="0">
+          <widget class="QLabel" name="securityLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
           <widget class="QWidget" name="charsetWidget" native="true">
            <property name="minimumSize">
             <size>
@@ -342,12 +369,41 @@
           </widget>
          </item>
          <item row="3" column="0">
+          <widget class="QWidget" name="lengthWidget" native="true"/>
+         </item>
+         <item row="4" column="0">
           <widget class="QWidget" name="simpleMasksWidget" native="true"/>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QProgressBar" name="progressBar">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="textVisible">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="format">
+            <string>Progression : %p%</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">

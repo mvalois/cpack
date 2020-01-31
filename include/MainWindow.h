@@ -90,6 +90,10 @@ private:
     QVBoxLayout * layoutSimple = nullptr;
     QVBoxLayout * layoutAdvanced = nullptr;
     ProgressThread* progressThread = nullptr;
+    uint64_t perc_other;
+    uint64_t display_charsets;
+    uint64_t display_simples;
+    uint64_t display_advanced;
     int firstTime=1;
     double initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, QPieSeries* pieSimple, QPieSeries* pieAdvanced, double & percentageTotal, double & percentageSecurity);
     QVBoxLayout*  drawPieChart(QPieSeries* qps, QVBoxLayout* layout, const std::string& title);

@@ -83,56 +83,17 @@ void MainWindow::startGame() {
         stats.setRegex(ui->RegexlineEdit->text().toStdString());
     }
 
-    if(ui->maxSimpleCheckBox->isChecked())
-    {
-        try
-        {
-            stats.setLimitSimplemask(stoi(ui->MaxSimpleMaxSpin->text().toStdString()));
-        }
-        catch(invalid_argument)
-        {
-            stats.setLimitSimplemask(100);
-        }
-        catch(out_of_range)
-        {
-            stats.setLimitSimplemask(100);
-        }
+    int other_perc = stoi(ui->OtherThreshold->text().toStdString());
+    perc_other = other_perc ? other_perc : 2;
 
-    }
+    int charset_nb = stoi(ui->CharsetToDisplay->text().toStdString());
+    display_charsets = charset_nb ? charset_nb : 5;
 
-    if(ui->maxAdvancedCheckBox->isChecked())
-    {
-        try
-        {
-            stats.setLimitAdvancedmask(stoi(ui->MaxAdvMaskSpin->text().toStdString()));
-        }
-        catch(invalid_argument)
-        {
-            stats.setLimitAdvancedmask(100);
-        }
-        catch(out_of_range)
-        {
-            stats.setLimitAdvancedmask(100);
-        }
+    int max_simple = stoi(ui->MaxSimpleMaskSpin->text().toStdString());
+    display_simples = max_simple ? max_simple : 5;
 
-    }
-
-    if(ui->topCheckBox->isChecked())
-    {
-        try
-        {
-            stats.setTop(stoi(ui->TopXAnswerSpin->text().toStdString()));
-        }
-        catch(invalid_argument)
-        {
-            stats.setTop(10);
-        }
-        catch(out_of_range)
-        {
-            stats.setTop(10);
-        }
-
-    }
+    int max_advanced = stoi(ui->MaxAdvMaskSpin->text().toStdString());
+    display_advanced = max_advanced ? max_advanced : 10;
 
     try
     {
@@ -153,28 +114,14 @@ void MainWindow::startGame() {
         stats.setSecurityRules(8,0,1,1,1);
     }
 
-    ui->fileLine->setDisabled(true);
-    ui->Browser->setDisabled(true);
-    ui->threadNumberSpin->setDisabled(true);
-    ui->TopXAnswerSpin->setDisabled(true);
-    ui->MaxSimpleMaxSpin->setDisabled(true);
-    ui->MaxAdvMaskSpin->setDisabled(true);
-    ui->RegexlineEdit->setDisabled(true);
-    ui->MinLenSpin->setDisabled(true);
-    ui->MinOccLowerSpin->setDisabled(true);
-    ui->MinOccUpperSpin->setDisabled(true);
-    ui->MinOccSpecialSpin->setDisabled(true);
-    ui->MinOccDigitsSpin->setDisabled(true);
-    ui->startButton->setDisabled(true);
-    ui->topCheckBox->setDisabled(true);
-    ui->regexCheckBox->setDisabled(true);
-    ui->maxAdvancedCheckBox->setDisabled(true);
-    ui->maxSimpleCheckBox->setDisabled(true);
+    ui->settingsWidget->setEnabled(false);
     ui->progressBar->setValue(0);
+    ui->progressBar->setEnabled(true);
 
     delete layoutLength;
     delete layoutCharset;
     delete layoutSimple;
+    delete layoutAdvanced;
 
     WorkerThread *workerThread = new WorkerThread(stats);
     connect(workerThread, SIGNAL(resultReady()), this, SLOT(handleResults()));
@@ -218,7 +165,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 
         percentageL = percentage(itL->first,  total);
         maxPercLength = percentageL > maxPercLength ? percentageL : maxPercLength;
-        if (percentageL >= 2) {
+        if (percentageL >= perc_other) {
             QBarSet *set = new QBarSet(QString::number(itL->second));
             *set << percentageL;
             barLength->append(set);
@@ -234,7 +181,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 
     /* CHARSET PIECHART */
     multimap<uint64_t, string> reverseC = flip_map<string>(stats.getStatsCharsets());
-    int top = 0;
+    uint64_t top = 0;
     uint64_t nbHideC = 0;
     pieCharset->clear();
 
@@ -242,7 +189,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     for(itC = reverseC.end(); itC != reverseC.begin(); itC--) {
         if (itC == reverseC.end()) continue;
         top++;
-        if (top <= 5) {
+        if (top <= display_charsets) {
             pieCharset->append(QString::fromStdString(itC->second), itC->first);
         } else {
             nbHideC += itC->first;
@@ -252,7 +199,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 
     /* SIMPLE PIECHART */
     multimap<uint64_t, string> reverseS = flip_map<string>(stats.getStatsSimple());
-    int top_simple = 0;
+    uint64_t top_simple = 0;
     uint64_t nbHideS = 0;
     pieSimple->clear();
 
@@ -260,7 +207,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     for(itS = reverseS.end(); itS != reverseS.begin(); itS--) {
         if (itS == reverseS.end()) continue;
         top_simple++;
-        if (top_simple <= 10) {
+        if (top_simple <= display_simples) {
             pieSimple->append(QString::fromStdString(itS->second), itS->first);
         } else {
             nbHideS += itS->first;
@@ -270,7 +217,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 
     /* ADVANCED PIECHART */
     multimap<uint64_t, string> reverseA = flip_map<string>(stats.getStatsAdvanced());
-    int top_advanced = 0;
+    uint64_t top_advanced = 0;
     uint64_t nbHideA = 0;
     pieAdvanced->clear();
 
@@ -278,7 +225,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     for(itA = reverseA.end(); itA != reverseA.begin(); itA--) {
         if (itA == reverseA.end()) continue;
         top_advanced++;
-        if (top_advanced <= 10) {
+        if (top_advanced <= display_advanced) {
             pieAdvanced->append(QString::fromStdString(itA->second), itA->first);
         } else {
             nbHideA += itA->first;
@@ -316,26 +263,7 @@ void MainWindow::handleResults()
     progressThread->terminate();
     progressThread->wait();
     ui->progressBar->setValue(100);
-    ui->fileLine->setDisabled(false);
-    ui->Browser->setDisabled(false);
-    ui->charsetWidget->setHidden(false);
-    ui->lengthWidget->show();
-    ui->threadNumberSpin->setDisabled(false);
-    ui->TopXAnswerSpin->setDisabled(false);
-    ui->MaxSimpleMaxSpin->setDisabled(false);
-    ui->MaxAdvMaskSpin->setDisabled(false);
-    ui->RegexlineEdit->setDisabled(false);
-    ui->MinLenSpin->setDisabled(false);
-    ui->MinOccLowerSpin->setDisabled(false);
-    ui->MinOccUpperSpin->setDisabled(false);
-    ui->MinOccSpecialSpin->setDisabled(false);
-    ui->MinOccDigitsSpin->setDisabled(false);
-    ui->startButton->setDisabled(false);
-    ui->topCheckBox->setDisabled(false);
-    ui->regexCheckBox->setDisabled(false);
-    ui->maxAdvancedCheckBox->setDisabled(false);
-    ui->maxSimpleCheckBox->setDisabled(false);
-
+    ui->settingsWidget->setEnabled(true);
 
     QBarSeries * barLength = new QBarSeries();
     QPieSeries * pieCharset = new QPieSeries();
@@ -355,7 +283,8 @@ void MainWindow::handleResults()
 
     layoutLength = new QVBoxLayout();
     layoutLength->addWidget(chartViewL);
-    ui->lengthWidget->setLayout(layoutLength);
+    if(ui->lengthWidget->layout() == nullptr)
+        ui->lengthWidget->setLayout(layoutLength);
 
     QValueAxis *axisY = new QValueAxis();
     chartL->addAxis(axisY, Qt::AlignLeft);
@@ -366,15 +295,18 @@ void MainWindow::handleResults()
 
     /* PIECHART FOR CHARSET */
     layoutCharset = drawPieChart(pieCharset, layoutCharset, "Charset");
-    ui->charsetWidget->setLayout(layoutCharset);
+    if(ui->charsetWidget->layout() == nullptr)
+        ui->charsetWidget->setLayout(layoutCharset);
 
     /* PIECHART FOR SIMPLE */
     layoutSimple = drawPieChart(pieSimple, layoutSimple, "Simple masks");
-    ui->simpleMasksWidget->setLayout(layoutSimple);
+    if(ui->simpleMasksWidget->layout() == nullptr)
+        ui->simpleMasksWidget->setLayout(layoutSimple);
 
     /* PIECHART FOR ADVANCED */
     layoutAdvanced = drawPieChart(pieAdvanced, layoutAdvanced, "Advanced masks");
-    ui->advancedMasksWidget->setLayout(layoutAdvanced);
+    if(ui->advancedMasksWidget->layout() == nullptr)
+        ui->advancedMasksWidget->setLayout(layoutAdvanced);
 
     /* LABELS */
 
@@ -388,7 +320,5 @@ void MainWindow::handleResults()
     ui->securityLabel->setText("--> " + QString::number(percentageSecurity)
                                + "% of the passwords respects the security rules");
 
-    stats.print_stats();
-
-    ui->resultLabel->setText("For more detailed statistics, check the file \"result.txt\"");
+    // stats.print_stats();
 }
