@@ -360,10 +360,15 @@ void* generate_stats_thread(void* threadarg) {
 	string password;
 	uint64_t nbPasswords;
 
-	while(readfile >> line) {
+	// fast-forward to beginning of work
+	while(nbline < my_data->lineBegin){
+		readfile.ignore('\n');
+		readfile.get();
 		++nbline;
-		if (nbline < my_data->lineBegin){ continue; }
-		if (nbline > my_data->lineEnd){ break; }
+	}
+
+	while(nbline < my_data->lineEnd && readfile >> line) {
+		++nbline;
 		if (line.size() == 0){ continue; }
 
 		if (my_data->withcount) {
