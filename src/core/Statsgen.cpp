@@ -116,7 +116,7 @@ int Statsgen::generate_stats() {
 	if (is_stdin){
 		string line;
 		nbline = 0;
-		while(getline(cin, line)){
+		while(cin >> line){
 			td[nbline%nbThread].password_queue.push(line);
 			nbline++;
 		}
@@ -126,16 +126,16 @@ int Statsgen::generate_stats() {
 		td[i].thread_id = i + 1;
 		configureThread(td[i]);
 
-		td[i].lineBegin = i*(nbline/nbThread) + 1;
-		td[i].lineEnd = (i+1)*nbline/nbThread;
-		if (i > 0) {
-			while (td[i].lineBegin <= td[i-1].lineEnd) {
-				td[i].lineBegin++;
-			}
+		if(i == 0){
+			td[i].lineBegin = 0;
 		}
+		else{
+			td[i].lineBegin =  td[i-1].lineEnd + 1;
+		}
+		td[i].lineEnd = (i+1)*nbline/nbThread;
 
 		if(debug_enabled){
-			cerr << "[DEBUG]" << "Thread" << td[i].thread_id << "analyse :" << td[i].lineBegin << " -->" << td[i].lineEnd << endl;
+			cerr << "[DEBUG] " << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
 		}
 
 		int rc;
@@ -161,9 +161,6 @@ int Statsgen::generate_stats() {
 			cerr << "[ERROR] unable to join," << rc << endl;
 			exit(-1);
 		}
-	}
-
-	for(int i=0; i < nbThread; i++)	{
 		td[i].finished = true;
 		mergeThread(td[i]);
 	}
