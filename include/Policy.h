@@ -8,13 +8,13 @@
 
 class Policy {
 public:
-	int digit = 0;
-	int lower = 0;
-	int upper = 0;
-	int special = 0;
+	uint digit = 0;
+	uint lower = 0;
+	uint upper = 0;
+	uint special = 0;
 	operator std::string() const;
-	static std::map<int, std::string> charsetNames() {
-		std::map<int, std::string> names;
+	static std::map<uint, std::string> charsetNames() {
+		std::map<uint, std::string> names;
 		names[1] = "numeric";
 		names[2] = "loweralpha";
 		names[3] = "loweralphanum";
@@ -32,7 +32,7 @@ public:
 		names[15]= "all";
 		return names;
 	}
-	bool satisfies(const SecurityRules& sr, const int& pwd_size) const;
+	bool satisfies(const SecurityRules& sr, const uint& pwd_size) const;
 };
 
 #endif

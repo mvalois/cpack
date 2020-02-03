@@ -4,11 +4,11 @@
 
 struct SecurityRules {
 	uint64_t nbSecurePassword;
-	int minLength;
-	int minSpecial;
-	int minDigit;
-	int minLower;
-	int minUpper;
+	uint minLength;
+	uint minSpecial;
+	uint minDigit;
+	uint minLower;
+	uint minUpper;
 };
 
 

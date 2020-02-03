@@ -21,6 +21,7 @@
 #include <regex>
 #include <queue>
 #include <thread>
+#include <climits>
 
 #include "Policy.h"
 #include "SecurityRules.h"
@@ -41,16 +42,17 @@ struct PasswordStats {
 
 /**
  * @brief Simplify number of arguments for functions
+ * minimal number of digits of a password, etc.
  */
 struct minMax {
-	int mindigit = -1;				// save the number minimum of digit in a password
-	int maxdigit = -1;				// save the number maximum of digit in a password
-	int minlower = -1;				// save the number minimum of lower in a password
-	int maxlower = -1;				// save the number maximum of lower in a password
-	int minupper = -1;				// save the number minimum of upper in a password
-	int maxupper = -1;				// save the number maximum of upper in a password
-	int minspecial = -1;			// save the number minimum of special character in a password
-	int maxspecial = -1;			// save the number maximum of special character in a password
+	uint mindigit = UINT_MAX;
+	uint maxdigit = 0;
+	uint minlower = UINT_MAX;
+	uint maxlower = 0;
+	uint minupper = UINT_MAX;
+	uint maxupper = 0;
+	uint minspecial = UINT_MAX;
+	uint maxspecial = 0;
 };
 
 /**
@@ -164,7 +166,7 @@ public:
 	 * @brief Defining all security rules
 	 */
 	void askSecurityRules();
-	void setSecurityRules(const int& length, const int& special, const int& digit, const int& upper, const int& lower);
+	void setSecurityRules(const uint& length, const uint& special, const uint& digit, const uint& upper, const uint& lower);
 
 	/**
 	 * @brief Where to write masks

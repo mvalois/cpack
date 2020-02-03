@@ -30,7 +30,7 @@ Statsgen::Statsgen(const std::string& name):filename(name){
 
 
 void Statsgen::askSecurityRules() {
-	int length, special, digit, upper, lower;
+	uint length, special, digit, upper, lower;
 	cout << "Minimal length of a password:" << endl;
 	cin >> length;
 
@@ -48,7 +48,7 @@ void Statsgen::askSecurityRules() {
 	setSecurityRules(length, special, digit, upper, lower);
 }
 
-void Statsgen::setSecurityRules(const int& length, const int& special, const int& digit, const int& upper, const int& lower) {
+void Statsgen::setSecurityRules(const uint& length, const uint& special, const uint& digit, const uint& upper, const uint& lower) {
 	_sr = { _sr.nbSecurePassword, length, special, digit, upper, lower };
 }
 
