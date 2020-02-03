@@ -242,73 +242,52 @@ void Statsgen::print_stats() {
 }
 
 
-void analyse_letter(const char & letter, PasswordStats& c, char & last_simplemask, int & sizeAdvancedMask, int & sizeSimpleMask) {
-	sizeAdvancedMask++;
-
-	if (letter >= '0' && letter <= '9') {
-		c.pol.digit++;
-		c.advancedmask_string += "?d";
-		if (last_simplemask != 'd') {
-			sizeSimpleMask++;
-			c.simplemask_string += "digit";
-			last_simplemask = 'd';
-		}
-	}
-	else if(letter >= 'a' && letter <= 'z') {
-		c.pol.lower++;
-		c.advancedmask_string += "?l";
-		if (last_simplemask != 'l') {
-			sizeSimpleMask++;
-			c.simplemask_string += "lower";
-			last_simplemask = 'l';
-		}
-	}
-	else if(letter >= 'A' && letter <= 'Z') {
-		c.pol.upper++;
-		c.advancedmask_string += "?u";
-		if (last_simplemask != 'u') {
-			sizeSimpleMask++;
-			c.simplemask_string += "upper";
-			last_simplemask = 'u';
-		}
-	}
-	else {
-		c.pol.special++;
-		c.advancedmask_string += "?s";
-
-		if (last_simplemask != 's') {
-			sizeSimpleMask++;
-			c.simplemask_string += "special";
-			last_simplemask = 's';
-		}
-	}
-}
-
-PasswordStats analyze_password(const string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask) {
-	PasswordStats c;
-	c.pass_length = password.size();
-
+pair<uint, uint> get_masks(const string& password, PasswordStats& c){
 	char last_simplemask = 'a';
-	int sizeAdvancedMask = 0;
-	int sizeSimpleMask = 0;
-
+	uint sizeSimpleMask = 0;
+	uint sizeAdvancedMask = 0;
 	for(wchar_t letter: password){
-		analyse_letter(letter, c, last_simplemask, sizeAdvancedMask, sizeSimpleMask);
-	}
+		sizeAdvancedMask++;
 
-	if(c.pol.satisfies(sr, password.size())){
-		sr.nbSecurePassword++;
-	}
+		if (letter >= '0' && letter <= '9') {
+			c.pol.digit++;
+			c.advancedmask_string += "?d";
+			if (last_simplemask != 'd') {
+				sizeSimpleMask++;
+				c.simplemask_string += "digit";
+				last_simplemask = 'd';
+			}
+		}
+		else if(letter >= 'a' && letter <= 'z') {
+			c.pol.lower++;
+			c.advancedmask_string += "?l";
+			if (last_simplemask != 'l') {
+				sizeSimpleMask++;
+				c.simplemask_string += "lower";
+				last_simplemask = 'l';
+			}
+		}
+		else if(letter >= 'A' && letter <= 'Z') {
+			c.pol.upper++;
+			c.advancedmask_string += "?u";
+			if (last_simplemask != 'u') {
+				sizeSimpleMask++;
+				c.simplemask_string += "upper";
+				last_simplemask = 'u';
+			}
+		}
+		else {
+			c.pol.special++;
+			c.advancedmask_string += "?s";
 
-	if (sizeAdvancedMask > limitAdvancedmask) {
-		c.advancedmask_string = "othermasks";
+			if (last_simplemask != 's') {
+				sizeSimpleMask++;
+				c.simplemask_string += "special";
+				last_simplemask = 's';
+			}
+		}
 	}
-
-	if (sizeSimpleMask > limitSimplemask) {
-		c.simplemask_string = "othermasks";
-	}
-
-	return c;
+	return make_pair(sizeSimpleMask, sizeAdvancedMask);
 }
 
 void updateMinMax(minMax& m, const Policy& pol) {
@@ -327,9 +306,23 @@ void handle_password(const string& password, const uint64_t& nbPasswords, thread
 	if(my_data->use_regex && !regex_match(password,my_data->current_regex)){
 		return;
 	}
-	PasswordStats c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
+	PasswordStats c;
+
+	pair<uint, uint> masks = get_masks(password, c);
+
+	if(c.pol.satisfies(my_data->sr, password.size())){
+		my_data->sr.nbSecurePassword++;
+	}
+
+	if (masks.first > my_data->limitSimplemask) {
+		c.simplemask_string = "othermasks";
+	}
+	if (masks.second > my_data->limitAdvancedmask) {
+		c.advancedmask_string = "othermasks";
+	}
+
 	my_data->total_filter += nbPasswords;
-	my_data->length[ c.pass_length ] += nbPasswords;
+	my_data->length[ password.size() ] += nbPasswords;
 	my_data->charactersets[ c.pol ] += nbPasswords;
 	my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
 	my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
@@ -399,7 +392,7 @@ uint64_t nbline_file(const string & filename) {
 	}
 	// we have not read the whole file
 	if (readfile.fail() && !readfile.eof()){
-		cerr << "[ERROR]" << " There was an error reading the file at line " << nb << endl;
+		cerr << "[ERROR] There was an error reading the file at line " << nb << endl;
 		return 0;
 	}
 

@@ -79,8 +79,8 @@ struct thread_data {
 	bool use_regex = false;
 	bool withcount = false;
 
-	int limitSimplemask;
-	int limitAdvancedmask;
+	uint limitSimplemask;
+	uint limitAdvancedmask;
 
 	SecurityRules sr;
 
@@ -255,15 +255,6 @@ private:
  */
 // void analyse_letter(const char & letter, char & last_simplemask, std::string & simplemask_string, std::string & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
 
-/**
- * @brief Analyse a password
- * @param password: current password
- * @param c: container of all useful data of the password
- * @param sr: get the actual security rules and count the number of password respecting them
- * @param limitAdvancedmask: define the limit for the size of advanced masks
- * @param limitSimplemask: define the limit for the size of simple masks
- */
-// Container analyze_password(const std::string & password, SecurityRules & sr, const int & limitAdvancedmask, const int & limitSimplemask);
 
 /**
  * @brief Update minima and maxima of all general data from analysed passwords
