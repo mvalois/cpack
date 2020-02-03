@@ -321,34 +321,15 @@ PasswordStats analyze_password(const string & password, SecurityRules & sr, cons
 	return c;
 }
 
-void updateMinMax(minMax & m, const Policy & pol) {
-	if (m.mindigit == -1 || m.mindigit > pol.digit) {
-		m.mindigit = pol.digit;
-	}
-	if (m.maxdigit == -1 || m.maxdigit < pol.digit) {
-		m.maxdigit = pol.digit;
-	}
-
-	if (m.minlower == -1 || m.minlower > pol.lower) {
-		m.minlower = pol.lower;
-	}
-	if (m.maxlower == -1 || m.maxlower < pol.lower) {
-		m.maxlower = pol.lower;
-	}
-
-	if (m.minupper == -1 || m.minupper > pol.upper) {
-		m.minupper = pol.upper;
-	}
-	if (m.maxupper == -1 || m.maxupper < pol.upper) {
-		m.maxupper = pol.upper;
-	}
-
-	if (m.minspecial == -1 || m.minspecial > pol.special) {
-		m.minspecial = pol.special;
-	}
-	if (m.maxspecial == -1 || m.maxspecial < pol.special) {
-		m.maxspecial = pol.special;
-	}
+void updateMinMax(minMax& m, const Policy& pol) {
+	m.mindigit = min(m.mindigit, pol.digit);
+	m.maxdigit = max(m.maxdigit, pol.digit);
+	m.minlower = min(m.minlower, pol.lower);
+	m.maxlower = max(m.maxlower, pol.lower);
+	m.minupper = min(m.minupper, pol.upper);
+	m.maxupper = max(m.maxupper, pol.upper);
+	m.minspecial = min(m.minspecial, pol.special);
+	m.maxspecial = max(m.maxspecial, pol.special);
 }
 
 void handle_password(const string& password, const uint64_t& nbPasswords, thread_data* my_data){
