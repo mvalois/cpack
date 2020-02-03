@@ -11,29 +11,24 @@
  */
 
 #include <fstream>
-#include <unistd.h>
-#include <getopt.h>
+
 #include "Statsgen.h"
 
 using namespace std;
 
 #define MISSING_FILENAME "Missing filename"
 
-static struct option long_options[] = {
-	{"help", no_argument, NULL, 'h'},
-	{"withcount", no_argument, NULL, 'w'},
-	{"hiderare", no_argument, NULL, 'H'},
-	{"top", required_argument, NULL, 't'},
-	{"regex", required_argument, NULL, 'r'},
-	{"out", required_argument, NULL, 'o'},
-	{"debug", no_argument, NULL, 'd'},
-	{"limit-advanced-masks", required_argument, NULL, 'A'},
-	{"limit-simple-masks", required_argument, NULL, 'S'},
-	{"parallel", required_argument, NULL, 'p'},
-	{"security", no_argument, NULL, 's'},
-	{NULL, 0, NULL, 0}
-};
+inline void notInteger(const char* value){
+	cerr << "Error: " << value << " is not an integer" << endl;
+}
 
+inline void needArgument(const char* value){
+	cerr << "Error: " << value << " needs an argument" << endl;
+}
+
+inline void unknownArg(const char* value){
+	cerr << "Error: argument unknown: " << value << endl;
+}
 
 void showHelp() {
 	static const char* USAGE[] = {
@@ -62,9 +57,9 @@ void showHelp() {
 		NULL
 	};
 	for(int line = 0; USAGE[line] != NULL; line++){
-			cerr << USAGE[line] << endl;
+			cout << USAGE[line] << endl;
 	}
-	exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
 }
 
 
@@ -72,44 +67,73 @@ int main(int argc,char* argv[]) {
 	locale::global(locale(""));
 	
 	string filename;
-	if(argc > 1){
-		filename = argv[optind];
+	if(argc >= 2){
+		filename = argv[1];
 	}
 	else {
 		showHelp();
 	}
 
 	Statsgen statsgen(filename);
-
-	int opt;
-	while ((opt = getopt_long(argc, argv, "hwHt:r:o:dA:S:p:s", long_options, NULL)) != -1){
-		switch(opt){
-			case 'h':
-				showHelp(); break;
-			case 'w':
-				statsgen.setWithcount(true); break;
-			case 'H':
-				statsgen.setHiderare(1); break;
-			case 't':
-				statsgen.setTop(atoi(optarg)); break;
-			case 'r':
-				statsgen.setRegex(optarg); break;
-			case 'o':
-				statsgen.setOutfile(optarg); break;
-			case 'd':
-				statsgen.enableDebug(); break;
-			case 'A':
-				statsgen.setLimitAdvancedmask(atoi(optarg)); break;
-			case 'S':
-				statsgen.setLimitSimplemask(atoi(optarg)); break;
-			case 'p':
-				statsgen.setNbThread(atoi(optarg)); break;
-			case 's':
-				statsgen.askSecurityRules(); break;
-			default:
-				showHelp(); break;
+	string arg;
+	for(int i=2; i < argc; ++i){
+		arg = string(argv[i]);
+		if(arg == "-h" || arg == "--help"){
+			showHelp(); return EXIT_SUCCESS;
 		}
-
+		if(arg == "-w" || arg == "--withcount"){
+			statsgen.setWithcount(true); continue;
+		}
+		if(arg == "-H" || arg == "--hiderare"){
+			statsgen.setHiderare(1); continue;
+		}
+		if(arg == "-t" || arg == "--top"){
+			try{
+				statsgen.setTop(stoi(argv[++i])); continue;
+			}
+			catch(std::invalid_argument){ notInteger(argv[i]); }
+			catch(std::logic_error){ needArgument(argv[i-1]); }
+			return EXIT_FAILURE;
+		}
+		if(arg == "-r" || arg == "--regex"){
+			statsgen.setRegex(argv[++i]); continue;
+		}
+		if(arg == "-o" || arg == "--out"){
+			statsgen.setOutfile(argv[++i]); continue;
+		}
+		if(arg == "-d" || arg == "--debug"){
+			statsgen.enableDebug(); continue;
+		}
+		if(arg == "-A" || arg == "--limit-advanced-masks"){
+			try{
+				statsgen.setLimitAdvancedmask(stoi(argv[++i])); continue;
+			}
+			catch(std::invalid_argument){ notInteger(argv[i]); }
+			catch(std::logic_error){ needArgument(argv[i-1]); }
+			return EXIT_FAILURE;
+		}
+		if(arg == "-S" || arg == "--limit-simple-masks"){
+			try{
+				statsgen.setLimitSimplemask(stoi(argv[++i])); continue;
+			}
+			catch(std::invalid_argument){ notInteger(argv[i]); }
+			catch(std::logic_error){ needArgument(argv[i-1]); }
+			return EXIT_FAILURE;
+		}
+		if(arg == "-p" || arg == "--parallel"){
+			try{
+				statsgen.setNbThread(stoi(argv[++i])); continue;
+			}
+			catch(std::invalid_argument){ notInteger(argv[i]); }
+			catch(std::logic_error){ needArgument(argv[i-1]); }
+			return EXIT_FAILURE;
+		}
+		if(arg == "-s" || arg == "--security"){
+			statsgen.askSecurityRules(); continue;
+		}
+		else {
+			unknownArg(argv[i]);
+		}
 	}
 	
 	if (statsgen.generate_stats()) {
