@@ -324,15 +324,16 @@ void updateMinMax(minMax& m, const Policy& pol) {
 
 void handle_password(const string& password, const uint64_t& nbPasswords, thread_data* my_data){
 	my_data->total_counter += nbPasswords;
-	if ( !my_data->use_regex || regex_match(password,my_data->current_regex)) {
-		PasswordStats c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
-		my_data->total_filter += nbPasswords;
-		my_data->length[ c.pass_length ] += nbPasswords;
-		my_data->charactersets[ c.pol ] += nbPasswords;
-		my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
-		my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
-		updateMinMax(my_data->minMaxValue, c.pol);
+	if(my_data->use_regex && !regex_match(password,my_data->current_regex)){
+		return;
 	}
+	PasswordStats c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
+	my_data->total_filter += nbPasswords;
+	my_data->length[ c.pass_length ] += nbPasswords;
+	my_data->charactersets[ c.pol ] += nbPasswords;
+	my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
+	my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
+	updateMinMax(my_data->minMaxValue, c.pol);
 }
 
 void* generate_stats_thread_queue(void* threadarg) {
