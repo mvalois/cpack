@@ -321,8 +321,6 @@ PasswordStats analyze_password(const string & password, SecurityRules & sr, cons
 	return c;
 }
 
-
-
 void updateMinMax(minMax & m, const Policy & pol) {
 	if (m.mindigit == -1 || m.mindigit > pol.digit) {
 		m.mindigit = pol.digit;
@@ -353,10 +351,21 @@ void updateMinMax(minMax & m, const Policy & pol) {
 	}
 }
 
+void handle_password(const string& password, const uint64_t& nbPasswords, thread_data* my_data){
+	my_data->total_counter += nbPasswords;
+	if ( !my_data->use_regex || regex_match(password,my_data->current_regex)) {
+		PasswordStats c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
+		my_data->total_filter += nbPasswords;
+		my_data->length[ c.pass_length ] += nbPasswords;
+		my_data->charactersets[ c.pol ] += nbPasswords;
+		my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
+		my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
+		updateMinMax(my_data->minMaxValue, c.pol);
+	}
+}
 
-void * generate_stats_thread_queue(void * threadarg) {
-	struct thread_data *my_data;
-	my_data = (struct thread_data *) threadarg;
+void* generate_stats_thread_queue(void* threadarg) {
+	struct thread_data *my_data = (struct thread_data *) threadarg;
 
 	string line;
 	uint64_t nbline = 0;
@@ -364,100 +373,41 @@ void * generate_stats_thread_queue(void * threadarg) {
 		++nbline;
 		line = my_data->password_queue.front();
 		my_data->password_queue.pop();
-
-		if (line.size() == 0) {
-			continue;
-		}
-
-		PasswordStats c;
-
-		my_data->total_counter++;
-		if ( !my_data->use_regex || regex_match(line,my_data->current_regex)) {
-			c = analyze_password(line, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
-
-			my_data->total_filter++;
-
-			my_data->length[ c.pass_length ] += 1;
-			my_data->charactersets[ c.pol ] += 1;
-			my_data->simplemasks[ c.simplemask_string ] += 1;
-			my_data->advancedmasks[ c.advancedmask_string ] += 1;
-		}
-		updateMinMax(my_data->minMaxValue, c.pol);
+		if (line.size() == 0){ continue; }
+		handle_password(line, 1, my_data);
 	}
 
 	pthread_exit(NULL);
 }
 
-
-void * generate_stats_thread(void * threadarg) {
-	struct thread_data *my_data;
-	my_data = (struct thread_data *) threadarg;
+void* generate_stats_thread(void* threadarg) {
+	struct thread_data* my_data = (struct thread_data *) threadarg;
 
 	ifstream readfile(my_data->filename);
-	string line;
 	uint64_t nbline = 0;
+	string line;
+	string password;
+	uint64_t nbPasswords;
 
-	while(readfile.good()) {
+	while(readfile >> line) {
 		++nbline;
-		getline(readfile, line);
-		if (nbline < my_data->lineBegin) {
-			continue;
-		}
-		if (nbline > my_data->lineEnd) {
-			break;
-		}
-
-
-		if (line.size() == 0) {
-			continue;
-		}
-
-		PasswordStats c;
+		if (nbline < my_data->lineBegin){ continue; }
+		if (nbline > my_data->lineEnd){ break; }
+		if (line.size() == 0){ continue; }
 
 		if (my_data->withcount) {
-			uint64_t i = 0;
-			bool number=false;
-			for(i=0; i < line.length(); i++) {
-				if(iswdigit(line.at(i))) {
-					number=true;
-				}
-				else if (!iswdigit(line.at(i)) && number) {
-					break;
-				}
-			}
-			string password = line.substr(i+1,line.length());
-			uint64_t nbPasswords = stoi(line.substr(0,i));
-
-			my_data->total_counter += nbPasswords;
-
-			if ( !my_data->use_regex || regex_match(password,my_data->current_regex)) {
-				my_data->total_filter += nbPasswords;
-				c = analyze_password(password, my_data->sr,my_data->limitAdvancedmask, my_data->limitSimplemask);
-
-				my_data->length[ c.pass_length ] += nbPasswords;
-				my_data->charactersets[ c.pol ] += nbPasswords;
-				my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
-				my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
-			}
+			istringstream is(line);
+			is >> nbPasswords;
+			is >> password;
 		}
 		else {
-			my_data->total_counter++;
-			if ( !my_data->use_regex || regex_match(line,my_data->current_regex)) {
-				c = analyze_password(line, my_data->sr, my_data->limitAdvancedmask, my_data->limitSimplemask);
-
-				my_data->total_filter++;
-
-				my_data->length[ c.pass_length ] += 1;
-				my_data->charactersets[ c.pol ] += 1;
-				my_data->simplemasks[ c.simplemask_string ] += 1;
-				my_data->advancedmasks[ c.advancedmask_string ] += 1;
-			}
+			nbPasswords = 1;
+			password = line;
 		}
-		updateMinMax(my_data->minMaxValue, c.pol);
+		handle_password(password, nbPasswords, my_data);
 	}
 
 	readfile.close();
-
 	pthread_exit(NULL);
 }
 
@@ -467,8 +417,7 @@ uint64_t nbline_file(const string & filename) {
 	string line;
 	uint64_t nb = 0;
 
-	while(readfile.good()) {
-		getline(readfile, line);
+	while(readfile >> line){
 		++nb;
 	}
 	// we have not read the whole file
