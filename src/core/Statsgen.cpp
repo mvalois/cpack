@@ -112,11 +112,6 @@ int Statsgen::generate_stats() {
 
 	pthread_t threads[MAX_THREADS];
 
-	pthread_attr_t attr;
-
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
 	// split stdin into nbThread files on disk
 	if (is_stdin){
 		string line;
@@ -160,7 +155,6 @@ int Statsgen::generate_stats() {
 	}
 
 	void *status;
-	pthread_attr_destroy(&attr);
 	for(int i = 0; i < nbThread; i++ ) {
 		int rc = pthread_join(threads[i], &status);
 		if (rc) {
@@ -233,14 +227,13 @@ void Statsgen::print_stats() {
 	cout << "\nStatistics relative to advancedmask: \n" << endl;
 	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
 
-	if (outfile_name != ""){
+	if (! outfile_name.empty()){
 		locale::global(locale("C"));
 		ofstream outfile_stream(outfile_name);
-		multimap<uint64_t, string> reverse = flip_map<string>(stats_advancedmasks);
-		for(auto it=reverse.end();it!=reverse.begin();it--){
-			if (it == reverse.end()) continue;
-			if(it->second == "othermasks") continue;
-			outfile_stream << it->second << "," << it->first << endl;
+		map<uint64_t, string, greater<uint64_t>> reverse = flip_map(stats_advancedmasks);
+		for(pair<uint64_t, string> it : reverse){
+			if(it.second == "othermasks") continue;
+			outfile_stream << it.second << "," << it.first << endl;
 		}
 		outfile_stream.close();
 	}

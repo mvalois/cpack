@@ -162,24 +162,22 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     percentageSecurity = percentage(stats.getNbSecurePasswords(), total);
 
     /* LENGTH HISTOGRAM */
-    multimap<uint64_t, int> reverseL = flip_map<int>(stats.getStatsLength());
+    map<uint64_t, int, greater<uint64_t>> reverseL = flip_map<int>(stats.getStatsLength());
     double percentageL;
     double maxPercLength = 0;
     uint64_t nbHideL = 0;
     barLength->clear();
 
-    MapIterator<uint64_t, int> itL;
-    for(itL = reverseL.end(); itL != reverseL.begin(); itL--) {
-        if (itL == reverseL.end()) continue;
+    for(pair<uint64_t, int> itL : reverseL) {
 
-        percentageL = percentage(itL->first,  total);
+        percentageL = percentage(itL.first,  total);
         maxPercLength = percentageL > maxPercLength ? percentageL : maxPercLength;
         if (percentageL >= perc_other) {
-            QBarSet *set = new QBarSet(QString::number(itL->second));
+            QBarSet *set = new QBarSet(QString::number(itL.second));
             *set << percentageL;
             barLength->append(set);
         } else {
-            nbHideL += itL->first;
+            nbHideL += itL.first;
         }
     }
 
@@ -189,55 +187,50 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 
 
     /* CHARSET PIECHART */
-    multimap<uint64_t, string> reverseC = flip_map<string>(stats.getStatsCharsets());
+    map<uint64_t, string, greater<uint64_t>> reverseC = flip_map(stats.getStatsCharsets());
     uint64_t top = 0;
     uint64_t nbHideC = 0;
     pieCharset->clear();
 
-    MapIterator<uint64_t, string> itC;
-    for(itC = reverseC.end(); itC != reverseC.begin(); itC--) {
-        if (itC == reverseC.end()) continue;
+    for(pair<uint64_t, string> itC : reverseC) {
         top++;
         if (top <= display_charsets) {
-            pieCharset->append(QString::fromStdString(itC->second), itC->first);
+            pieCharset->append(QString::fromStdString(itC.second), itC.first);
         } else {
-            nbHideC += itC->first;
+            nbHideC += itC.first;
         }
     }
     pieCharset->append("Other charsets", nbHideC);
 
     /* SIMPLE PIECHART */
-    multimap<uint64_t, string> reverseS = flip_map<string>(stats.getStatsSimple());
+    map<uint64_t, string, greater<uint64_t>> reverseS = flip_map(stats.getStatsSimple());
     uint64_t top_simple = 0;
     uint64_t nbHideS = 0;
     pieSimple->clear();
 
-    MapIterator<uint64_t, string> itS;
-    for(itS = reverseS.end(); itS != reverseS.begin(); itS--) {
-        if (itS == reverseS.end()) continue;
+    for(pair<uint64_t, string> itS : reverseS) {
         top_simple++;
         if (top_simple <= display_simples) {
-            pieSimple->append(QString::fromStdString(itS->second), itS->first);
+            pieSimple->append(QString::fromStdString(itS.second), itS.first);
         } else {
-            nbHideS += itS->first;
+            nbHideS += itS.first;
         }
     }
     pieSimple->append("Other Masks", nbHideS);
 
     /* ADVANCED PIECHART */
-    multimap<uint64_t, string> reverseA = flip_map<string>(stats.getStatsAdvanced());
+    map<uint64_t, string, greater<uint64_t>> reverseA = flip_map(stats.getStatsAdvanced());
     uint64_t top_advanced = 0;
     uint64_t nbHideA = 0;
     pieAdvanced->clear();
 
     MapIterator<uint64_t, string> itA;
-    for(itA = reverseA.end(); itA != reverseA.begin(); itA--) {
-        if (itA == reverseA.end()) continue;
+    for(pair<uint64_t, string> itA : reverseA) {
         top_advanced++;
         if (top_advanced <= display_advanced) {
-            pieAdvanced->append(QString::fromStdString(itA->second), itA->first);
+            pieAdvanced->append(QString::fromStdString(itA.second), itA.first);
         } else {
-            nbHideA += itA->first;
+            nbHideA += itA.first;
         }
     }
     pieAdvanced->append("Other Masks", nbHideA);

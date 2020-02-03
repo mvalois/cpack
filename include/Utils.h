@@ -18,6 +18,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <iomanip>
+#include <utility>
 
 inline float percentage(const float& num, const float& den){
 	return 100 * num / den;
@@ -36,11 +37,11 @@ using MapIterator = typename std::map<K, V>::const_iterator;
  * @return ordered map
  */
 template<typename A>
-std::multimap<uint64_t, A> flip_map(const std::unordered_map<A, uint64_t> & src) {
-	std::multimap<uint64_t, A> dst;
+std::map<uint64_t, A, std::greater<uint64_t>> flip_map(const std::unordered_map<A, uint64_t> & src) {
+	std::map<uint64_t, A, std::greater<uint64_t>> dst;
 
 	for(UnorderedMapIterator<A, uint64_t> it = src.begin(); it != src.end(); ++it)
-		dst.insert(std::pair<uint64_t, A>(it->second, it->first));
+		dst.insert(std::make_pair(it->second, it->first));
 
 	return dst;
 }
@@ -82,18 +83,15 @@ void readResult(const uint64_t & res, const Type& carac, int & count, const uint
 template<typename Type>
 void showMap(const std::unordered_map<Type, uint64_t> & stats, const int & top, const uint64_t & total_counter, const int & hiderare, int & count) {
 	count = 0;
-	std::multimap<uint64_t, Type> reverse = flip_map<Type>(stats);
-
-	MapIterator<uint64_t, Type> it;
-	for(it = reverse.end(); it != reverse.begin(); it--) {
-		if (it == reverse.end()) continue;
-
-		readResult<Type>(it->first, it->second, count, total_counter, hiderare);
+	std::map<uint64_t, Type, std::greater<uint64_t>> reverse = flip_map<Type>(stats);
+	std::pair<uint64_t, Type> it;
+	for(std::pair<uint64_t, Type> it : reverse) {
+		readResult<Type>(it.first, it.second, count, total_counter, hiderare);
 		if (top != -1 && count == top) break;
 	}
 
 	if (count != top) {
-		readResult<Type>(it->first, it->second, count, total_counter, hiderare);
+		readResult<Type>(it.first, it.second, count, total_counter, hiderare);
 	}
 }
 
