@@ -7,7 +7,6 @@
 #include <climits>
 #include <regex>
 
-#include "Policy.h"
 #include "SecurityRules.h"
 
 typedef std::unordered_map<std::string, uint64_t> StringOccurrence;
@@ -16,9 +15,8 @@ typedef std::unordered_map<int, uint64_t> IntOccurrence;
 /**
  * @brief minimal number of digits of a password, etc.
  */
-class minMax {
-public:
-	void updateMinMax(const Policy& pol);
+struct minMax {
+	void updateMinMax(const minMax &m);
 	uint mindigit = UINT_MAX;
 	uint maxdigit = 0;
 	uint minlower = UINT_MAX;
@@ -29,9 +27,8 @@ public:
 	uint maxspecial = 0;
 };
 
-class ThreadData {
-public:
-	ThreadData operator+(const ThreadData& other);
+struct ThreadData {
+	ThreadData operator+(const ThreadData& other) const;
 	void operator+=(const ThreadData& other);
 	int thread_id;
 	std::string filename;

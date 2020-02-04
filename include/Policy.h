@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 
+#include "ThreadData.h"
 #include "SecurityRules.h"
 
 class Policy {
@@ -13,6 +14,7 @@ public:
 	uint upper = 0;
 	uint special = 0;
 	operator std::string() const;
+	operator minMax() const;
 	static std::map<uint, std::string> charsetNames() {
 		std::map<uint, std::string> names;
 		names[1] = "numeric";

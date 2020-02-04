@@ -16,6 +16,15 @@ Policy::operator string() const {
 	return it->second;
 }
 
+Policy::operator minMax() const {
+	minMax m;
+	m.maxlower = lower;
+	m.maxupper = upper;
+	m.maxdigit = digit;
+	m.maxspecial = special;
+	return m;
+}
+
 bool Policy::satisfies(const SecurityRules& sr, const uint& pwd_size) const {
 	return 	pwd_size >= sr.minLength
 			&& digit >= sr.minDigit
