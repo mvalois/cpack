@@ -52,7 +52,7 @@ void Statsgen::setSecurityRules(const uint& length, const uint& special, const u
 	_sr = { _sr.nbSecurePassword, length, special, digit, upper, lower };
 }
 
-void Statsgen::configureThread(thread_data& td) const {
+void Statsgen::configureThread(ThreadData& td) const {
 	td.filename = filename;
 	td.current_regex = current_regex;
 	td.use_regex = use_regex;
@@ -60,44 +60,6 @@ void Statsgen::configureThread(thread_data& td) const {
 	td.limitSimplemask = limitSimplemask;
 	td.limitAdvancedmask = limitAdvancedmask;
 	td.sr = { 0, _sr.minLength, _sr.minSpecial, _sr.minDigit, _sr.minLower, _sr.minUpper };
-}
-
-void Statsgen::mergeThread(const thread_data& td){
-	total_counter += td.total_counter;
-	total_filter += td.total_filter;
-
-	Policy min, max;
-	min.digit = td.minMaxValue.mindigit;
-	min.lower = td.minMaxValue.minlower;
-	min.upper = td.minMaxValue.minupper;
-	min.special = td.minMaxValue.minspecial;
-
-	max.digit = td.minMaxValue.maxdigit;
-	max.lower = td.minMaxValue.maxlower;
-	max.upper = td.minMaxValue.maxupper;
-	max.special = td.minMaxValue.maxspecial;
-
-	_sr.nbSecurePassword += td.sr.nbSecurePassword;
-
-	updateMinMax(minMaxValue, min);
-	updateMinMax(minMaxValue, max);
-
-
-	for(pair<int, uint64_t> occ: td.length){
-		stats_length[occ.first] += occ.second;
-	}
-
-	for(pair<string, int> occ : td.charactersets){
-		stats_charactersets[occ.first] += occ.second;
-	}
-
-	for(pair<string, int> occ: td.simplemasks){
-		stats_simplemasks[occ.first] += occ.second;
-	}
-
-	for(pair<string, int> occ: td.advancedmasks){
-		stats_advancedmasks[occ.first] += occ.second;
-	}
 }
 
 int Statsgen::generate_stats() {
@@ -162,10 +124,12 @@ int Statsgen::generate_stats() {
 			exit(-1);
 		}
 		td[i].finished = true;
-		mergeThread(td[i]);
+		if(i >= 1){
+			td[0] += td[i];
+		}
 	}
 
-	if (!total_counter) {
+	if (!td[0].total_counter) {
 		cerr << "[ERROR] Empty file or not existing file" << endl;
 		return 0;
 	}
@@ -175,59 +139,60 @@ int Statsgen::generate_stats() {
 
 
 void Statsgen::print_stats() {
+	ThreadData& data = td[0];
 	int count;
-	float perc = percentage(total_filter, total_counter);
+	float perc = percentage(data.total_filter, data.total_counter);
 
-	cout << "\n\tSelected " << total_filter << " on " << total_counter << " passwords\t("
+	cout << "\n\tSelected " << data.total_filter << " on " << data.total_counter << " passwords\t("
 		<< perc << " %)" << endl;
 
 
 	cout << "\nSecurity rules : " << endl;
-	cout << "\tMinimal length of a password: " << _sr.minLength << endl;
-	cout << "\tMinimum of special characters in a password: " << _sr.minSpecial << endl;
-	cout << "\tMinimum of digits in a password: " << _sr.minDigit << endl;
-	cout << "\tMinimum of lower characters in a password: " << _sr.minLower << endl;
-	cout << "\tMinimum of upper characters in a password: " << _sr.minUpper << endl;
+	cout << "\tMinimal length of a password: " << data.sr.minLength << endl;
+	cout << "\tMinimum of special characters in a password: " << data.sr.minSpecial << endl;
+	cout << "\tMinimum of digits in a password: " << data.sr.minDigit << endl;
+	cout << "\tMinimum of lower characters in a password: " << data.sr.minLower << endl;
+	cout << "\tMinimum of upper characters in a password: " << data.sr.minUpper << endl;
 
-	float perce = percentage(_sr.nbSecurePassword, total_counter);
-	cout << "\n\t\t--> " << _sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
+	float perce = percentage(data.sr.nbSecurePassword, data.total_counter);
+	cout << "\n\t\t--> " << data.sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
 	cout << "\nmin - max\n" << endl;
 	cout << setw(43) << right << "digit:  "
-			<< setw(2) << right << minMaxValue.mindigit << " - " << minMaxValue.maxdigit << endl;
+			<< setw(2) << right << data.minMaxValue.mindigit << " - " << data.minMaxValue.maxdigit << endl;
 	cout << setw(43) << right << "lower:  "
-			<< setw(2) << right << minMaxValue.minlower << " - " << minMaxValue.maxlower << endl;
+			<< setw(2) << right << data.minMaxValue.minlower << " - " << data.minMaxValue.maxlower << endl;
 	cout << setw(43) << right << "upper:  "
-			<< setw(2) << right << minMaxValue.minupper << " - " << minMaxValue.maxupper << endl;
+			<< setw(2) << right << data.minMaxValue.minupper << " - " << data.minMaxValue.maxupper << endl;
 	cout << setw(43) << right << "special:  "
-			<< setw(2) << right << minMaxValue.minspecial << " - " << minMaxValue.maxspecial << endl;
+			<< setw(2) << right << data.minMaxValue.minspecial << " - " << data.minMaxValue.maxspecial << endl;
 
 
 
 	cout << "\nStatistics relative to length: \n" << endl;
-	showMap(stats_length, top, total_counter, hiderare, count);
+	showMap(data.length, top, data.total_counter, hiderare, count);
 
 	cout << "\nStatistics relative to charsets: \n" << endl;
-	showMap(stats_charactersets, -1, total_counter, hiderare, count);
+	showMap(data.charactersets, -1, data.total_counter, hiderare, count);
 
 
 	cout << "\nStatistics relative to simplemasks: \n" << endl;
-	showMap(stats_simplemasks, top, total_counter, hiderare, count);
+	showMap(data.simplemasks, top, data.total_counter, hiderare, count);
 
 	if (limitSimplemask > 0) {
 		cout << endl;
-		readResult(stats_simplemasks["othermasks"], "othermasks", count, total_counter, hiderare);
+		readResult(data.simplemasks["othermasks"], "othermasks", count, data.total_counter, hiderare);
 	}
 
 
 	cout << "\nStatistics relative to advancedmask: \n" << endl;
-	showMap(stats_advancedmasks, top, total_counter, hiderare, count);
+	showMap(data.advancedmasks, top, data.total_counter, hiderare, count);
 
 	if (! outfile_name.empty()){
 		locale::global(locale("C"));
 		ofstream outfile_stream(outfile_name);
-		map<uint64_t, string, greater<uint64_t>> reverse = flip_map(stats_advancedmasks);
+		map<uint64_t, string, greater<uint64_t>> reverse = flip_map(data.advancedmasks);
 		for(pair<uint64_t, string> it : reverse){
 			if(it.second == "othermasks") continue;
 			outfile_stream << it.second << "," << it.first << endl;
@@ -237,7 +202,7 @@ void Statsgen::print_stats() {
 
 	if (limitAdvancedmask > 0) {
 		cout << endl;
-		readResult(stats_advancedmasks["othermasks"], "othermasks", count, total_counter, hiderare);
+		readResult(data.advancedmasks["othermasks"], "othermasks", count, data.total_counter, hiderare);
 	}
 }
 
@@ -290,18 +255,7 @@ pair<uint, uint> get_masks(const string& password, PasswordStats& c){
 	return make_pair(sizeSimpleMask, sizeAdvancedMask);
 }
 
-void updateMinMax(minMax& m, const Policy& pol) {
-	m.mindigit = min(m.mindigit, pol.digit);
-	m.maxdigit = max(m.maxdigit, pol.digit);
-	m.minlower = min(m.minlower, pol.lower);
-	m.maxlower = max(m.maxlower, pol.lower);
-	m.minupper = min(m.minupper, pol.upper);
-	m.maxupper = max(m.maxupper, pol.upper);
-	m.minspecial = min(m.minspecial, pol.special);
-	m.maxspecial = max(m.maxspecial, pol.special);
-}
-
-void handle_password(const string& password, const uint64_t& nbPasswords, thread_data* my_data){
+void handle_password(const string& password, const uint64_t& nbPasswords, ThreadData* my_data){
 	my_data->total_counter += nbPasswords;
 	if(my_data->use_regex && !regex_match(password,my_data->current_regex)){
 		return;
@@ -326,11 +280,11 @@ void handle_password(const string& password, const uint64_t& nbPasswords, thread
 	my_data->charactersets[ c.pol ] += nbPasswords;
 	my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
 	my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
-	updateMinMax(my_data->minMaxValue, c.pol);
+	my_data->minMaxValue.updateMinMax(c.pol);
 }
 
 void* generate_stats_thread_queue(void* threadarg) {
-	struct thread_data *my_data = (struct thread_data *) threadarg;
+	ThreadData *my_data = (ThreadData *) threadarg;
 
 	string line;
 	uint64_t nbline = 0;
@@ -346,7 +300,7 @@ void* generate_stats_thread_queue(void* threadarg) {
 }
 
 void* generate_stats_thread(void* threadarg) {
-	struct thread_data* my_data = (struct thread_data *) threadarg;
+	ThreadData* my_data = (ThreadData *) threadarg;
 
 	ifstream readfile(my_data->filename);
 	uint64_t nbline = 0;

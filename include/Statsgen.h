@@ -16,20 +16,14 @@
 
 
 #include <string>
-#include <unordered_map>
 #include <iostream>
-#include <regex>
-#include <queue>
 #include <thread>
-#include <climits>
 
 #include "Policy.h"
 #include "SecurityRules.h"
+#include "ThreadData.h"
 
 #define MAX_THREADS 32
-
-typedef std::unordered_map<std::string, uint64_t> StringOccurrence;
-typedef std::unordered_map<int, uint64_t> IntOccurrence;
 
 
 struct PasswordStats {
@@ -38,56 +32,6 @@ struct PasswordStats {
 	std::string simplemask_string = "";
 	Policy pol;
 };
-
-
-/**
- * @brief Simplify number of arguments for functions
- * minimal number of digits of a password, etc.
- */
-struct minMax {
-	uint mindigit = UINT_MAX;
-	uint maxdigit = 0;
-	uint minlower = UINT_MAX;
-	uint maxlower = 0;
-	uint minupper = UINT_MAX;
-	uint maxupper = 0;
-	uint minspecial = UINT_MAX;
-	uint maxspecial = 0;
-};
-
-/**
- * @brief All needed variables to give to each thread
- */
-struct thread_data {
-	int thread_id;
-	std::string filename;
-	uint64_t lineBegin = 0;
-	uint64_t lineEnd = 0;
-
-	uint64_t total_counter = 0;
-	uint64_t total_filter = 0;
-
-	IntOccurrence length;
-	StringOccurrence simplemasks;
-	StringOccurrence advancedmasks;
-	StringOccurrence charactersets;
-	std::queue<std::string> password_queue;
-
-	minMax minMaxValue;
-
-	std::regex current_regex;
-	bool use_regex = false;
-	bool withcount = false;
-
-	uint limitSimplemask;
-	uint limitAdvancedmask;
-
-	SecurityRules sr;
-
-	bool finished = false;
-};
-
-
 
 /**
  * @brief Calcul and save all analysed statistics
@@ -158,8 +102,7 @@ public:
 		}
 	}
 
-	void configureThread(thread_data& td) const;
-	void mergeThread(const thread_data& td);
+	void configureThread(ThreadData& td) const;
 
 
 	/**
@@ -200,11 +143,11 @@ public:
 	inline const StringOccurrence& getStatsCharsets() const { return stats_charactersets; }
 	inline const StringOccurrence& getStatsSimple() const { return stats_simplemasks; }
 	inline const StringOccurrence& getStatsAdvanced() const { return stats_advancedmasks; }
-	inline const thread_data* getThreadsData() const { return td; }
+	inline const ThreadData* getThreadsData() const { return td; }
 
 private:
 	std::string filename;
-	struct thread_data td[MAX_THREADS];
+	ThreadData td[MAX_THREADS];
 
 	// Filters
 

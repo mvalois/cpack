@@ -16,6 +16,7 @@ set(CMAKE_LD_FLAGS "-lpthread")
 add_executable(cppack
 				src/core/Statsgen.cpp
 				src/core/Policy.cpp
+				src/core/ThreadData.cpp
 				src/cli/Main.cpp)
 target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
@@ -42,6 +43,7 @@ if(Qt5Core_FOUND)
 	    src/gui/MainGui.cpp
 	    src/core/Statsgen.cpp
 	    src/core/Policy.cpp
+	    src/core/ThreadData.cpp
 	    ressources/logos.qrc
 	)
 
