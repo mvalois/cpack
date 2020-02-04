@@ -28,7 +28,6 @@ class ProgressThread : public QThread
     void run() {
         unsigned int progress = 0;
         uint64_t processed = 0;
-        int finished = 0;
         const int nbthreads = _s.getNbThreads();
         const struct ThreadData* td = _s.getThreadsData();
 

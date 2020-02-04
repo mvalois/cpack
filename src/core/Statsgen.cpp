@@ -127,10 +127,10 @@ int Statsgen::generate_stats() {
 			cerr << "[ERROR] unable to join," << rc << endl;
 			exit(-1);
 		}
-		finished++;
 		if(i >= 1){
 			td[0] += td[i];
 		}
+		finished++;
 	}
 
 	if (!td[0].total_counter) {
