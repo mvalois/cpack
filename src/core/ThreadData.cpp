@@ -15,13 +15,14 @@ void minMax::updateMinMax(const Policy& pol) {
 	maxspecial = std::max(maxspecial, pol.special);
 }
 
-ThreadData ThreadData::operator+=(const ThreadData& other) const{
-	return ThreadData(*this) + other;
+void ThreadData::operator+=(const ThreadData& other){
+	*this = *this + other;
 }
 
 ThreadData ThreadData::operator+(const ThreadData& other){
-	total_counter += other.total_counter;
-	total_filter += other.total_filter;
+	ThreadData td(*this);
+	td.total_counter = total_counter + other.total_counter;
+	td.total_filter = total_filter + other.total_filter;
 
 	Policy min, max;
 	min.digit = other.minMaxValue.mindigit;
@@ -34,26 +35,26 @@ ThreadData ThreadData::operator+(const ThreadData& other){
 	max.upper = other.minMaxValue.maxupper;
 	max.special = other.minMaxValue.maxspecial;
 
-	sr.nbSecurePassword += other.sr.nbSecurePassword;
+	td.sr.nbSecurePassword += other.sr.nbSecurePassword;
 
-	minMaxValue.updateMinMax(min);
-	minMaxValue.updateMinMax(max);
+	td.minMaxValue.updateMinMax(min);
+	td.minMaxValue.updateMinMax(max);
 
 
 	for(std::pair<int, uint64_t> occ: other.length){
-		length[occ.first] += occ.second;
+		td.length[occ.first] += occ.second;
 	}
 
 	for(std::pair<std::string, int> occ : other.charactersets){
-		charactersets[occ.first] += occ.second;
+		td.charactersets[occ.first] += occ.second;
 	}
 
 	for(std::pair<std::string, int> occ: other.simplemasks){
-		simplemasks[occ.first] += occ.second;
+		td.simplemasks[occ.first] += occ.second;
 	}
 
 	for(std::pair<std::string, int> occ: other.advancedmasks){
-		advancedmasks[occ.first] += occ.second;
+		td.advancedmasks[occ.first] += occ.second;
 	}
-	return *this;
+	return td;
 }

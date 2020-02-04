@@ -32,7 +32,7 @@ public:
 class ThreadData {
 public:
 	ThreadData operator+(const ThreadData& other);
-	ThreadData operator+=(const ThreadData& other) const;
+	void operator+=(const ThreadData& other);
 	int thread_id;
 	std::string filename;
 	uint64_t lineBegin = 0;
