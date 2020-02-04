@@ -63,6 +63,8 @@ void Statsgen::configureThread(ThreadData& td) const {
 }
 
 int Statsgen::generate_stats() {
+	finished = 0;
+	started = false;
 	uint64_t nbline = 0;
 	if (!is_stdin){
 		nbline = nbline_file(filename);
@@ -84,7 +86,7 @@ int Statsgen::generate_stats() {
 		}
 	}
 
-	for(int i = 0; i < nbThread; i++ ) {
+	for(uint i = 0; i < nbThread; i++ ) {
 		td[i].thread_id = i + 1;
 		configureThread(td[i]);
 
@@ -116,14 +118,16 @@ int Statsgen::generate_stats() {
 		}
 	}
 
+	started = true;
+
 	void *status;
-	for(int i = 0; i < nbThread; i++ ) {
+	for(uint i = 0; i < nbThread; i++ ) {
 		int rc = pthread_join(threads[i], &status);
 		if (rc) {
 			cerr << "[ERROR] unable to join," << rc << endl;
 			exit(-1);
 		}
-		td[i].finished = true;
+		finished++;
 		if(i >= 1){
 			td[0] += td[i];
 		}

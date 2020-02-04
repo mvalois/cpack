@@ -54,8 +54,6 @@ struct ThreadData {
 	uint limitAdvancedmask;
 
 	SecurityRules sr;
-
-	bool finished = false;
 };
 
 #endif // THREAD_DATA_H

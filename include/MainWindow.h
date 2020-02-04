@@ -30,19 +30,18 @@ class ProgressThread : public QThread
         uint64_t processed = 0;
         int finished = 0;
         const int nbthreads = _s.getNbThreads();
-        const struct thread_data* td = _s.getThreadsData();
+        const struct ThreadData* td = _s.getThreadsData();
 
-        while(td[nbthreads-1].lineEnd == 0){
+        while(!_s.allStarted()){
             msleep(500);
         }
         const uint64_t nblines = td[nbthreads-1].lineEnd;
 
-        while(finished != nbthreads){
+        while(!_s.allFinished()){
             processed = 0;
             finished = 0;
             for(int i=0; i < nbthreads; ++i){
                 processed += td[i].total_counter;
-                finished += td[i].finished;
             }
             progress = (int) percentage(processed, nblines);
             _qpb.setValue(progress);

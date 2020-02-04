@@ -144,6 +144,8 @@ public:
 	inline const StringOccurrence& getStatsSimple() const { return stats_simplemasks; }
 	inline const StringOccurrence& getStatsAdvanced() const { return stats_advancedmasks; }
 	inline const ThreadData* getThreadsData() const { return td; }
+	inline bool allFinished() const { return finished == nbThread; }
+	inline bool allStarted() const { return started; }
 
 private:
 	std::string filename;
@@ -158,7 +160,7 @@ private:
 	bool withcount = false;			// Know if the database is at the format withcount or not
 	int limitSimplemask = 12;		// Limit the size of Simple Mask
 	int limitAdvancedmask = 12;		// Limit the size of Advanced Mask
-	int nbThread = 1;				// Number of usable threads, default 1
+	uint nbThread = 1;				// Number of usable threads, default 1
 	std::string outfile_name;		// File where to write masks
 	bool is_stdin = false;				// If filename is stdin
 	bool debug_enabled = false;		// Enable debug output
@@ -182,6 +184,11 @@ private:
 
 	// Security policy
 	SecurityRules _sr = { 0, 8, 0, 1, 1, 1	};
+
+	// threads which have finished
+	uint finished = 0;
+	// all threads have been started
+	bool started = false;
 };
 
 
