@@ -156,10 +156,11 @@ void MainWindow::disableWithCount()
 }
 
 double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, QPieSeries* pieSimple, QPieSeries* pieAdvanced, double & percentageTotal, double & percentageSecurity) {
-    double total = stats.getTotalCounter();
-    double filter = stats.getTotalFilter();
+    const ThreadData& results = stats.getResults();
+    double total = results.total_counter;
+    double filter = results.total_filter;
     percentageTotal = percentage(filter, total);
-    percentageSecurity = percentage(stats.getNbSecurePasswords(), total);
+    percentageSecurity = percentage(results.sr.nbSecurePassword, total);
 
     /* LENGTH HISTOGRAM */
     multimap<uint64_t, int, greater<uint64_t>> reverseL = flip_map<int>(results.length);
@@ -261,7 +262,7 @@ QVBoxLayout* MainWindow::drawPieChart(QPieSeries* qps, QVBoxLayout* layout, cons
 
 void MainWindow::handleResults()
 {
-
+    const ThreadData& results = stats.getResults();
     progressThread->terminate();
     progressThread->wait();
     ui->progressBar->setValue(100);
@@ -313,9 +314,9 @@ void MainWindow::handleResults()
     /* LABELS */
 
     ui->AnalyzedLabel->setText("Number of analyzed passwords: "
-                               + QString::number(stats.getTotalFilter(), 'g', 2)
+                               + QString::number(results.total_filter, 'g', 2)
                                + " on a total of "
-                               + QString::number(stats.getTotalFilter(), 'g', 2)
+                               + QString::number(results.total_counter, 'g', 2)
                                + " passwords (" + QString::number(percentageTotal) + "%)");
 
 

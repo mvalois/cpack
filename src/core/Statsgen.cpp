@@ -14,7 +14,7 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
-#include <thread>
+#include <omp.h>
 
 
 #include "Statsgen.h"
@@ -58,55 +58,38 @@ void Statsgen::configureThread(ThreadData& td) const {
 }
 
 int Statsgen::generate_stats() {
-	td = vector<ThreadData>(nbThread);
+	processed = 0;
+	finished = false;
 	results = ThreadData();
-	finished = 0;
-	started = false;
-	uint64_t nbline = 0;
-	nbline = nbline_file(filename);
-	if (!nbline){ // error reading the file
+	configureThread(results);
+	omp_set_num_threads(nbThread);
+	nblines = nbline_file(filename);
+	if (!nblines){ // error reading the file
 		cerr << "[ERROR] Empty file or not existing file" << endl;
 		return 0;
 	}
 
-	vector<pthread_t> threads(nbThread);
-
-	for(uint i = 0; i < nbThread; i++ ) {
-		td[i].thread_id = i + 1;
-		configureThread(td[i]);
-
-		if(i == 0){
-			td[i].lineBegin = 0;
-		}
-		else{
-			td[i].lineBegin =  td[i-1].lineEnd + 1;
-		}
-		td[i].lineEnd = (i+1)*nbline/nbThread;
-
-		if(debug_enabled){
-			cerr << "[DEBUG] " << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
-		}
-
-		int rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
-
-		if (rc) {
-			cerr << "[ERROR] unable to create thread," << rc << endl;
-			exit(-1);
-		}
-	}
-
 	started = true;
-
-	void *status;
-	for(uint i = 0; i < nbThread; i++ ) {
-		int rc = pthread_join(threads[i], &status);
-		if (rc) {
-			cerr << "[ERROR] unable to join," << rc << endl;
-			exit(-1);
+#pragma omp parallel reduction(dataSum:results)
+	{
+#pragma omp single
+		{
+			nbThread = omp_get_num_threads();
 		}
-		results += td[i];
-		finished++;
+		uint thread_id = omp_get_thread_num();
+		ifstream inputfile(filename);
+		string line;
+		for(uint numline = 0; numline < nblines; ++numline){
+			getline(inputfile, line);
+			if((numline % nbThread) == thread_id){
+				handle_password(line, 1, results);
+#pragma omp atomic
+				++processed;
+			}
+		}
 	}
+
+	finished = true;
 
 	if (!results.total_counter) {
 		cerr << "[ERROR] Empty file or not existing file" << endl;
@@ -232,63 +215,32 @@ pair<uint, uint> get_masks(const string& password, PasswordStats& c){
 	return make_pair(sizeSimpleMask, sizeAdvancedMask);
 }
 
-void handle_password(const string& password, const uint64_t& nbPasswords, ThreadData* my_data){
-	my_data->total_counter += nbPasswords;
-	if(my_data->use_regex && !regex_match(password,my_data->current_regex)){
+void Statsgen::handle_password(const string& password, const uint64_t& nbPasswords, ThreadData& my_data) const {
+	my_data.total_counter += nbPasswords;
+	if(my_data.use_regex && !regex_match(password,my_data.current_regex)){
 		return;
 	}
 	PasswordStats c;
 
 	pair<uint, uint> masks = get_masks(password, c);
 
-	if(c.pol.satisfies(my_data->sr, password.size())){
-		my_data->sr.nbSecurePassword++;
+	if(c.pol.satisfies(my_data.sr, password.size())){
+		my_data.sr.nbSecurePassword++;
 	}
 
-	if (masks.first > my_data->limitSimplemask) {
+	if (masks.first > my_data.limitSimplemask) {
 		c.simplemask_string = "othermasks";
 	}
-	if (masks.second > my_data->limitAdvancedmask) {
+	if (masks.second > my_data.limitAdvancedmask) {
 		c.advancedmask_string = "othermasks";
 	}
 
-	my_data->total_filter += nbPasswords;
-	my_data->length[ password.size() ] += nbPasswords;
-	my_data->charactersets[ c.pol ] += nbPasswords;
-	my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
-	my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
-	my_data->minMaxValue.updateMinMax(c.pol);
-}
-
-void* Statsgen::generate_stats_thread(void* threadarg) {
-	ThreadData* my_data = (ThreadData *) threadarg;
-
-	ifstream readfile(my_data->filename);
-	uint64_t nbline = 0;
-	string line;
-	string password;
-	uint64_t nbPasswords;
-
-	while(getline(readfile, line)){
-		++nbline;
-		if (nbline < my_data->lineBegin){ continue; }
-		if (nbline > my_data->lineEnd){ break; }
-		if (line.size() == 0){ continue; }
-
-		if (my_data->withcount) {
-			istringstream is(line);
-			is >> nbPasswords;
-			is >> password;
-		}
-		else {
-			nbPasswords = 1;
-			password = line;
-		}
-		handle_password(password, nbPasswords, my_data);
-	}
-
-	readfile.close();
-	pthread_exit(NULL);
+	my_data.total_filter += nbPasswords;
+	my_data.length[ password.size() ] += nbPasswords;
+	my_data.charactersets[ c.pol ] += nbPasswords;
+	my_data.simplemasks[ c.simplemask_string ] += nbPasswords;
+	my_data.advancedmasks[ c.advancedmask_string ] += nbPasswords;
+	my_data.minMaxValue.updateMinMax(c.pol);
 }
 
 bool Statsgen::operator==(const Statsgen& o) const {
