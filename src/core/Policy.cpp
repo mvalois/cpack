@@ -18,10 +18,10 @@ Policy::operator string() const {
 
 Policy::operator minMax() const {
 	minMax m;
-	m.maxlower = lower;
-	m.maxupper = upper;
-	m.maxdigit = digit;
-	m.maxspecial = special;
+	m.minlower = m.maxlower = lower;
+	m.minupper = m.maxupper = upper;
+	m.mindigit = m.maxdigit = digit;
+	m.minspecial = m.maxspecial = special;
 	return m;
 }
 
