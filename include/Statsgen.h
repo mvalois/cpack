@@ -146,6 +146,7 @@ public:
 	* @param threadarg : parameters and result storage
 	*/
 	static void* generate_stats_thread(void * threadarg);
+	void handle_password(const std::string& password, const uint64_t& nbPasswords, ThreadData& td) const;
 
 private:
 	std::string filename;
