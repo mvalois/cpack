@@ -17,11 +17,13 @@
 
 #include <string>
 #include <iostream>
-#include <thread>
 
 #include "Policy.h"
 #include "SecurityRules.h"
 #include "ThreadData.h"
+
+
+#pragma omp declare reduction(dataSum: ThreadData : omp_out += omp_in ) initializer(omp_priv(omp_orig))
 
 
 struct PasswordStats {
@@ -86,14 +88,7 @@ public:
 	 * @brief Number of threads the user wants to use
 	 * @param nb: number of usable threads
 	 */
-	inline void setNbThread(const int& nb) {
-		int max = std::thread::hardware_concurrency();
-		if (nb > max) {
-			nbThread = max;
-		} else {
-			nbThread = nb;
-		}
-	}
+	inline void setNbThread(const int& nb) { nbThread = nb; }
 
 	void configureThread(ThreadData& td) const;
 
@@ -128,35 +123,21 @@ public:
 	 */
 	void print_stats();
 
-	inline uint64_t getTotalCounter() const { return td[0].total_counter; }
-	inline uint64_t getTotalFilter() const { return td[0].total_filter; }
-	inline uint64_t getNbSecurePasswords() const { return td[0].sr.nbSecurePassword; }
 	inline int getNbThreads() const { return nbThread; }
-	inline const IntOccurrence& getStatsLength() const { return td[0].length; }
-	inline const StringOccurrence& getStatsCharsets() const { return td[0].charactersets; }
-	inline const StringOccurrence& getStatsSimple() const { return td[0].simplemasks; }
-	inline const StringOccurrence& getStatsAdvanced() const { return td[0].advancedmasks; }
-	inline const std::vector<ThreadData>& getThreadsData() const { return td; }
-	inline bool allFinished() const { return finished == nbThread; }
+	inline uint64_t getNbLines() const { return nblines; }
+	inline uint64_t getProcessed() const { return processed; }
+	inline const ThreadData& getResults() const { return results; }
+	inline bool allFinished() const { return finished; }
 	inline bool allStarted() const { return started; }
 	bool operator==(const Statsgen& other) const;
-
-	/**
-	* @brief Given parameters in threadarg, compute statistics on partition of the file
-	* @param threadarg : parameters and result storage
-	*/
-	static void* generate_stats_thread(void * threadarg);
 	void handle_password(const std::string& password, const uint64_t& nbPasswords, ThreadData& td) const;
 
 private:
 	std::string filename;
 	// results of the computation
 	ThreadData results;
-	// Data computed from within a thread, for read-accessibility
-	std::vector<ThreadData> td;
 
 	// Filters
-
 	int hiderare = 0; 				// Hide low statistics
 	int top = 10;					// Show only a top of statistics
 	std::regex current_regex;		// Regex for the interesting passwords
@@ -171,8 +152,12 @@ private:
 	// Security policy
 	SecurityRules _sr = { 0, 8, 0, 1, 1, 1	};
 
-	// threads which have finished
-	uint finished = 0;
+	// nb lines processed
+	uint64_t nblines = 0;
+	// nb lines processed
+	uint64_t processed = 0;
+	// all threads have finished
+	uint finished = false;
 	// all threads have been started
 	bool started = false;
 };
