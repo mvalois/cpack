@@ -260,7 +260,7 @@ void handle_password(const string& password, const uint64_t& nbPasswords, Thread
 	my_data->minMaxValue.updateMinMax(c.pol);
 }
 
-void* generate_stats_thread(void* threadarg) {
+void* Statsgen::generate_stats_thread(void* threadarg) {
 	ThreadData* my_data = (ThreadData *) threadarg;
 
 	ifstream readfile(my_data->filename);

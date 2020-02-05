@@ -146,6 +146,12 @@ public:
 	inline bool allStarted() const { return started; }
 	bool operator==(const Statsgen& other) const;
 
+	/**
+	* @brief Given parameters in threadarg, compute statistics on partition of the file
+	* @param threadarg : parameters and result storage
+	*/
+	static void* generate_stats_thread(void * threadarg);
+
 private:
 	std::string filename;
 	// results of the computation
@@ -198,11 +204,6 @@ private:
  */
 void updateMinMax(minMax & minMaxValue, const Policy & pol);
 
-/**
-* @brief Action of all threads
-* @param threadarg : all useful argument for the thread
-*/
-void * generate_stats_thread(void * threadarg);
 
 /**
  * @brief Compute statistics by consumming password from a queue
