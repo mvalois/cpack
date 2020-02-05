@@ -17,6 +17,7 @@ typedef std::unordered_map<int, uint64_t> IntOccurrence;
  */
 struct minMax {
 	void updateMinMax(const minMax &m);
+	bool operator==(const minMax& m) const;
 	uint mindigit = UINT_MAX;
 	uint maxdigit = 0;
 	uint minlower = UINT_MAX;
@@ -30,6 +31,7 @@ struct minMax {
 struct ThreadData {
 	ThreadData operator+(const ThreadData& other) const;
 	void operator+=(const ThreadData& other);
+	bool operator==(const ThreadData& other) const;
 	int thread_id;
 	std::string filename;
 	uint64_t lineBegin = 0;

@@ -9,6 +9,7 @@ struct SecurityRules {
 	uint minDigit;
 	uint minLower;
 	uint minUpper;
+	bool operator==(const SecurityRules& o) const;
 };
 
 

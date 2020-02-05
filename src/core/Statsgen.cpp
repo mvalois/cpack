@@ -141,7 +141,6 @@ int Statsgen::generate_stats() {
 	return 1;
 }
 
-
 void Statsgen::print_stats() {
 	ThreadData& data = td[0];
 	int count;
@@ -350,4 +349,19 @@ uint64_t nbline_file(const string & filename) {
 	}
 
 	return nb;
+}
+
+
+bool Statsgen::operator==(const Statsgen& o) const {
+	return td[0] == o.td[0];
+}
+
+bool SecurityRules::operator==(const SecurityRules& o) const {
+	return nbSecurePassword == o.nbSecurePassword
+	&& minLength == o.minLength
+	&& minSpecial == o.minSpecial
+	&& minDigit == o.minDigit
+	&& minLower == o.minLower
+	&& minUpper == o.minUpper
+	;
 }

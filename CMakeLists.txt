@@ -51,3 +51,10 @@ if(Qt5Core_FOUND)
 else()
 	message(STATUS "Qt5 not found. Not building GUI.")
 endif()
+
+add_executable(cppack-test
+				src/core/Statsgen.cpp
+				src/core/Policy.cpp
+				src/core/ThreadData.cpp
+				src/test/cppack-tests.cpp)
+target_link_libraries(cppack-test ${CMAKE_THREAD_LIBS_INIT})

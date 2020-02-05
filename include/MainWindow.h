@@ -38,7 +38,6 @@ class ProgressThread : public QThread
 
         while(!_s.allFinished()){
             processed = 0;
-            finished = 0;
             for(int i=0; i < nbthreads; ++i){
                 processed += td[i].total_counter;
             }

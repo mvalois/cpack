@@ -146,6 +146,7 @@ public:
 	inline const ThreadData* getThreadsData() const { return td; }
 	inline bool allFinished() const { return finished == nbThread; }
 	inline bool allStarted() const { return started; }
+	bool operator==(const Statsgen& other) const;
 
 private:
 	std::string filename;

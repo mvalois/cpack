@@ -6,7 +6,8 @@ build-cli:
     - apt-get -qq -y install build-essential cmake
   script:
     - cmake .
-    - make -j$(nproc) cppack
+    - make -j$(nproc) cppack cppack-test
+    - make test
   artifacts:
     paths:
       - bin/cppack
