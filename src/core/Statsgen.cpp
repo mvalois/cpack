@@ -21,12 +21,7 @@
 #include "Utils.h"
 using namespace std;
 
-Statsgen::Statsgen(const std::string& name):filename(name){
-	if (name == "-"){
-		is_stdin = true;
-		cerr << "[WARNING]" << " reading from stdin enabled, loading the whole list in memory" << endl;
-	}
-}
+Statsgen::Statsgen(const std::string& name):filename(name){}
 
 
 void Statsgen::askSecurityRules() {
@@ -68,25 +63,13 @@ int Statsgen::generate_stats() {
 	finished = 0;
 	started = false;
 	uint64_t nbline = 0;
-	if (!is_stdin){
-		nbline = nbline_file(filename);
-		if (!nbline){ // error reading the file
-			cerr << "[ERROR] Empty file or not existing file" << endl;
-			return 0;
-		}
+	nbline = nbline_file(filename);
+	if (!nbline){ // error reading the file
+		cerr << "[ERROR] Empty file or not existing file" << endl;
+		return 0;
 	}
 
 	vector<pthread_t> threads(nbThread);
-
-	// split stdin into nbThread files on disk
-	if (is_stdin){
-		string line;
-		nbline = 0;
-		while(getline(cin, line)){
-			td[nbline%nbThread].password_queue.push(line);
-			nbline++;
-		}
-	}
 
 	for(uint i = 0; i < nbThread; i++ ) {
 		td[i].thread_id = i + 1;
@@ -104,15 +87,7 @@ int Statsgen::generate_stats() {
 			cerr << "[DEBUG] " << "Thread " << td[i].thread_id << " analyse : " << td[i].lineBegin << " --> " << td[i].lineEnd << endl;
 		}
 
-		int rc;
-		// We use std::queue if input is from stdin
-		if (is_stdin) {
-			rc = pthread_create(&threads[i], NULL, generate_stats_thread_queue, (void *)&td[i] );
-		}
-		// Else we split the file in nbThread threads
-		else {
-			rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
-		}
+		int rc = pthread_create(&threads[i], NULL, generate_stats_thread, (void *)&td[i] );
 
 		if (rc) {
 			cerr << "[ERROR] unable to create thread," << rc << endl;
@@ -283,22 +258,6 @@ void handle_password(const string& password, const uint64_t& nbPasswords, Thread
 	my_data->simplemasks[ c.simplemask_string ] += nbPasswords;
 	my_data->advancedmasks[ c.advancedmask_string ] += nbPasswords;
 	my_data->minMaxValue.updateMinMax(c.pol);
-}
-
-void* generate_stats_thread_queue(void* threadarg) {
-	ThreadData *my_data = (ThreadData *) threadarg;
-
-	string line;
-	uint64_t nbline = 0;
-	while(!my_data->password_queue.empty()) {
-		++nbline;
-		line = my_data->password_queue.front();
-		my_data->password_queue.pop();
-		if (line.size() == 0){ continue; }
-		handle_password(line, 1, my_data);
-	}
-
-	pthread_exit(NULL);
 }
 
 void* generate_stats_thread(void* threadarg) {
