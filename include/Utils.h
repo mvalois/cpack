@@ -56,6 +56,7 @@ std::multimap<uint64_t, A, std::greater<uint64_t>> flip_map(const std::unordered
  */
 template<typename Type>
 void readResult(const uint64_t & res, const Type& carac, int & count, const uint64_t & total_counter, const int & hiderare) {
+	if(res == 0) return;
 	std::ostringstream ss;
 	float perc = percentage(res, total_counter);
 
