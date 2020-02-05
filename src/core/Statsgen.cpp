@@ -70,20 +70,22 @@ int Statsgen::generate_stats() {
 	}
 
 	started = true;
-#pragma omp parallel
+#pragma omp parallel reduction(dataSum:results)
 	{
 #pragma omp single
 		{
 			nbThread = omp_get_num_threads();
 		}
+		uint thread_id = omp_get_thread_num();
 		ifstream inputfile(filename);
 		string line;
-#pragma omp for schedule(dynamic) private(line) reduction(dataSum:results)
 		for(uint numline = 0; numline < nblines; ++numline){
 			getline(inputfile, line);
-			handle_password(line, 1, results);
+			if((numline % nbThread) == thread_id){
+				handle_password(line, 1, results);
 #pragma omp atomic
-			++processed;
+				++processed;
+			}
 		}
 	}
 

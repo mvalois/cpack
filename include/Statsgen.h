@@ -23,9 +23,6 @@
 #include "ThreadData.h"
 
 
-#pragma omp declare reduction(dataSum: ThreadData : omp_out += omp_in ) initializer(omp_priv(omp_orig))
-
-
 struct PasswordStats {
 	int pass_length = 0;
 	std::string advancedmask_string = "";
