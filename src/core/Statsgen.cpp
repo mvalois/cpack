@@ -169,7 +169,7 @@ void Statsgen::print_stats() {
 	if (! outfile_name.empty()){
 		locale::global(locale("C"));
 		ofstream outfile_stream(outfile_name);
-		map<uint64_t, string, greater<uint64_t>> reverse = flip_map(results.advancedmasks);
+		multimap<uint64_t, string, greater<uint64_t>> reverse = flip_map(results.advancedmasks);
 		for(pair<uint64_t, string> it : reverse){
 			if(it.second == "othermasks") continue;
 			outfile_stream << it.second << "," << it.first << endl;
