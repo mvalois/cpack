@@ -23,8 +23,6 @@
 #include "SecurityRules.h"
 #include "ThreadData.h"
 
-#define MAX_THREADS 32
-
 
 struct PasswordStats {
 	int pass_length = 0;
@@ -143,15 +141,17 @@ public:
 	inline const StringOccurrence& getStatsCharsets() const { return td[0].charactersets; }
 	inline const StringOccurrence& getStatsSimple() const { return td[0].simplemasks; }
 	inline const StringOccurrence& getStatsAdvanced() const { return td[0].advancedmasks; }
-	inline const ThreadData* getThreadsData() const { return td; }
+	inline const std::vector<ThreadData>& getThreadsData() const { return td; }
 	inline bool allFinished() const { return finished == nbThread; }
 	inline bool allStarted() const { return started; }
 	bool operator==(const Statsgen& other) const;
 
 private:
 	std::string filename;
-	// contains all the stats
-	ThreadData td[MAX_THREADS];
+	// results of the computation
+	ThreadData results;
+	// Data computed from within a thread, for read-accessibility
+	std::vector<ThreadData> td;
 
 	// Filters
 

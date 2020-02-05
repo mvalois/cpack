@@ -63,6 +63,8 @@ void Statsgen::configureThread(ThreadData& td) const {
 }
 
 int Statsgen::generate_stats() {
+	td = vector<ThreadData>(nbThread);
+	results = ThreadData();
 	finished = 0;
 	started = false;
 	uint64_t nbline = 0;
@@ -74,7 +76,7 @@ int Statsgen::generate_stats() {
 		}
 	}
 
-	pthread_t threads[MAX_THREADS];
+	vector<pthread_t> threads(nbThread);
 
 	// split stdin into nbThread files on disk
 	if (is_stdin){
@@ -127,13 +129,11 @@ int Statsgen::generate_stats() {
 			cerr << "[ERROR] unable to join," << rc << endl;
 			exit(-1);
 		}
-		if(i >= 1){
-			td[0] += td[i];
-		}
+		results += td[i];
 		finished++;
 	}
 
-	if (!td[0].total_counter) {
+	if (!results.total_counter) {
 		cerr << "[ERROR] Empty file or not existing file" << endl;
 		return 0;
 	}
@@ -142,60 +142,59 @@ int Statsgen::generate_stats() {
 }
 
 void Statsgen::print_stats() {
-	ThreadData& data = td[0];
 	int count;
-	float perc = percentage(data.total_filter, data.total_counter);
+	float perc = percentage(results.total_filter, results.total_counter);
 
-	cout << "\n\tSelected " << data.total_filter << " on " << data.total_counter << " passwords\t("
+	cout << "\n\tSelected " << results.total_filter << " on " << results.total_counter << " passwords\t("
 		<< perc << " %)" << endl;
 
 
 	cout << "\nSecurity rules : " << endl;
-	cout << "\tMinimal length of a password: " << data.sr.minLength << endl;
-	cout << "\tMinimum of special characters in a password: " << data.sr.minSpecial << endl;
-	cout << "\tMinimum of digits in a password: " << data.sr.minDigit << endl;
-	cout << "\tMinimum of lower characters in a password: " << data.sr.minLower << endl;
-	cout << "\tMinimum of upper characters in a password: " << data.sr.minUpper << endl;
+	cout << "\tMinimal length of a password: " << results.sr.minLength << endl;
+	cout << "\tMinimum of special characters in a password: " << results.sr.minSpecial << endl;
+	cout << "\tMinimum of digits in a password: " << results.sr.minDigit << endl;
+	cout << "\tMinimum of lower characters in a password: " << results.sr.minLower << endl;
+	cout << "\tMinimum of upper characters in a password: " << results.sr.minUpper << endl;
 
-	float perce = percentage(data.sr.nbSecurePassword, data.total_counter);
-	cout << "\n\t\t--> " << data.sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
+	float perce = percentage(results.sr.nbSecurePassword, results.total_counter);
+	cout << "\n\t\t--> " << results.sr.nbSecurePassword << " passwords\t(" << perce << " %) respect the security rules\n" << endl;
 
 
 	cout << "\nmin - max\n" << endl;
 	cout << setw(43) << right << "digit:  "
-			<< setw(2) << right << data.minMaxValue.mindigit << " - " << data.minMaxValue.maxdigit << endl;
+			<< setw(2) << right << results.minMaxValue.mindigit << " - " << results.minMaxValue.maxdigit << endl;
 	cout << setw(43) << right << "lower:  "
-			<< setw(2) << right << data.minMaxValue.minlower << " - " << data.minMaxValue.maxlower << endl;
+			<< setw(2) << right << results.minMaxValue.minlower << " - " << results.minMaxValue.maxlower << endl;
 	cout << setw(43) << right << "upper:  "
-			<< setw(2) << right << data.minMaxValue.minupper << " - " << data.minMaxValue.maxupper << endl;
+			<< setw(2) << right << results.minMaxValue.minupper << " - " << results.minMaxValue.maxupper << endl;
 	cout << setw(43) << right << "special:  "
-			<< setw(2) << right << data.minMaxValue.minspecial << " - " << data.minMaxValue.maxspecial << endl;
+			<< setw(2) << right << results.minMaxValue.minspecial << " - " << results.minMaxValue.maxspecial << endl;
 
 
 
 	cout << "\nStatistics relative to length: \n" << endl;
-	showMap(data.length, top, data.total_counter, hiderare, count);
+	showMap(results.length, top, results.total_counter, hiderare, count);
 
 	cout << "\nStatistics relative to charsets: \n" << endl;
-	showMap(data.charactersets, -1, data.total_counter, hiderare, count);
+	showMap(results.charactersets, -1, results.total_counter, hiderare, count);
 
 
 	cout << "\nStatistics relative to simplemasks: \n" << endl;
-	showMap(data.simplemasks, top, data.total_counter, hiderare, count);
+	showMap(results.simplemasks, top, results.total_counter, hiderare, count);
 
 	if (limitSimplemask > 0) {
 		cout << endl;
-		readResult(data.simplemasks["othermasks"], "othermasks", count, data.total_counter, hiderare);
+		readResult(results.simplemasks["othermasks"], "othermasks", count, results.total_counter, hiderare);
 	}
 
 
 	cout << "\nStatistics relative to advancedmask: \n" << endl;
-	showMap(data.advancedmasks, top, data.total_counter, hiderare, count);
+	showMap(results.advancedmasks, top, results.total_counter, hiderare, count);
 
 	if (! outfile_name.empty()){
 		locale::global(locale("C"));
 		ofstream outfile_stream(outfile_name);
-		map<uint64_t, string, greater<uint64_t>> reverse = flip_map(data.advancedmasks);
+		map<uint64_t, string, greater<uint64_t>> reverse = flip_map(results.advancedmasks);
 		for(pair<uint64_t, string> it : reverse){
 			if(it.second == "othermasks") continue;
 			outfile_stream << it.second << "," << it.first << endl;
@@ -205,7 +204,7 @@ void Statsgen::print_stats() {
 
 	if (limitAdvancedmask > 0) {
 		cout << endl;
-		readResult(data.advancedmasks["othermasks"], "othermasks", count, data.total_counter, hiderare);
+		readResult(results.advancedmasks["othermasks"], "othermasks", count, results.total_counter, hiderare);
 	}
 }
 
@@ -347,13 +346,12 @@ uint64_t nbline_file(const string & filename) {
 		cerr << "[ERROR] There was an error reading the file at line " << nb << endl;
 		return 0;
 	}
-
 	return nb;
 }
 
 
 bool Statsgen::operator==(const Statsgen& o) const {
-	return td[0] == o.td[0];
+	return results == o.results;
 }
 
 bool SecurityRules::operator==(const SecurityRules& o) const {
