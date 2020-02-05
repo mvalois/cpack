@@ -15,6 +15,11 @@ typedef std::unordered_map<int, uint64_t> IntOccurrence;
  * @brief minimal number of digits of a password, etc.
  */
 struct minMax {
+	/**
+	 * @brief Update minima and maxima of all general data from analysed passwords
+	 * with the analysed passwords
+	 * @param m: other minMaxValue to merge with
+	 */
 	void updateMinMax(const minMax &m);
 	bool operator==(const minMax& m) const;
 	uint mindigit = UINT_MAX;

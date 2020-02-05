@@ -40,11 +40,6 @@ public:
 	Statsgen(const std::string& name);
 
 	/**
-	 * @brief show all options for the command
-	 */
-	void showHelp();
-
-	/**
 	 * @brief useful to hide statistics below 1%
 	 * @param hr: 1 to hide, else 0
 	 */
@@ -180,35 +175,5 @@ private:
 	// all threads have been started
 	bool started = false;
 };
-
-
-
-/**
- * @brief Analyse a letter in a password
- * @param letter: current letter
- * @param last_simplemask: last analyzed part of the simple masks
- * @param simplemask_string: current simple mask
- * @param advancedmask_string: current advanced mask
- * @param policy: current number of digit, lower, upper and special for the current password
- * @param sizeAdvancedMask: size of the current advanced mask
- * @param sizeSimpleMask: size of the current simple mask
- */
-// void analyse_letter(const char & letter, char & last_simplemask, std::string & simplemask_string, std::string & advancedmask_string, Policy & policy, int & sizeAdvancedMask, int & sizeSimpleMask);
-
-
-/**
- * @brief Update minima and maxima of all general data from analysed passwords
- * with the analysed passwords
- * @param minMaxValue: save all minima and maxima
- * @param pol : policy of the last analyzed password
- */
-void updateMinMax(minMax & minMaxValue, const Policy & pol);
-
-
-/**
- * @brief Compute statistics by consumming password from a queue
- * @param threadarg : arguments required by the thread
- */
-void * generate_stats_thread_queue(void * threadarg);
 
 #endif
