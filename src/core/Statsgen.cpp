@@ -79,10 +79,20 @@ int Statsgen::generate_stats() {
 		uint thread_id = omp_get_thread_num();
 		ifstream inputfile(filename);
 		string line;
+		int nbpasswords = 1;
+		istringstream iss;
 		for(uint numline = 0; numline < nblines; ++numline){
 			getline(inputfile, line);
+			if(withcount){
+				iss = istringstream(line);
+				iss >> nbpasswords;
+				iss >> line;
+			}
+			else {
+				nbpasswords = 1;
+			}
 			if((numline % nbThread) == thread_id){
-				handle_password(line, 1, results);
+				handle_password(line, nbpasswords, results);
 #pragma omp atomic
 				++processed;
 			}
