@@ -332,24 +332,6 @@ void* generate_stats_thread(void* threadarg) {
 	pthread_exit(NULL);
 }
 
-
-uint64_t nbline_file(const string & filename) {
-	ifstream readfile(filename);
-	string line;
-	uint64_t nb = 0;
-
-	while(getline(readfile, line)){
-		++nb;
-	}
-	// we have not read the whole file
-	if (readfile.fail() && !readfile.eof()){
-		cerr << "[ERROR] There was an error reading the file at line " << nb << endl;
-		return 0;
-	}
-	return nb;
-}
-
-
 bool Statsgen::operator==(const Statsgen& o) const {
 	return results == o.results;
 }

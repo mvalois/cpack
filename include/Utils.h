@@ -18,7 +18,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <iomanip>
-#include <utility>
+#include <sstream>
 
 inline float percentage(const float& num, const float& den){
 	return 100 * num / den;
@@ -100,6 +100,6 @@ void showMap(const std::unordered_map<Type, uint64_t> & stats, const int & top, 
  * @param filename: name of the file
  * @return number of line
  */
-uint64_t nbline_file(const std::string & filename);
+uint64_t nbline_file(const std::string& filename);
 
 #endif

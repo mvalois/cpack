@@ -17,6 +17,7 @@ add_executable(cppack
 				src/core/Statsgen.cpp
 				src/core/Policy.cpp
 				src/core/ThreadData.cpp
+				src/core/Utils.cpp
 				src/cli/Main.cpp)
 target_link_libraries(cppack ${CMAKE_THREAD_LIBS_INIT})
 
@@ -44,6 +45,7 @@ if(Qt5Core_FOUND)
 	    src/core/Statsgen.cpp
 	    src/core/Policy.cpp
 	    src/core/ThreadData.cpp
+	    src/core/Utils.cpp
 	    ressources/logos.qrc
 	)
 
@@ -58,5 +60,6 @@ add_executable(cppack-test
 				src/core/Statsgen.cpp
 				src/core/Policy.cpp
 				src/core/ThreadData.cpp
+				src/core/Utils.cpp
 				src/test/cppack-tests.cpp)
 target_link_libraries(cppack-test ${CMAKE_THREAD_LIBS_INIT})
