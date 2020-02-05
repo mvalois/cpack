@@ -82,7 +82,7 @@ int Statsgen::generate_stats() {
 	if (is_stdin){
 		string line;
 		nbline = 0;
-		while(cin >> line){
+		while(getline(cin, line)){
 			td[nbline%nbThread].password_queue.push(line);
 			nbline++;
 		}
@@ -310,7 +310,7 @@ void* generate_stats_thread(void* threadarg) {
 	string password;
 	uint64_t nbPasswords;
 
-	while(readfile >> line){
+	while(getline(readfile, line)){
 		++nbline;
 		if (nbline < my_data->lineBegin){ continue; }
 		if (nbline > my_data->lineEnd){ break; }
@@ -338,7 +338,7 @@ uint64_t nbline_file(const string & filename) {
 	string line;
 	uint64_t nb = 0;
 
-	while(readfile >> line){
+	while(getline(readfile, line)){
 		++nb;
 	}
 	// we have not read the whole file
