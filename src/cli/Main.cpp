@@ -61,6 +61,24 @@ void showHelp() {
 	exit(EXIT_SUCCESS);
 }
 
+void askSecurityRules(Statsgen& stats){
+	uint length, special, digit, upper, lower;
+	cout << "Minimal length of a password:" << endl;
+	cin >> length;
+
+	cout << "Minimum of special characters in a password:" << endl;
+	cin >> special;
+
+	cout << "Minimum of digits in a password:" << endl;
+	cin >> digit;
+
+	cout << "Minimum of lower characters in a password:" << endl;
+	cin >> lower;
+
+	cout << "Minimum of upper characters in a password:" << endl;
+	cin >> upper;
+	stats.setSecurityRules(length, special, digit, upper, lower);
+}
 
 int main(int argc,char* argv[]) {
 	locale::global(locale(""));
@@ -128,7 +146,7 @@ int main(int argc,char* argv[]) {
 			return EXIT_FAILURE;
 		}
 		if(arg == "-s" || arg == "--security"){
-			statsgen.askSecurityRules(); continue;
+			askSecurityRules(statsgen); continue;
 		}
 		else {
 			unknownArg(argv[i]);

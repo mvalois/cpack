@@ -23,26 +23,6 @@ using namespace std;
 
 Statsgen::Statsgen(const std::string& name):filename(name){}
 
-
-void Statsgen::askSecurityRules() {
-	uint length, special, digit, upper, lower;
-	cout << "Minimal length of a password:" << endl;
-	cin >> length;
-
-	cout << "Minimum of special characters in a password:" << endl;
-	cin >> special;
-
-	cout << "Minimum of digits in a password:" << endl;
-	cin >> digit;
-
-	cout << "Minimum of lower characters in a password:" << endl;
-	cin >> lower;
-
-	cout << "Minimum of upper characters in a password:" << endl;
-	cin >> upper;
-	setSecurityRules(length, special, digit, upper, lower);
-}
-
 void Statsgen::setSecurityRules(const uint& length, const uint& special, const uint& digit, const uint& upper, const uint& lower) {
 	_sr = { _sr.nbSecurePassword, length, special, digit, upper, lower };
 }
@@ -109,7 +89,7 @@ int Statsgen::generate_stats() {
 	return 1;
 }
 
-void Statsgen::print_stats() {
+void Statsgen::print_stats() const {
 	int count;
 	float perc = percentage(results.total_filter, results.total_counter);
 
@@ -152,7 +132,10 @@ void Statsgen::print_stats() {
 
 	if (limitSimplemask > 0) {
 		cout << endl;
-		readResult(results.simplemasks["othermasks"], "othermasks", count, results.total_counter, hiderare);
+		auto r = results.simplemasks.find("othermasks");
+		if(r != results.simplemasks.end()){
+			readResult(r->second, r->first, count, results.total_counter, hiderare);
+		}
 	}
 
 
@@ -172,12 +155,15 @@ void Statsgen::print_stats() {
 
 	if (limitAdvancedmask > 0) {
 		cout << endl;
-		readResult(results.advancedmasks["othermasks"], "othermasks", count, results.total_counter, hiderare);
+		auto r = results.advancedmasks.find("othermasks");
+		if(r != results.advancedmasks.end()){
+			readResult(r->second, r->first, count, results.total_counter, hiderare);
+		}
 	}
 }
 
 
-pair<uint, uint> get_masks(const string& password, PasswordStats& c){
+pair<uint, uint> Statsgen::get_masks(const string& password, PasswordStats& c) const {
 	char last_simplemask = 'a';
 	uint sizeSimpleMask = 0;
 	uint sizeAdvancedMask = 0;

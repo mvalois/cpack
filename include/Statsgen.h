@@ -38,87 +38,23 @@ public:
 	Statsgen(){}
 	Statsgen(const std::string& name);
 
-	/**
-	 * @brief useful to hide statistics below 1%
-	 * @param hr: 1 to hide, else 0
-	 */
+	int generate_stats();
+	void print_stats() const;
+
 	inline void setHiderare(const int& hr) { hiderare = hr; }
-
-	/**
-	 * @brief Defining the number of best results the user wants to see,
-	 * and so the result should be clearer
-	 * @param t: number of interesting results
-	 */
 	inline void setTop(const int& t) { top = t; }
-
-	/**
-	 * @brief Defining a regular expression to analyse only
-	 * some interesting passwords
-	 * @param reg: regular expression
-	 */
 	inline void setRegex(const std::string& reg) {
 		current_regex = reg;
 		use_regex = true;
 	}
-
-	/**
-	 * @brief Useful to know if the database uses the format withcount
-	 * @param var: true if database uses the format withcount, else false
-	 */
 	inline void setWithcount(const bool& wc) { withcount = wc; }
-
-	/**
-	 * @brief Filter for the size of the simple masks, can be
-	 * used as an optimisation option
-	 * @param limit: number that limit the size of the simple masks
-	 */
 	inline void setLimitSimplemask(const int& limit) { limitSimplemask = limit; }
-
-	/**
-	 * @brief Filter for the size of the advanced masks, can be
-	 * used as an optimisation option
-	 * @param limit: number that limit the size of the advanced masks
-	 */
 	inline void setLimitAdvancedmask(const int& limit) { limitAdvancedmask = limit; }
-
-	/**
-	 * @brief Number of threads the user wants to use
-	 * @param nb: number of usable threads
-	 */
 	inline void setNbThread(const int& nb) { nbThread = nb; }
-
 	void configureThread(ThreadData& td) const;
-
-
-	/**
-	 * @brief Defining all security rules
-	 */
-	void askSecurityRules();
 	void setSecurityRules(const uint& length, const uint& special, const uint& digit, const uint& upper, const uint& lower);
-
-	/**
-	 * @brief Where to write masks
-	 * @param outfile: the file where to write masks
-	 */
 	inline void setOutfile(const std::string& outfile) { outfile_name = outfile; }
-
-	/**
-	 * @brief enable debugging
-	 */
 	inline void enableDebug() { debug_enabled = true; }
-
-
-	/**
-	 * @brief Calculate all statistics for a database
-	 * @return 0 if error, 1 if success
-	 */
-	int generate_stats();
-
-
-	/**
-	 * @brief Print all calculated statistics
-	 */
-	void print_stats();
 
 	inline int getNbThreads() const { return nbThread; }
 	inline uint64_t getNbLines() const { return nblines; }
@@ -127,7 +63,6 @@ public:
 	inline bool allFinished() const { return finished; }
 	inline bool allStarted() const { return started; }
 	bool operator==(const Statsgen& other) const;
-	void handle_password(const std::string& password, const uint64_t& nbPasswords, ThreadData& td) const;
 
 private:
 	std::string filename;
@@ -157,6 +92,9 @@ private:
 	uint finished = false;
 	// all threads have been started
 	bool started = false;
+
+	void handle_password(const std::string& password, const uint64_t& nbPasswords, ThreadData& td) const;
+	std::pair<uint, uint> get_masks(const std::string& password, PasswordStats& c) const;
 };
 
 #endif
