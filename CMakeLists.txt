@@ -52,6 +52,8 @@ else()
 	message(STATUS "Qt5 not found. Not building GUI.")
 endif()
 
+enable_testing()
+add_test(cppack-test bin/cppack-test)
 add_executable(cppack-test
 				src/core/Statsgen.cpp
 				src/core/Policy.cpp

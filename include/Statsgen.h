@@ -135,14 +135,14 @@ public:
 	 */
 	void print_stats();
 
-	inline uint64_t getTotalCounter() const { return total_counter; }
-	inline uint64_t getTotalFilter() const { return total_filter; }
-	inline uint64_t getNbSecurePasswords() const { return _sr.nbSecurePassword; }
+	inline uint64_t getTotalCounter() const { return td[0].total_counter; }
+	inline uint64_t getTotalFilter() const { return td[0].total_filter; }
+	inline uint64_t getNbSecurePasswords() const { return td[0].sr.nbSecurePassword; }
 	inline int getNbThreads() const { return nbThread; }
-	inline const IntOccurrence& getStatsLength() const { return stats_length; }
-	inline const StringOccurrence& getStatsCharsets() const { return stats_charactersets; }
-	inline const StringOccurrence& getStatsSimple() const { return stats_simplemasks; }
-	inline const StringOccurrence& getStatsAdvanced() const { return stats_advancedmasks; }
+	inline const IntOccurrence& getStatsLength() const { return td[0].length; }
+	inline const StringOccurrence& getStatsCharsets() const { return td[0].charactersets; }
+	inline const StringOccurrence& getStatsSimple() const { return td[0].simplemasks; }
+	inline const StringOccurrence& getStatsAdvanced() const { return td[0].advancedmasks; }
 	inline const ThreadData* getThreadsData() const { return td; }
 	inline bool allFinished() const { return finished == nbThread; }
 	inline bool allStarted() const { return started; }
@@ -150,6 +150,7 @@ public:
 
 private:
 	std::string filename;
+	// contains all the stats
 	ThreadData td[MAX_THREADS];
 
 	// Filters
@@ -165,23 +166,6 @@ private:
 	std::string outfile_name;		// File where to write masks
 	bool is_stdin = false;				// If filename is stdin
 	bool debug_enabled = false;		// Enable debug output
-
-
-	// Dictionary
-
-	IntOccurrence stats_length;					// Passwords' length linked to their occurrence
-	StringOccurrence stats_simplemasks;	// Passwords' simple mask linked to their occurrence
-	StringOccurrence stats_advancedmasks;	// Passwords' advanced mask linked to their occurrence
-	StringOccurrence stats_charactersets;	// Passwords' characterset linked to their occurrence
-
-
-	// Counters
-
-	uint64_t total_counter = 0;		// number of analysed passwords
-	uint64_t total_filter = 0;		// number of analysed passwords after a filter
-
-	minMax minMaxValue;				// save all genral data from passwords
-
 
 	// Security policy
 	SecurityRules _sr = { 0, 8, 0, 1, 1, 1	};
