@@ -35,7 +35,6 @@ void showHelp() {
 		"Usage: stats FILENAME [OPTIONS]",
 		"To be sure the database's format can be read, please use this command before:",
 		"	iconv -f ISO-8859-1 -t UTF-8 databaseInput.txt -o databaseOutput.txt",
-		"Use '-' for FILENAME to read from stdin",
 		"Options:",
 		"	--help, -h          Show this help message",
 		"	--withcount, -w     Mendatory if the input database has the following format : [number of occurence] [password]",

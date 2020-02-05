@@ -3,7 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <queue>
 #include <climits>
 #include <regex>
 
@@ -44,7 +43,6 @@ struct ThreadData {
 	StringOccurrence simplemasks;
 	StringOccurrence advancedmasks;
 	StringOccurrence charactersets;
-	std::queue<std::string> password_queue;
 
 	minMax minMaxValue;
 
