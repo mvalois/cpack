@@ -26,21 +26,14 @@ class ProgressThread : public QThread
 {
     Q_OBJECT
     void run() {
-        unsigned int progress = 0;
-        uint64_t processed = 0;
-        const std::vector<ThreadData>& td = _s.getThreadsData();
-
+        int progress = 0;
         while(!_s.allStarted()){
             msleep(500);
         }
-        const uint64_t nblines = td.back().lineEnd;
+        const uint64_t nblines = _s.getNbLines();
 
         while(!_s.allFinished()){
-            processed = 0;
-            for(ThreadData t : td){
-                processed += t.total_counter;
-            }
-            progress = (int) percentage(processed, nblines);
+            progress = (int) percentage(_s.getProcessed(), nblines);
             _qpb.setValue(progress);
             msleep(500);
         }

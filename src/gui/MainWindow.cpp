@@ -156,13 +156,14 @@ void MainWindow::disableWithCount()
 }
 
 double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCharset, QPieSeries* pieSimple, QPieSeries* pieAdvanced, double & percentageTotal, double & percentageSecurity) {
-    double total = stats.getTotalCounter();
-    double filter = stats.getTotalFilter();
+    const ThreadData& results = stats.getResults();
+    double total = results.total_counter;
+    double filter = results.total_filter;
     percentageTotal = percentage(filter, total);
-    percentageSecurity = percentage(stats.getNbSecurePasswords(), total);
+    percentageSecurity = percentage(results.sr.nbSecurePassword, total);
 
     /* LENGTH HISTOGRAM */
-    map<uint64_t, int, greater<uint64_t>> reverseL = flip_map<int>(stats.getStatsLength());
+    multimap<uint64_t, int, greater<uint64_t>> reverseL = flip_map<int>(results.length);
     double percentageL;
     double maxPercLength = 0;
     uint64_t nbHideL = 0;
@@ -187,7 +188,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
 
 
     /* CHARSET PIECHART */
-    map<uint64_t, string, greater<uint64_t>> reverseC = flip_map(stats.getStatsCharsets());
+    multimap<uint64_t, string, greater<uint64_t>> reverseC = flip_map(results.charactersets);
     uint64_t top = 0;
     uint64_t nbHideC = 0;
     pieCharset->clear();
@@ -203,7 +204,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     pieCharset->append("Other charsets", nbHideC);
 
     /* SIMPLE PIECHART */
-    map<uint64_t, string, greater<uint64_t>> reverseS = flip_map(stats.getStatsSimple());
+    multimap<uint64_t, string, greater<uint64_t>> reverseS = flip_map(results.simplemasks);
     uint64_t top_simple = 0;
     uint64_t nbHideS = 0;
     pieSimple->clear();
@@ -219,7 +220,7 @@ double MainWindow::initGraphicalStats(QBarSeries * barLength, QPieSeries * pieCh
     pieSimple->append("Other Masks", nbHideS);
 
     /* ADVANCED PIECHART */
-    map<uint64_t, string, greater<uint64_t>> reverseA = flip_map(stats.getStatsAdvanced());
+    multimap<uint64_t, string, greater<uint64_t>> reverseA = flip_map(results.advancedmasks);
     uint64_t top_advanced = 0;
     uint64_t nbHideA = 0;
     pieAdvanced->clear();
@@ -261,7 +262,7 @@ QVBoxLayout* MainWindow::drawPieChart(QPieSeries* qps, QVBoxLayout* layout, cons
 
 void MainWindow::handleResults()
 {
-
+    const ThreadData& results = stats.getResults();
     progressThread->terminate();
     progressThread->wait();
     ui->progressBar->setValue(100);
@@ -313,9 +314,9 @@ void MainWindow::handleResults()
     /* LABELS */
 
     ui->AnalyzedLabel->setText("Number of analyzed passwords: "
-                               + QString::number(stats.getTotalFilter(), 'g', 2)
+                               + QString::number(results.total_filter, 'g', 2)
                                + " on a total of "
-                               + QString::number(stats.getTotalFilter(), 'g', 2)
+                               + QString::number(results.total_counter, 'g', 2)
                                + " passwords (" + QString::number(percentageTotal) + "%)");
 
 

@@ -11,6 +11,7 @@
 typedef std::unordered_map<std::string, uint64_t> StringOccurrence;
 typedef std::unordered_map<int, uint64_t> IntOccurrence;
 
+
 /**
  * @brief minimal number of digits of a password, etc.
  */
@@ -60,5 +61,7 @@ struct ThreadData {
 
 	SecurityRules sr;
 };
+
+#pragma omp declare reduction(dataSum: ThreadData : omp_out += omp_in ) initializer(omp_priv(omp_orig))
 
 #endif // THREAD_DATA_H
