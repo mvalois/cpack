@@ -20,6 +20,8 @@
 #include <iomanip>
 #include <sstream>
 
+typedef unsigned int uint;
+
 inline float percentage(const float& num, const float& den){
 	return 100 * num / den;
 }
