@@ -57,6 +57,8 @@ make cppack-gui
 bin/cppack-gui
 ```
 
+![Screenshot](screenshot.png)
+
 ## License
 
 See [LICENSE](LICENSE) for licensing details.
